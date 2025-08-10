@@ -22,4 +22,7 @@ app.UseAuthorization();
 
 app.MapControllers();
 
+app.UseStaticFiles();
+app.UseSpa(spa => { });
+
 app.Run();
