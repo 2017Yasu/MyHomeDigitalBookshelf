@@ -4,6 +4,13 @@ import { defineConfig } from 'vite';
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
+  css: {
+    preprocessorOptions: {
+      scss: {
+        silenceDeprecations: ['color-functions', 'global-builtin', 'import'],
+      },
+    },
+  },
   server: {
     proxy: {
       '/api': {
