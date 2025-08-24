@@ -88,6 +88,10 @@ Per user, track:
 * **Bookshelf View Modes**:
   * Traditional list view
   * **Cover-based “bookshelf view”** for a visual browsing experience
+* **OIDC Login**
+  * Users can choose the following ID provider to login
+    * Google
+  * Users can also choose traditional username/password login
 
 ---
 
@@ -172,15 +176,40 @@ Per user, track:
 
 ### 5.4 Users Table
 
-| Field       | Type     | Description        | Not NULL |
-| ----------- | -------- | ------------------ | -------- |
-| id          | UUID     | Primary key        | True     |
-| username    | String   | Unique username    | True     |
-| email       | String   | Unique email       | True     |
-| role        | Enum     | Admin/Member/Guest | True     |
-| created\_at | DateTime | Created timestamp  | True     |
+| Field         | Type     | Description                             | Not NULL |
+| ------------- | -------- | --------------------------------------- | -------- |
+| id            | UUID     | Primary key                             | True     |
+| username      | String   | Unique username                         | True     |
+| email         | String   | Unique email                            | True     |
+| password_hash | String   | Only required if user wants local login | False    |
+| role          | Enum     | Admin/Member/Guest                      | True     |
+| created\_at   | DateTime | Created timestamp                       | True     |
 
-### 5.5 BookshelfUsers Table (Many-to-Many)
+### 5.5 User Identities Table
+
+| Field      | Type     | Description                          | Not NULL |
+| ---------- | -------- | ------------------------------------ | -------- |
+| id         | UUID     | Primary key                          | True     |
+| user_id    | UUID     | FK to users(id)                      | True     |
+| provider   | String   | 'google', 'microsoft', 'apple', etc. | True     |
+| subject    | String   | OIDC 'sub' claim                     | True     |
+| email      | String   | Email from provider (optional)       | False    |
+| created_at | DateTime | Created timestamp                    | True     |
+
+### 5.6 Sessions Table
+
+| Field         | Type     | Description                             | Not NULL |
+| ------------- | -------- | --------------------------------------- | -------- |
+| id            | UUID     | Primary key (session ID)                | True     |
+| user_id       | UUID     | FK → users.id                           | True     |
+| token         | String   | JWT                                     | True     |
+| created_at    | DateTime | When session was created                | True     |
+| expires_at    | DateTime | When session should expire              | True     |
+| ip_address    | String   | (Optional) Origin IP for security/audit | False    |
+| user_agent    | String   | (Optional) Browser/device info          | False    |
+| refresh_token | String   | (Optional) For long-lived refresh (JWT) | False    |
+
+### 5.7 BookshelfUsers Table (Many-to-Many)
 
 | Field         | Type     | Description                  | Not NULL |
 | ------------- | -------- | ---------------------------- | -------- |
@@ -190,7 +219,7 @@ Per user, track:
 | created\_at   | DateTime | Created timestamp            | True     |
 | updated\_at   | DateTime | Updated timestamp            | True     |
 
-### 5.6 UserBooks Table (Many-to-Many)
+### 5.8 UserBooks Table (Many-to-Many)
 
 | Field           | Type    | Description                               | Not NULL |
 | --------------- | ------- | ----------------------------------------- | -------- |
@@ -284,3 +313,43 @@ Summary ranges:
 ## Appendix B – Official C-Code Resources
 
 * [日本図書コードの分類コード（C-コード） — Official PDF](https://www.sasshi-insatsu.com/wp/wp-content/uploads/2023/01/ccode_ori.pdf)
+
+## Appendix C - OpenID Connect Login Sequence
+
+```mermaid
+sequenceDiagram
+    participant User as User
+    participant Client as Web App (Frontend)
+    participant AuthServer as OIDC Provider (Google, etc.)
+    participant API as Backend API
+    participant DB as Database
+
+    User->>Client: Click "Login with Google"
+    Client->>AuthServer: Redirect to Authorization Endpoint (OAuth2/OIDC)
+    AuthServer->>User: Login + Consent screen
+    User->>AuthServer: Enter credentials, approve
+    AuthServer->>Client: Redirect back with Authorization Code
+    Client->>API: Send Authorization Code
+    API->>AuthServer: Exchange Code for ID Token + Access Token
+    AuthServer->>API: Return ID Token (contains `sub`, `email`, etc.)
+    API->>DB: Lookup `user_identities` by (provider, sub)
+    alt User identity found
+        DB->>API: Return linked user_id
+        API->>DB: Load user record
+        API->>Client: Return session / JWT for user
+    else User identity not found
+        API->>DB: Create new user in `users`
+        API->>DB: Insert new `user_identities` row with provider+sub
+        DB->>API: Return new user_id
+        API->>Client: Return session / JWT for new user
+    end
+    Client->>User: Logged in successfully
+```
+
+### 🔑 Key Points in Flow
+
+1. **OIDC provider returns `sub`** → this is the unique ID you always trust.
+2. **Database lookup** happens in `user_identities` by `(provider, sub)`.
+3. If found → link to existing user.
+4. If not found → create new user and link identity.
+5. Result → your system issues a **local session or JWT** tied to your `users.id`.
