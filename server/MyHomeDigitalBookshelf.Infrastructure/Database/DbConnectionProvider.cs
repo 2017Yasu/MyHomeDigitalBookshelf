@@ -10,6 +10,7 @@ public class DbConnectionProvider : IDisposable
 
     public DbConnectionProvider(DbSettings settings, ILoggerFactory loggerFactory)
     {
+        Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
         _dataSource = new Npgsql.NpgsqlDataSourceBuilder(settings.ConnectionString)
             .UseLoggerFactory(loggerFactory)
             .Build();
