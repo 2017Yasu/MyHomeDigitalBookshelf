@@ -1,15 +1,53 @@
 namespace MyHomeDigitalBookshelf.Domain.Entities;
 
+/// <summary>
+/// Represents a user session, including authentication tokens and metadata.
+/// </summary>
 public class Session
 {
+    /// <summary>
+    /// Gets the unique identifier for the session.
+    /// </summary>
     public Guid Id { get; }
+
+    /// <summary>
+    /// Gets the user ID associated with the session.
+    /// </summary>
     public Guid UserId { get; }
+
+    /// <summary>
+    /// Gets the authentication token for the session.
+    /// </summary>
     public string Token { get; }
+
+    /// <summary>
+    /// Gets the timestamp when the session was created.
+    /// </summary>
     public DateTime CreatedAt { get; }
+
+    /// <summary>
+    /// Gets the timestamp when the session expires.
+    /// </summary>
     public DateTime ExpiresAt { get; }
+
+    /// <summary>
+    /// Gets the originating IP address for the session (if available).
+    /// </summary>
     public string? IpAddress { get; }
+
+    /// <summary>
+    /// Gets the user agent string for the session (if available).
+    /// </summary>
     public string? UserAgent { get; }
+
+    /// <summary>
+    /// Gets the refresh token for the session (if available).
+    /// </summary>
     public string? RefreshToken { get; }
+
+    /// <summary>
+    /// Gets the user entity associated with the session.
+    /// </summary>
     public User? User { get; }
 
     public Session(
@@ -23,6 +61,27 @@ public class Session
         string? refreshToken = null,
         User? user = null)
     {
+        if (id == Guid.Empty)
+        {
+            throw new ArgumentException("Id must not be empty.", nameof(id));
+        }
+        if (userId == Guid.Empty)
+        {
+            throw new ArgumentException("UserId must not be empty.", nameof(userId));
+        }
+        if (string.IsNullOrWhiteSpace(token))
+        {
+            throw new ArgumentException("Token must not be null or whitespace.", nameof(token));
+        }
+        if (createdAt == default)
+        {
+            throw new ArgumentException("CreatedAt must be a valid date.", nameof(createdAt));
+        }
+        if (expiresAt == default)
+        {
+            throw new ArgumentException("ExpiresAt must be a valid date.", nameof(expiresAt));
+        }
+
         Id = id;
         UserId = userId;
         Token = token;

@@ -2,22 +2,33 @@ using System.Text.RegularExpressions;
 
 namespace MyHomeDigitalBookshelf.Domain.ValueObjects;
 
-public class Email
+/// <summary>
+/// Value object representing an email address with format validation.
+/// </summary>
+public partial class Email
 {
+    /// <summary>
+    /// Gets the email address value as a string.
+    /// </summary>
     public string Value { get; }
 
     public Email(string value)
     {
         if (!IsValidEmail(value))
+        {
             throw new ArgumentException("Invalid email format.");
+        }
         Value = value;
     }
 
     public static bool IsValidEmail(string value)
     {
-        if (string.IsNullOrWhiteSpace(value)) return false;
-        return Regex.IsMatch(value, @"^[^@\s]+@[^@\s]+\.[^@\s]+$");
+        return !string.IsNullOrWhiteSpace(value)
+            && EmailPattern().IsMatch(value);
     }
 
     public override string ToString() => Value;
+
+    [GeneratedRegex(@"^[^@\s]+@[^@\s]+\.[^@\s]+$")]
+    private static partial Regex EmailPattern();
 }
