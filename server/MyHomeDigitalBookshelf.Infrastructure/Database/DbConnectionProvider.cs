@@ -1,4 +1,5 @@
 using System.Data.Common;
+using Microsoft.Extensions.Logging;
 
 namespace MyHomeDigitalBookshelf.Infrastructure.Database;
 
@@ -7,9 +8,11 @@ public class DbConnectionProvider : IDisposable
     private readonly DbDataSource _dataSource;
     private bool _isDisposed;
 
-    public DbConnectionProvider(DbSettings settings)
+    public DbConnectionProvider(DbSettings settings, ILoggerFactory loggerFactory)
     {
-        _dataSource = new Npgsql.NpgsqlDataSourceBuilder(settings.ConnectionString).Build();
+        _dataSource = new Npgsql.NpgsqlDataSourceBuilder(settings.ConnectionString)
+            .UseLoggerFactory(loggerFactory)
+            .Build();
     }
 
     public async Task<DbConnection> GetConnection()

@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyHomeDigitalBookshelf.Infr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyHomeDigitalBookshelf.Application", "MyHomeDigitalBookshelf.Application\MyHomeDigitalBookshelf.Application.csproj", "{7FB6F85C-6BA5-452D-A3EF-BCEA74354A10}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyHomeDigitalBookshelf.Infrastructure.Tests", "MyHomeDigitalBookshelf.Infrastructure.Tests\MyHomeDigitalBookshelf.Infrastructure.Tests.csproj", "{D34E7C7A-C7EF-446F-94D0-0DDC63ACF32D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -36,5 +38,9 @@ Global
 		{7FB6F85C-6BA5-452D-A3EF-BCEA74354A10}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7FB6F85C-6BA5-452D-A3EF-BCEA74354A10}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7FB6F85C-6BA5-452D-A3EF-BCEA74354A10}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D34E7C7A-C7EF-446F-94D0-0DDC63ACF32D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D34E7C7A-C7EF-446F-94D0-0DDC63ACF32D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D34E7C7A-C7EF-446F-94D0-0DDC63ACF32D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D34E7C7A-C7EF-446F-94D0-0DDC63ACF32D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

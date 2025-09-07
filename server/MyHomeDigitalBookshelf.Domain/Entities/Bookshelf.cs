@@ -89,6 +89,20 @@ public class Bookshelf
         Description = description;
         Categories = [];
     }
+
+    public Bookshelf Update(
+        string? name,
+        string? description)
+    {
+        return new Bookshelf(
+            Id,
+            string.IsNullOrWhiteSpace(name) ? Name : name,
+            string.IsNullOrWhiteSpace(description) ? Description : description,
+            CreatedAt,
+            DateTime.UtcNow,
+            [.. Categories]);
+    }
+
     public override string ToString()
     {
         return Utilities.ClassUtilities.GetPropertiesInfo(this);
