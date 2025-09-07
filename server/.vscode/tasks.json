@@ -2,6 +2,15 @@
   "version": "2.0.0",
   "tasks": [
     {
+      "label": "build to launch",
+      "command": "echo",
+      "type": "process",
+      "args": ["Build task for launch.json"],
+      "problemMatcher": [],
+      "dependsOn": ["build", "up db"],
+      "dependsOrder": "parallel"
+    },
+    {
       "label": "build",
       "command": "dotnet",
       "type": "process",
@@ -12,6 +21,64 @@
         "/consoleloggerparameters:NoSummary"
       ],
       "problemMatcher": "$msCompile"
+    },
+    {
+      "label": "test: infrastructure",
+      "command": "dotnet",
+      "type": "process",
+      "args": [
+        "test",
+        "${workspaceFolder}/MyHomeDigitalBookshelf.Infrastructure.Tests/MyHomeDigitalBookshelf.Infrastructure.Tests.csproj",
+        "-v",
+        "normal"
+      ],
+      "problemMatcher": [],
+      "dependsOn": ["up db_test"],
+      "isTestCommand": true
+    },
+    {
+      "label": "up db_test",
+      "command": "docker",
+      "type": "process",
+      "args": ["compose", "-f", "${workspaceFolder}/compose.yml", "up", "db_test", "-d"],
+      "problemMatcher": [],
+      "presentation": {
+        "echo": true,
+        "reveal": "silent",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": true,
+        "clear": false
+      }
+    },
+    {
+      "label": "down db_test",
+      "command": "docker",
+      "type": "process",
+      "args": ["compose", "-f", "${workspaceFolder}/compose.yml", "down", "db_test", "--volumes"],
+      "problemMatcher": []
+    },
+    {
+      "label": "up db",
+      "command": "docker",
+      "type": "process",
+      "args": ["compose", "-f", "${workspaceFolder}/compose.yml", "up", "db", "-d"],
+      "problemMatcher": [],
+      "presentation": {
+        "echo": true,
+        "reveal": "silent",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": true,
+        "clear": false
+      }
+    },
+    {
+      "label": "clean docker",
+      "command": "docker",
+      "type": "process",
+      "args": ["compose", "-f", "${workspaceFolder}/compose.yml", "down", "--volumes"],
+      "problemMatcher": []
     }
   ]
 }

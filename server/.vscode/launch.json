@@ -8,7 +8,7 @@
       "name": "C#: MyHomeDigitalBookshelf.Api Debug",
       "type": "coreclr",
       "request": "launch",
-      "preLaunchTask": "build",
+      "preLaunchTask": "build to launch",
       "program": "${workspaceFolder}/MyHomeDigitalBookshelf.Api/bin/Debug/net8.0/MyHomeDigitalBookshelf.Api.dll",
       "cwd": "${workspaceFolder}",
       "stopAtEntry": false,

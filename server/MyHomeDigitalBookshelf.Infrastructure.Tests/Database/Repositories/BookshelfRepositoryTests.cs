@@ -14,7 +14,7 @@ public class BookshelfRepositoryTests : RepositoryTestBase
         _repository = new BookshelfRepository(CreateLogger<BookshelfRepository>(), GetConnectionProvider());
     }
 
-    [Fact]
+    [Fact(DisplayName = "AddAsync should add a bookshelf and return the created entity")]
     public async Task AddAsync_ShouldAddBookshelfAndReturnCreated()
     {
         // Arrange
@@ -36,7 +36,7 @@ public class BookshelfRepositoryTests : RepositoryTestBase
         Assert.Equal(newBookshelf.Id, fetchedBookshelf.Id);
     }
 
-    [Fact]
+    [Fact(DisplayName = "GetByIdAsync should return null when the bookshelf does not exist")]
     public async Task GetByIdAsync_ShouldReturnNull_WhenNotExists()
     {
         // Arrange
@@ -49,7 +49,7 @@ public class BookshelfRepositoryTests : RepositoryTestBase
         Assert.Null(result);
     }
 
-    [Fact]
+    [Fact(DisplayName = "GetAllAsync should return all bookshelves")]
     public async Task GetAllAsync_ShouldReturnAllBookshelves()
     {
         // Arrange
@@ -72,7 +72,7 @@ public class BookshelfRepositoryTests : RepositoryTestBase
         Assert.All(bookshelves, shelf => Assert.Contains(allBookshelves, x => x.Name == shelf.Name && x.Description == shelf.Description));
     }
 
-    [Fact]
+    [Fact(DisplayName = "UpdateAsync should update a bookshelf and return the updated entity")]
     public async Task UpdateAsync_ShouldUpdateBookshelfAndReturnUpdated()
     {
         // Arrange
@@ -90,7 +90,7 @@ public class BookshelfRepositoryTests : RepositoryTestBase
         Assert.Equal(updatedBookshelf.Description, result.Description);
     }
 
-    [Fact]
+    [Fact(DisplayName = "DeleteAsync should remove the bookshelf")]
     public async Task DeleteAsync_ShouldRemoveBookshelf()
     {
         // Arrange
