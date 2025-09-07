@@ -31,20 +31,22 @@ public interface IUserRepository
     /// <summary>
     /// Retrieves all users in the data store.
     /// </summary>
-    /// <returns>A collection of all users.</returns>
-    Task<IEnumerable<User>> GetAllAsync();
+    /// <returns>An array of all users.</returns>
+    Task<User[]> GetAllAsync();
 
     /// <summary>
-    /// Adds a new user to the data store.
+    /// Adds a new user to the data store and returns the created user (with generated fields populated).
     /// </summary>
     /// <param name="user">The user to add.</param>
-    Task AddAsync(User user);
+    /// <returns>The created user entity, including any generated fields (e.g., Id, timestamps).</returns>
+    Task<User> AddAsync(User user);
 
     /// <summary>
-    /// Updates an existing user in the data store.
+    /// Updates an existing user in the data store and returns the updated user.
     /// </summary>
     /// <param name="user">The user to update.</param>
-    Task UpdateAsync(User user);
+    /// <returns>The updated user entity if found; otherwise, null.</returns>
+    Task<User?> UpdateAsync(User user);
 
     /// <summary>
     /// Deletes a user from the data store by their unique identifier.

@@ -24,20 +24,22 @@ public interface IBookRepository
     /// <param name="cCode">The CCode of the book (optional).</param>
     /// <param name="ownerId">The owner ID of the book (optional).</param>
     /// <param name="readingStatus">The reading status of the book (optional).</param>
-    /// <returns>A collection of books matching the search criteria.</returns>
-    Task<IEnumerable<Book>> SearchAsync(string? title, string? author, string? isbn, Guid? categoryId, string? cCode, Guid? ownerId, ReadingStatus? readingStatus);
+    /// <returns>An array of books matching the search criteria.</returns>
+    Task<Book[]> SearchAsync(string? title, string? author, string? isbn, Guid? categoryId, string? cCode, Guid? ownerId, ReadingStatus? readingStatus);
 
     /// <summary>
-    /// Adds a new book to the data store.
+    /// Adds a new book to the data store and returns the created book (with generated fields populated).
     /// </summary>
     /// <param name="book">The book to add.</param>
-    Task AddAsync(Book book);
+    /// <returns>The created book entity, including any generated fields (e.g., Id, timestamps).</returns>
+    Task<Book> AddAsync(Book book);
 
     /// <summary>
-    /// Updates an existing book in the data store.
+    /// Updates an existing book in the data store and returns the updated book.
     /// </summary>
     /// <param name="book">The book to update.</param>
-    Task UpdateAsync(Book book);
+    /// <returns>The updated book entity if found: otherwise, null.</returns>
+    Task<Book?> UpdateAsync(Book book);
 
     /// <summary>
     /// Deletes a book from the data store by its unique identifier.

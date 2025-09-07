@@ -19,27 +19,29 @@ public interface IUserBookRepository
     /// Retrieves all user-book relationships for a specific user.
     /// </summary>
     /// <param name="userId">The unique identifier of the user.</param>
-    /// <returns>A collection of UserBook relationships for the user.</returns>
-    Task<IEnumerable<UserBook>> GetByUserAsync(Guid userId);
+    /// <returns>An array of UserBook relationships for the user.</returns>
+    Task<UserBook[]> GetByUserAsync(Guid userId);
 
     /// <summary>
     /// Retrieves all user-book relationships for a specific book.
     /// </summary>
     /// <param name="bookId">The unique identifier of the book.</param>
-    /// <returns>A collection of UserBook relationships for the book.</returns>
-    Task<IEnumerable<UserBook>> GetByBookAsync(Guid bookId);
+    /// <returns>An array of UserBook relationships for the book.</returns>
+    Task<UserBook[]> GetByBookAsync(Guid bookId);
 
     /// <summary>
-    /// Adds a new user-book relationship to the data store.
+    /// Adds a new user-book relationship to the data store and returns the created relationship (with generated fields populated).
     /// </summary>
     /// <param name="userBook">The UserBook relationship to add.</param>
-    Task AddAsync(UserBook userBook);
+    /// <returns>The created UserBook entity, including any generated fields (e.g., timestamps).</returns>
+    Task<UserBook> AddAsync(UserBook userBook);
 
     /// <summary>
-    /// Updates an existing user-book relationship in the data store.
+    /// Updates an existing user-book relationship in the data store and returns the updated relationship.
     /// </summary>
     /// <param name="userBook">The UserBook relationship to update.</param>
-    Task UpdateAsync(UserBook userBook);
+    /// <returns>The updated UserBook entity if found; otherwise, null.</returns>
+    Task<UserBook?> UpdateAsync(UserBook userBook);
 
     /// <summary>
     /// Deletes a user-book relationship from the data store.

@@ -17,20 +17,22 @@ public interface IBookshelfRepository
     /// <summary>
     /// Retrieves all bookshelves in the data store.
     /// </summary>
-    /// <returns>A collection of all bookshelves.</returns>
-    Task<IEnumerable<Bookshelf>> GetAllAsync();
+    /// <returns>An array of all bookshelves.</returns>
+    Task<Bookshelf[]> GetAllAsync();
 
     /// <summary>
-    /// Adds a new bookshelf to the data store.
+    /// Adds a new bookshelf to the data store and returns the created bookshelf (with generated fields populated).
     /// </summary>
     /// <param name="bookshelf">The bookshelf to add.</param>
-    Task AddAsync(Bookshelf bookshelf);
+    /// <returns>The created bookshelf entity, including any generated fields (e.g., Id, timestamps).</returns>
+    Task<Bookshelf> AddAsync(Bookshelf bookshelf);
 
     /// <summary>
-    /// Updates an existing bookshelf in the data store.
+    /// Updates an existing bookshelf in the data store and returns the updated bookshelf.
     /// </summary>
     /// <param name="bookshelf">The bookshelf to update.</param>
-    Task UpdateAsync(Bookshelf bookshelf);
+    /// <returns>The updated bookshelf entity if found; otherwise, null.</returns>
+    Task<Bookshelf?> UpdateAsync(Bookshelf bookshelf);
 
     /// <summary>
     /// Deletes a bookshelf from the data store by its unique identifier.
