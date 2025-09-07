@@ -1,47 +1,34 @@
-using System.Data.Common;
-using Dapper;
+using Microsoft.Extensions.Logging;
 using MyHomeDigitalBookshelf.Domain.Entities;
 using MyHomeDigitalBookshelf.Domain.Repositories;
-using MyHomeDigitalBookshelf.Infrastructure.Database;
 
 namespace MyHomeDigitalBookshelf.Infrastructure.Database.Repositories;
 
-public class BookshelfRepository : IBookshelfRepository
+public class BookshelfRepository(ILogger<BookshelfRepository> logger, DbConnectionProvider connectionProvider)
+    : RepositoryBase(logger, connectionProvider), IBookshelfRepository
 {
-    private readonly DbConnectionProvider _connectionProvider;
-
-    public BookshelfRepository(DbConnectionProvider connectionProvider)
+    public Task<Bookshelf?> GetByIdAsync(Guid id)
     {
-        _connectionProvider = connectionProvider;
+        return QueryAndTraceAsync<Bookshelf?>(conn => throw new NotImplementedException(), "Get Bookshelf By Id", $"id: {id}");
     }
 
-    public async Task<Bookshelf?> GetByIdAsync(Guid id)
+    public Task<Bookshelf[]> GetAllAsync()
     {
-        await using var conn = await _connectionProvider.GetConnection();
-        throw new NotImplementedException();
+        return QueryAndTraceAsync<Bookshelf[]>(conn => throw new NotImplementedException(), "Get All Bookshelves");
     }
 
-    public async Task<IEnumerable<Bookshelf>> GetAllAsync()
+    public Task<Bookshelf> AddAsync(Bookshelf bookshelf)
     {
-        await using var conn = await _connectionProvider.GetConnection();
-        throw new NotImplementedException();
+        return ExecuteAndTraceAsync<Bookshelf>((conn, tran) => throw new NotImplementedException(), "Add Bookshelf", bookshelf.ToString());
     }
 
-    public async Task AddAsync(Bookshelf bookshelf)
+    public Task<Bookshelf?> UpdateAsync(Bookshelf bookshelf)
     {
-        await using var conn = await _connectionProvider.GetConnection();
-        throw new NotImplementedException();
-    }
-
-    public async Task UpdateAsync(Bookshelf bookshelf)
-    {
-        await using var conn = await _connectionProvider.GetConnection();
-        throw new NotImplementedException();
+        return ExecuteAndTraceAsync<Bookshelf?>((conn, tran) => throw new NotImplementedException(), "Update Bookshelf", bookshelf.ToString());
     }
 
     public async Task DeleteAsync(Guid id)
     {
-        await using var conn = await _connectionProvider.GetConnection();
-        throw new NotImplementedException();
+        _ = await ExecuteAndTraceAsync<int>((conn, tran) => throw new NotImplementedException(), "Delete Bookshelf", $"id: {id}");
     }
 }

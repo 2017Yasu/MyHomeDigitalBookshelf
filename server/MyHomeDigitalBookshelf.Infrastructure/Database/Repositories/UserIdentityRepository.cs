@@ -1,41 +1,29 @@
-using System.Data.Common;
-using Dapper;
+using Microsoft.Extensions.Logging;
 using MyHomeDigitalBookshelf.Domain.Entities;
 using MyHomeDigitalBookshelf.Domain.Repositories;
-using MyHomeDigitalBookshelf.Infrastructure.Database;
 
 namespace MyHomeDigitalBookshelf.Infrastructure.Database.Repositories;
 
-public class UserIdentityRepository : IUserIdentityRepository
+public class UserIdentityRepository(ILogger<UserIdentityRepository> logger, DbConnectionProvider connectionProvider)
+    : RepositoryBase(logger, connectionProvider), IUserIdentityRepository
 {
-    private readonly DbConnectionProvider _connectionProvider;
-
-    public UserIdentityRepository(DbConnectionProvider connectionProvider)
+    public Task<UserIdentity?> GetByIdAsync(Guid id)
     {
-        _connectionProvider = connectionProvider;
+        return QueryAndTraceAsync<UserIdentity?>(conn => throw new NotImplementedException(), "Get UserIdentity By Id", $"id: {id}");
     }
 
-    public async Task<UserIdentity?> GetByIdAsync(Guid id)
+    public Task<UserIdentity?> GetByProviderAndSubjectAsync(string provider, string subject)
     {
-        await using var conn = await _connectionProvider.GetConnection();
-        throw new NotImplementedException();
+        return QueryAndTraceAsync<UserIdentity?>(conn => throw new NotImplementedException(), "Get UserIdentity By Provider/Subject", $"provider: {provider}, subject: {subject}");
     }
 
-    public async Task<UserIdentity?> GetByProviderAndSubjectAsync(string provider, string subject)
+    public Task<UserIdentity> AddAsync(UserIdentity identity)
     {
-        await using var conn = await _connectionProvider.GetConnection();
-        throw new NotImplementedException();
-    }
-
-    public async Task AddAsync(UserIdentity identity)
-    {
-        await using var conn = await _connectionProvider.GetConnection();
-        throw new NotImplementedException();
+        return ExecuteAndTraceAsync<UserIdentity>((conn, tran) => throw new NotImplementedException(), "Add UserIdentity", identity.ToString());
     }
 
     public async Task DeleteAsync(Guid id)
     {
-        await using var conn = await _connectionProvider.GetConnection();
-        throw new NotImplementedException();
+        _ = await ExecuteAndTraceAsync<int>((conn, tran) => throw new NotImplementedException(), "Delete UserIdentity", $"id: {id}");
     }
 }

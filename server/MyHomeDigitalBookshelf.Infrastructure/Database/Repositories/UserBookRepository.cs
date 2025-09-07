@@ -1,53 +1,39 @@
-using System.Data.Common;
-using Dapper;
+using Microsoft.Extensions.Logging;
 using MyHomeDigitalBookshelf.Domain.Entities;
 using MyHomeDigitalBookshelf.Domain.Repositories;
-using MyHomeDigitalBookshelf.Infrastructure.Database;
 
 namespace MyHomeDigitalBookshelf.Infrastructure.Database.Repositories;
 
-public class UserBookRepository : IUserBookRepository
+public class UserBookRepository(ILogger<UserBookRepository> logger, DbConnectionProvider connectionProvider)
+    : RepositoryBase(logger, connectionProvider), IUserBookRepository
 {
-    private readonly DbConnectionProvider _connectionProvider;
-
-    public UserBookRepository(DbConnectionProvider connectionProvider)
+    public Task<UserBook?> GetAsync(Guid userId, Guid bookId)
     {
-        _connectionProvider = connectionProvider;
+        return QueryAndTraceAsync<UserBook?>(conn => throw new NotImplementedException(), "Get UserBook", $"userId: {userId}, bookId: {bookId}");
     }
 
-    public async Task<UserBook?> GetAsync(Guid userId, Guid bookId)
+    public Task<UserBook[]> GetByUserAsync(Guid userId)
     {
-        await using var conn = await _connectionProvider.GetConnection();
-        throw new NotImplementedException();
+        return QueryAndTraceAsync<UserBook[]>(conn => throw new NotImplementedException(), "Get UserBooks By User", $"userId: {userId}");
     }
 
-    public async Task<IEnumerable<UserBook>> GetByUserAsync(Guid userId)
+    public Task<UserBook[]> GetByBookAsync(Guid bookId)
     {
-        await using var conn = await _connectionProvider.GetConnection();
-        throw new NotImplementedException();
+        return QueryAndTraceAsync<UserBook[]>(conn => throw new NotImplementedException(), "Get UserBooks By Book", $"bookId: {bookId}");
     }
 
-    public async Task<IEnumerable<UserBook>> GetByBookAsync(Guid bookId)
+    public Task<UserBook> AddAsync(UserBook userBook)
     {
-        await using var conn = await _connectionProvider.GetConnection();
-        throw new NotImplementedException();
+        return ExecuteAndTraceAsync<UserBook>((conn, tran) => throw new NotImplementedException(), "Add UserBook", userBook.ToString());
     }
 
-    public async Task AddAsync(UserBook userBook)
+    public Task<UserBook?> UpdateAsync(UserBook userBook)
     {
-        await using var conn = await _connectionProvider.GetConnection();
-        throw new NotImplementedException();
-    }
-
-    public async Task UpdateAsync(UserBook userBook)
-    {
-        await using var conn = await _connectionProvider.GetConnection();
-        throw new NotImplementedException();
+        return ExecuteAndTraceAsync<UserBook?>((conn, tran) => throw new NotImplementedException(), "Update UserBook", userBook.ToString());
     }
 
     public async Task DeleteAsync(Guid userId, Guid bookId)
     {
-        await using var conn = await _connectionProvider.GetConnection();
-        throw new NotImplementedException();
+        _ = await ExecuteAndTraceAsync<int>((conn, tran) => throw new NotImplementedException(), "Delete UserBook", $"userId: {userId}, bookId: {bookId}");
     }
 }

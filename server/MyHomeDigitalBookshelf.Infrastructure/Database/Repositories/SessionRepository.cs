@@ -1,41 +1,29 @@
-using System.Data.Common;
-using Dapper;
+using Microsoft.Extensions.Logging;
 using MyHomeDigitalBookshelf.Domain.Entities;
 using MyHomeDigitalBookshelf.Domain.Repositories;
-using MyHomeDigitalBookshelf.Infrastructure.Database;
 
 namespace MyHomeDigitalBookshelf.Infrastructure.Database.Repositories;
 
-public class SessionRepository : ISessionRepository
+public class SessionRepository(ILogger<SessionRepository> logger, DbConnectionProvider connectionProvider)
+    : RepositoryBase(logger, connectionProvider), ISessionRepository
 {
-    private readonly DbConnectionProvider _connectionProvider;
-
-    public SessionRepository(DbConnectionProvider connectionProvider)
+    public Task<Session?> GetByIdAsync(Guid id)
     {
-        _connectionProvider = connectionProvider;
+        return QueryAndTraceAsync<Session?>(conn => throw new NotImplementedException(), "Get Session By Id", $"id: {id}");
     }
 
-    public async Task<Session?> GetByIdAsync(Guid id)
+    public Task<Session[]> GetByUserIdAsync(Guid userId)
     {
-        await using var conn = await _connectionProvider.GetConnection();
-        throw new NotImplementedException();
+        return QueryAndTraceAsync<Session[]>(conn => throw new NotImplementedException(), "Get Sessions By UserId", $"userId: {userId}");
     }
 
-    public async Task<IEnumerable<Session>> GetByUserIdAsync(Guid userId)
+    public Task<Session> AddAsync(Session session)
     {
-        await using var conn = await _connectionProvider.GetConnection();
-        throw new NotImplementedException();
-    }
-
-    public async Task AddAsync(Session session)
-    {
-        await using var conn = await _connectionProvider.GetConnection();
-        throw new NotImplementedException();
+        return ExecuteAndTraceAsync<Session>((conn, tran) => throw new NotImplementedException(), "Add Session", session.ToString());
     }
 
     public async Task DeleteAsync(Guid id)
     {
-        await using var conn = await _connectionProvider.GetConnection();
-        throw new NotImplementedException();
+        _ = await ExecuteAndTraceAsync<int>((conn, tran) => throw new NotImplementedException(), "Delete Session", $"id: {id}");
     }
 }

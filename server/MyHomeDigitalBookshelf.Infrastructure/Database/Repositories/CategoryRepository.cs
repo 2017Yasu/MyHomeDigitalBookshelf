@@ -1,47 +1,34 @@
-using System.Data.Common;
-using Dapper;
+using Microsoft.Extensions.Logging;
 using MyHomeDigitalBookshelf.Domain.Entities;
 using MyHomeDigitalBookshelf.Domain.Repositories;
-using MyHomeDigitalBookshelf.Infrastructure.Database;
 
 namespace MyHomeDigitalBookshelf.Infrastructure.Database.Repositories;
 
-public class CategoryRepository : ICategoryRepository
+public class CategoryRepository(ILogger<CategoryRepository> logger, DbConnectionProvider connectionProvider)
+    : RepositoryBase(logger, connectionProvider), ICategoryRepository
 {
-    private readonly DbConnectionProvider _connectionProvider;
-
-    public CategoryRepository(DbConnectionProvider connectionProvider)
+    public Task<Category?> GetByIdAsync(Guid id)
     {
-        _connectionProvider = connectionProvider;
+        return QueryAndTraceAsync<Category?>(conn => throw new NotImplementedException(), "Get Category By Id", $"id: {id}");
     }
 
-    public async Task<Category?> GetByIdAsync(Guid id)
+    public Task<Category[]> GetAllByBookshelfAsync(Guid bookshelfId)
     {
-        await using var conn = await _connectionProvider.GetConnection();
-        throw new NotImplementedException();
+        return QueryAndTraceAsync<Category[]>(conn => throw new NotImplementedException(), "Get Categories By Bookshelf", $"bookshelfId: {bookshelfId}");
     }
 
-    public async Task<IEnumerable<Category>> GetAllByBookshelfAsync(Guid bookshelfId)
+    public Task<Category> AddAsync(Category category)
     {
-        await using var conn = await _connectionProvider.GetConnection();
-        throw new NotImplementedException();
+        return ExecuteAndTraceAsync<Category>((conn, tran) => throw new NotImplementedException(), "Add Category", category.ToString());
     }
 
-    public async Task AddAsync(Category category)
+    public Task<Category?> UpdateAsync(Category category)
     {
-        await using var conn = await _connectionProvider.GetConnection();
-        throw new NotImplementedException();
-    }
-
-    public async Task UpdateAsync(Category category)
-    {
-        await using var conn = await _connectionProvider.GetConnection();
-        throw new NotImplementedException();
+        return ExecuteAndTraceAsync<Category?>((conn, tran) => throw new NotImplementedException(), "Update Category", category.ToString());
     }
 
     public async Task DeleteAsync(Guid id)
     {
-        await using var conn = await _connectionProvider.GetConnection();
-        throw new NotImplementedException();
+        _ = await ExecuteAndTraceAsync<int>((conn, tran) => throw new NotImplementedException(), "Delete Category", $"id: {id}");
     }
 }

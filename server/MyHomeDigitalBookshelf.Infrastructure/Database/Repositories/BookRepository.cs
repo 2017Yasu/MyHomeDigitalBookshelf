@@ -1,47 +1,34 @@
-using System.Data.Common;
-using Dapper;
+using Microsoft.Extensions.Logging;
 using MyHomeDigitalBookshelf.Domain.Entities;
 using MyHomeDigitalBookshelf.Domain.Repositories;
-using MyHomeDigitalBookshelf.Infrastructure.Database;
 
 namespace MyHomeDigitalBookshelf.Infrastructure.Database.Repositories;
 
-public class BookRepository : IBookRepository
+public class BookRepository(ILogger<BookRepository> logger, DbConnectionProvider connectionProvider)
+: RepositoryBase(logger, connectionProvider), IBookRepository
 {
-    private readonly DbConnectionProvider _connectionProvider;
-
-    public BookRepository(DbConnectionProvider connectionProvider)
+    public Task<Book> AddAsync(Book book)
     {
-        _connectionProvider = connectionProvider;
-    }
-
-    public async Task<Book?> GetByIdAsync(Guid id)
-    {
-        await using var conn = await _connectionProvider.GetConnection();
-        throw new NotImplementedException();
-    }
-
-    public async Task<IEnumerable<Book>> SearchAsync(string? title, string? author, string? isbn, Guid? categoryId, string? cCode, Guid? ownerId, ReadingStatus? readingStatus)
-    {
-        await using var conn = await _connectionProvider.GetConnection();
-        throw new NotImplementedException();
-    }
-
-    public async Task AddAsync(Book book)
-    {
-        await using var conn = await _connectionProvider.GetConnection();
-        throw new NotImplementedException();
-    }
-
-    public async Task UpdateAsync(Book book)
-    {
-        await using var conn = await _connectionProvider.GetConnection();
-        throw new NotImplementedException();
+        return ExecuteAndTraceAsync<Book>((conn, tran) => throw new NotImplementedException(), "Add New Book", book.ToString());
     }
 
     public async Task DeleteAsync(Guid id)
     {
-        await using var conn = await _connectionProvider.GetConnection();
-        throw new NotImplementedException();
+        _ = await ExecuteAndTraceAsync<int>((conn, tran) => throw new NotImplementedException(), "Delete Book", $"id: {id}");
+    }
+
+    public Task<Book?> GetByIdAsync(Guid id)
+    {
+        return QueryAndTraceAsync<Book?>(conn => throw new NotImplementedException(), "Get Book By Id", $"id: {id}");
+    }
+
+    public Task<Book[]> SearchAsync(string? title, string? author, string? isbn, Guid? categoryId, string? cCode, Guid? ownerId, ReadingStatus? readingStatus)
+    {
+        return QueryAndTraceAsync<Book[]>(conn => throw new NotImplementedException(), "Search Books", $"title: {title}, author: {author}, isbn: {isbn}, categoryId: {categoryId}, cCode: {cCode}, ownerId: {ownerId}, readingStatus: {readingStatus}");
+    }
+
+    public Task<Book?> UpdateAsync(Book book)
+    {
+        return ExecuteAndTraceAsync<Book?>((conn, tran) => throw new NotImplementedException(), "Update Book", book.ToString());
     }
 }
