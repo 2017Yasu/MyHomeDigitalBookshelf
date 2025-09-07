@@ -93,4 +93,8 @@ public class UserIdentity
         Subject = subject;
         Email = email;
     }
+    public override string ToString()
+    {
+        return Utilities.ClassUtilities.GetPropertiesInfo(this);
+    }
 }

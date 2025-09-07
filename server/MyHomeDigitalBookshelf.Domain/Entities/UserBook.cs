@@ -104,4 +104,8 @@ public class UserBook
         PurchaseDate = purchaseDate;
         Price = price;
     }
+    public override string ToString()
+    {
+        return Utilities.ClassUtilities.GetPropertiesInfo(this);
+    }
 }

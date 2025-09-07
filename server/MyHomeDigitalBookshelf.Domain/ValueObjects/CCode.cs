@@ -5,12 +5,12 @@ namespace MyHomeDigitalBookshelf.Domain.ValueObjects;
 /// <summary>
 /// Value object representing a Japanese C-Code classification with validation.
 /// </summary>
-public partial class CCode
+public partial class CCode : ValueObjectBase<string>
 {
     /// <summary>
     /// Gets the C-Code value as a string.
     /// </summary>
-    public string Value { get; }
+    public override string Value { get; }
 
     public CCode(string value)
     {

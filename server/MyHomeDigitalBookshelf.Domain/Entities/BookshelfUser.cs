@@ -91,4 +91,8 @@ public class BookshelfUser
         BookshelfId = bookshelfId;
         Role = role;
     }
+    public override string ToString()
+    {
+        return Utilities.ClassUtilities.GetPropertiesInfo(this);
+    }
 }

@@ -92,4 +92,8 @@ public class Session
         RefreshToken = refreshToken;
         User = user;
     }
+    public override string ToString()
+    {
+        return Utilities.ClassUtilities.GetPropertiesInfo(this);
+    }
 }

@@ -82,4 +82,8 @@ public class User
         PasswordHash = passwordHash;
         Role = role;
     }
+    public override string ToString()
+    {
+        return Utilities.ClassUtilities.GetPropertiesInfo(this);
+    }
 }

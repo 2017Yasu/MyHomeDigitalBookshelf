@@ -5,12 +5,12 @@ namespace MyHomeDigitalBookshelf.Domain.ValueObjects;
 /// <summary>
 /// Value object representing an ISBN (International Standard Book Number) with validation.
 /// </summary>
-public partial class Isbn
+public partial class Isbn : ValueObjectBase<string>
 {
     /// <summary>
     /// Gets the ISBN value as a string.
     /// </summary>
-    public string Value { get; }
+    public override string Value { get; }
 
     public Isbn(string value)
     {

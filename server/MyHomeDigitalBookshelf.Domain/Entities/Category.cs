@@ -79,4 +79,8 @@ public class Category
         Description = description;
         BookshelfId = bookshelfId;
     }
+    public override string ToString()
+    {
+        return Utilities.ClassUtilities.GetPropertiesInfo(this);
+    }
 }

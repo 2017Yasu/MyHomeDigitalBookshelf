@@ -3,12 +3,12 @@ namespace MyHomeDigitalBookshelf.Domain.ValueObjects;
 /// <summary>
 /// Value object representing a price with validation for non-negative values.
 /// </summary>
-public class Price
+public class Price : ValueObjectBase<decimal>
 {
     /// <summary>
     /// Gets the price value as a decimal.
     /// </summary>
-    public decimal Value { get; }
+    public override decimal Value { get; }
 
     public Price(decimal value)
     {

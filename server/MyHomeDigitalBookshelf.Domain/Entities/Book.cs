@@ -162,4 +162,9 @@ public class Book
         Notes = notes;
         BookshelfId = bookshelfId;
     }
+
+    public override string ToString()
+    {
+        return Utilities.ClassUtilities.GetPropertiesInfo(this);
+    }
 }

@@ -89,4 +89,8 @@ public class Bookshelf
         Description = description;
         Categories = [];
     }
+    public override string ToString()
+    {
+        return Utilities.ClassUtilities.GetPropertiesInfo(this);
+    }
 }

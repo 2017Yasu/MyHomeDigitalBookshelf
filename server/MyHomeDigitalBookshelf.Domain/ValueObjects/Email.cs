@@ -5,12 +5,12 @@ namespace MyHomeDigitalBookshelf.Domain.ValueObjects;
 /// <summary>
 /// Value object representing an email address with format validation.
 /// </summary>
-public partial class Email
+public partial class Email : ValueObjectBase<string>
 {
     /// <summary>
     /// Gets the email address value as a string.
     /// </summary>
-    public string Value { get; }
+    public override string Value { get; }
 
     public Email(string value)
     {
