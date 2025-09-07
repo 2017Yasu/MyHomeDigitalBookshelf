@@ -1,0 +1,31 @@
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: my_home_digital_bookshelf_db
+    environment:
+      POSTGRES_USER: bookshelves_user
+      POSTGRES_PASSWORD: mhdb_test
+      POSTGRES_DB: my_home_bookshelves
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+      - ./sql/up:/docker-entrypoint-initdb.d
+      - ./sql:/sql
+  db_test:
+    image: postgres:15-alpine
+    container_name: my_home_digital_bookshelf_db_test
+    environment:
+      POSTGRES_USER: test_user
+      POSTGRES_PASSWORD: test
+      POSTGRES_DB: my_home_bookshelves
+    ports:
+      - "35432:5432"
+    volumes:
+      - db_data_test:/var/lib/postgresql/data
+      - ./sql/up:/docker-entrypoint-initdb.d
+      - ./sql:/sql
+
+volumes:
+  db_data:
+  db_data_test:

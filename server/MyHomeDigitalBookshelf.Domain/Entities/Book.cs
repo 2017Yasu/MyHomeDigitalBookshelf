@@ -78,6 +78,7 @@ public class Book
     public Book(
         Guid id,
         string title,
+        Guid bookshelfId,
         string[]? authors = null,
         ValueObjects.Isbn? isbn = null,
         string? publisher = null,
@@ -86,11 +87,10 @@ public class Book
         Guid? categoryId = null,
         string? coverImageUrl = null,
         string? notes = null,
-        Guid bookshelfId = default,
         DateTime createdAt = default,
         DateTime updatedAt = default,
         Category? category = null)
-        : this(title, authors, isbn, publisher, publishDate, cCode, categoryId, coverImageUrl, notes, bookshelfId)
+        : this(title, bookshelfId, authors, isbn, publisher, publishDate, cCode, categoryId, coverImageUrl, notes)
     {
         if (id == Guid.Empty)
         {
@@ -113,6 +113,7 @@ public class Book
 
     public static Book CreateNew(
         string title,
+        Guid bookshelfId,
         string[]? authors = null,
         ValueObjects.Isbn? isbn = null,
         string? publisher = null,
@@ -120,14 +121,14 @@ public class Book
         ValueObjects.CCode? cCode = null,
         Guid? categoryId = null,
         string? coverImageUrl = null,
-        string? notes = null,
-        Guid bookshelfId = default)
+        string? notes = null)
     {
-        return new Book(title, authors, isbn, publisher, publishDate, cCode, categoryId, coverImageUrl, notes, bookshelfId);
+        return new Book(title, bookshelfId, authors, isbn, publisher, publishDate, cCode, categoryId, coverImageUrl, notes);
     }
 
     private Book(
         string title,
+        Guid bookshelfId,
         string[]? authors,
         ValueObjects.Isbn? isbn,
         string? publisher,
@@ -135,8 +136,7 @@ public class Book
         ValueObjects.CCode? cCode,
         Guid? categoryId,
         string? coverImageUrl,
-        string? notes,
-        Guid bookshelfId)
+        string? notes)
     {
         if (string.IsNullOrWhiteSpace(title))
         {
