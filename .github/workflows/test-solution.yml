@@ -19,6 +19,8 @@ jobs:
           POSTGRES_USER: test_user
           POSTGRES_PASSWORD: test
           POSTGRES_DB: my_home_bookshelves
+        ports:
+          - 35432:5432
         options: >-
           --health-cmd="pg_isready"
           --health-interval=10s
@@ -40,7 +42,7 @@ jobs:
         run: |
           for file in $(ls ./sql/up); do
             echo "Executing $file"
-            psql -h localhost -U test_user -d my_home_bookshelves -f ./sql/up/$file
+            psql -h localhost -p 35432 -U test_user -d my_home_bookshelves -f ./sql/up/$file
           done
 
       - name: Install dependencies
