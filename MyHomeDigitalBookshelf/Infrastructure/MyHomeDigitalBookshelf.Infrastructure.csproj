@@ -1,8 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
-    <ProjectReference Include="..\MyHomeDigitalBookshelf.Domain\MyHomeDigitalBookshelf.Domain.csproj" />
-    <ProjectReference Include="..\MyHomeDigitalBookshelf.Application\MyHomeDigitalBookshelf.Application.csproj" />
+    <ProjectReference Include="..\Domain\MyHomeDigitalBookshelf.Domain.csproj" />
+    <ProjectReference Include="..\Application\MyHomeDigitalBookshelf.Application.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -12,8 +12,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\MyHomeDigitalBookshelf.Application\MyHomeDigitalBookshelf.Application.csproj" />
-    <ProjectReference Include="..\MyHomeDigitalBookshelf.Infrastructure\MyHomeDigitalBookshelf.Infrastructure.csproj" />
+    <ProjectReference Include="..\Application\MyHomeDigitalBookshelf.Application.csproj" />
+    <ProjectReference Include="..\Infrastructure\MyHomeDigitalBookshelf.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

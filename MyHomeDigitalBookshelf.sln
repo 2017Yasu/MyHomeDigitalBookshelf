@@ -3,15 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyHomeDigitalBookshelf.Api", "MyHomeDigitalBookshelf.Api\MyHomeDigitalBookshelf.Api.csproj", "{47CF9861-11B5-49E5-8C21-254F0CB6EDBA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyHomeDigitalBookshelf.Api", "MyHomeDigitalBookshelf\Api\MyHomeDigitalBookshelf.Api.csproj", "{47CF9861-11B5-49E5-8C21-254F0CB6EDBA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyHomeDigitalBookshelf.Domain", "MyHomeDigitalBookshelf.Domain\MyHomeDigitalBookshelf.Domain.csproj", "{4E934FAC-8CD4-46F5-B5E8-469BE69F191D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyHomeDigitalBookshelf.Domain", "MyHomeDigitalBookshelf\Domain\MyHomeDigitalBookshelf.Domain.csproj", "{4E934FAC-8CD4-46F5-B5E8-469BE69F191D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyHomeDigitalBookshelf.Infrastructure", "MyHomeDigitalBookshelf.Infrastructure\MyHomeDigitalBookshelf.Infrastructure.csproj", "{9D81A9AF-D7D9-47BE-BC67-6E40D7A8AC52}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyHomeDigitalBookshelf.Infrastructure", "MyHomeDigitalBookshelf\Infrastructure\MyHomeDigitalBookshelf.Infrastructure.csproj", "{9D81A9AF-D7D9-47BE-BC67-6E40D7A8AC52}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyHomeDigitalBookshelf.Application", "MyHomeDigitalBookshelf.Application\MyHomeDigitalBookshelf.Application.csproj", "{7FB6F85C-6BA5-452D-A3EF-BCEA74354A10}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyHomeDigitalBookshelf.Application", "MyHomeDigitalBookshelf\Application\MyHomeDigitalBookshelf.Application.csproj", "{7FB6F85C-6BA5-452D-A3EF-BCEA74354A10}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyHomeDigitalBookshelf.Infrastructure.Tests", "MyHomeDigitalBookshelf.Infrastructure.Tests\MyHomeDigitalBookshelf.Infrastructure.Tests.csproj", "{D34E7C7A-C7EF-446F-94D0-0DDC63ACF32D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyHomeDigitalBookshelf.Infrastructure.Tests", "MyHomeDigitalBookshelf\Infrastructure.Tests\MyHomeDigitalBookshelf.Infrastructure.Tests.csproj", "{D34E7C7A-C7EF-446F-94D0-0DDC63ACF32D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

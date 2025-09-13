@@ -2,21 +2,21 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "build to launch",
+      "label": "build API to launch",
       "command": "echo",
       "type": "process",
       "args": ["Build task for launch.json"],
       "problemMatcher": [],
-      "dependsOn": ["build", "up db"],
+      "dependsOn": ["build Api", "up db"],
       "dependsOrder": "parallel"
     },
     {
-      "label": "build",
+      "label": "build Api",
       "command": "dotnet",
       "type": "process",
       "args": [
         "build",
-        "${workspaceFolder}/MyHomeDigitalBookshelf.Api/MyHomeDigitalBookshelf.Api.csproj",
+        "${workspaceFolder}/MyHomeDigitalBookshelf/Api/MyHomeDigitalBookshelf.Api.csproj",
         "/property:GenerateFullPaths=true",
         "/consoleloggerparameters:NoSummary"
       ],
@@ -28,7 +28,7 @@
       "type": "process",
       "args": [
         "test",
-        "${workspaceFolder}/MyHomeDigitalBookshelf.Infrastructure.Tests/MyHomeDigitalBookshelf.Infrastructure.Tests.csproj",
+        "${workspaceFolder}/MyHomeDigitalBookshelf/Infrastructure.Tests/MyHomeDigitalBookshelf.Infrastructure.Tests.csproj",
         "-v",
         "normal"
       ],
