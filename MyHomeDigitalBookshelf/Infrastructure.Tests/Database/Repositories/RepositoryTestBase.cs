@@ -8,6 +8,7 @@ public abstract class RepositoryTestBase
 {
     private readonly ITestOutputHelper _outputHelper;
     private readonly LoggerFactory _loggerFactory;
+    private readonly ILogger<RepositoryTestBase> _logger;
     private DbConnectionProvider? _dbConnectionProvider;
 
     public RepositoryTestBase(ITestOutputHelper outputHelper)
@@ -16,6 +17,7 @@ public abstract class RepositoryTestBase
 
         _loggerFactory = new LoggerFactory();
         _loggerFactory.AddProvider(new XunitLoggerProvider(_outputHelper));
+        _logger = _loggerFactory.CreateLogger<RepositoryTestBase>();
     }
 
     protected ILogger<T> CreateLogger<T>()
@@ -34,13 +36,22 @@ public abstract class RepositoryTestBase
         return _dbConnectionProvider;
     }
 
-    protected static DbSettings GetDbSettings()
+    protected DbSettings GetDbSettings()
     {
+        var hostname = "127.0.0.1";
+        var port = 35432;
+#if TESTING
+        _logger.LogDebug("Using TESTING database settings");
+        hostname = "db_test";
+        port = 5432;
+#else
+        _logger.LogDebug("Using LOCAL database settings");
+#endif
         return new DbSettings(
-            "127.0.0.1",
+            hostname,
             "my_home_bookshelves",
             "test_user",
             "test",
-            35432);
+            port);
     }
 }
