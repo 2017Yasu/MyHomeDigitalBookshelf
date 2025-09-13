@@ -12,8 +12,6 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    container:
-      image: mcr.microsoft.com/dotnet/sdk:8.0
     services:
       db_test:
         image: postgres:15-alpine
@@ -21,8 +19,6 @@ jobs:
           POSTGRES_USER: test_user
           POSTGRES_PASSWORD: test
           POSTGRES_DB: my_home_bookshelves
-        volumes:
-          - ./sql/up:/docker-entrypoint-initdb.d
         options: >-
           --health-cmd="pg_isready"
           --health-interval=10s
@@ -30,10 +26,25 @@ jobs:
           --health-retries=5
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
+
+      - name: Set up .NET Core
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Install PostgreSQL Client
+        run: sudo apt update && sudo apt install -y postgresql-client
+
+      - name: Initialize database
+        run: |
+          for file in $(ls ./sql/up); do
+            echo "Executing $file"
+            psql -h localhost -U test_user -d my_home_bookshelves -f ./sql/up/$file
+          done
 
       - name: Install dependencies
         run: dotnet restore
 
       - name: Run tests
-        run: dotnet test --verbosity normal --configuration Testing MyHomeDigitalBookshelf/Infrastructure.Tests
+        run: dotnet test MyHomeDigitalBookshelf/Infrastructure.Tests

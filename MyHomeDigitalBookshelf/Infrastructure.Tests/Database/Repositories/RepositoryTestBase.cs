@@ -38,20 +38,11 @@ public abstract class RepositoryTestBase
 
     protected DbSettings GetDbSettings()
     {
-        var hostname = "127.0.0.1";
-        var port = 35432;
-#if TESTING
-        _logger.LogDebug("Using TESTING database settings");
-        hostname = "db_test";
-        port = 5432;
-#else
-        _logger.LogDebug("Using LOCAL database settings");
-#endif
         return new DbSettings(
-            hostname,
+            "127.0.0.1",
             "my_home_bookshelves",
             "test_user",
             "test",
-            port);
+            35432);
     }
 }
