@@ -21,8 +21,8 @@ jobs:
           POSTGRES_USER: test_user
           POSTGRES_PASSWORD: test
           POSTGRES_DB: my_home_bookshelves
-        ports:
-          - 5432:5432
+        volumes:
+          - ./sql/up:/docker-entrypoint-initdb.d
         options: >-
           --health-cmd="pg_isready"
           --health-interval=10s
