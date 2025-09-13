@@ -36,4 +36,4 @@ jobs:
         run: dotnet restore
 
       - name: Run tests
-        run: dotnet test --verbosity normal MyHomeDigitalBookshelf/Infrastructure.Tests
+        run: dotnet test --verbosity normal --configuration Testing MyHomeDigitalBookshelf/Infrastructure.Tests
