@@ -1,0 +1,273 @@
+using Moq;
+using MyHomeDigitalBookshelf.Application.Books.Commands;
+using MyHomeDigitalBookshelf.Application.Books.Queries;
+using MyHomeDigitalBookshelf.Domain.Entities;
+using MyHomeDigitalBookshelf.Domain.Repositories;
+using MyHomeDigitalBookshelf.Domain.ValueObjects;
+
+namespace MyHomeDigitalBookshelf.Application.Tests.Books;
+
+public class BookServiceTests
+{
+    private readonly Mock<IBookRepository> _mockBookRepository;
+    private readonly Mock<IUserBookRepository> _mockUserBookRepository;
+    private readonly Mock<ICategoryRepository> _mockCategoryRepository;
+    private readonly Books.BookService _service;
+
+    public BookServiceTests()
+    {
+        _mockBookRepository = new Mock<IBookRepository>();
+        _mockUserBookRepository = new Mock<IUserBookRepository>();
+        _mockCategoryRepository = new Mock<ICategoryRepository>();
+        _service = new Books.BookService(_mockBookRepository.Object, _mockUserBookRepository.Object, _mockCategoryRepository.Object);
+    }
+
+    [Fact]
+    public async Task AddBook_WithValidCommand_ReturnsCreatedBook()
+    {
+        // Arrange
+        var command = new AddBookCommand(
+            Title: "Test Book",
+            BookshelfId: Guid.NewGuid(),
+            Authors: ["Test Author"],
+            Isbn: new Isbn("978-4-0000-0000-0"),
+            Publisher: "Test Publisher",
+            PublishDate: new DateTime(2023, 1, 1),
+            Notes: "Test notes"
+        );
+
+        var expectedBook = Book.CreateNew(
+            command.Title,
+            command.BookshelfId,
+            command.Authors,
+            command.Isbn,
+            command.Publisher,
+            command.PublishDate,
+            command.CCode,
+            command.CategoryId,
+            command.CoverImageUrl,
+            command.Notes);
+
+        _mockBookRepository.Setup(r => r.AddAsync(It.IsAny<Book>()))
+            .ReturnsAsync((Book book) => book);
+
+        // Act
+        var result = await _service.AddBookAsync(command);
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.Equal(command.Title, result.Title);
+        Assert.Equal(command.Authors, result.Authors);
+        Assert.Equal(command.Isbn, result.Isbn);
+        Assert.Equal(command.Publisher, result.Publisher);
+        Assert.Equal(command.PublishDate, result.PublishDate);
+        Assert.Equal(command.Notes, result.Notes);
+
+        _mockBookRepository.Verify(r => r.AddAsync(It.IsAny<Book>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task AddBook_WithInvalidCategory_ThrowsArgumentException()
+    {
+        // Arrange
+        var categoryId = Guid.NewGuid();
+        var command = new AddBookCommand(
+            Title: "Test Book",
+            BookshelfId: Guid.NewGuid(),
+            CategoryId: categoryId
+        );
+
+        _mockCategoryRepository.Setup(r => r.GetByIdAsync(categoryId))
+            .ReturnsAsync((Category?)null);
+
+        // Act & Assert
+        await Assert.ThrowsAsync<ArgumentException>(() => _service.AddBookAsync(command));
+    }
+
+    [Fact]
+    public async Task SearchBooks_WithValidCriteria_ReturnsMatchingBooks()
+    {
+        // Arrange
+        var query = new SearchBooksQuery(
+            Title: "Test",
+            Author: "Author",
+            Isbn: new Isbn("978-4-0000-0000-0")
+        );
+
+        var expectedBooks = new[]
+        {
+            Book.CreateNew("Test Book 1", Guid.NewGuid(), ["Test Author"]),
+            Book.CreateNew("Test Book 2", Guid.NewGuid(), ["Test Author"])
+        };
+
+        _mockBookRepository.Setup(r => r.SearchAsync(
+            query.Title,
+            query.Author,
+            query.Isbn?.ToString(),
+            query.CategoryId,
+            query.CCode?.ToString(),
+            query.OwnerId,
+            query.ReadingStatus))
+            .ReturnsAsync(expectedBooks);
+
+        // Act
+        var result = await _service.SearchBooksAsync(query);
+
+        // Assert
+        Assert.Equal(expectedBooks.Length, result.Length);
+        _mockBookRepository.Verify(r => r.SearchAsync(
+            query.Title,
+            query.Author,
+            query.Isbn?.ToString(),
+            query.CategoryId,
+            query.CCode?.ToString(),
+            query.OwnerId,
+            query.ReadingStatus), Times.Once);
+    }
+
+    [Fact]
+    public async Task GetBookById_WithExistingBook_ReturnsBook()
+    {
+        // Arrange
+        var bookId = Guid.NewGuid();
+        var query = new GetBookByIdQuery(bookId);
+
+        var expectedBook = Book.CreateNew("Test Book", Guid.NewGuid(), ["Test Author"]);
+
+        _mockBookRepository.Setup(r => r.GetByIdAsync(bookId))
+            .ReturnsAsync(expectedBook);
+
+        // Act
+        var result = await _service.GetBookByIdAsync(query);
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.Equal(expectedBook.Title, result.Title);
+        _mockBookRepository.Verify(r => r.GetByIdAsync(bookId), Times.Once);
+    }
+
+    [Fact]
+    public async Task GetBookById_WithNonExistingBook_ReturnsNull()
+    {
+        // Arrange
+        var bookId = Guid.NewGuid();
+        var query = new GetBookByIdQuery(bookId);
+
+        _mockBookRepository.Setup(r => r.GetByIdAsync(bookId))
+            .ReturnsAsync((Book?)null);
+
+        // Act
+        var result = await _service.GetBookByIdAsync(query);
+
+        // Assert
+        Assert.Null(result);
+        _mockBookRepository.Verify(r => r.GetByIdAsync(bookId), Times.Once);
+    }
+
+    [Fact]
+    public async Task UpdateBook_WithValidCommand_ReturnsUpdatedBook()
+    {
+        // Arrange
+        var bookId = Guid.NewGuid();
+        var command = new UpdateBookCommand(
+            Id: bookId,
+            Title: "Updated Book",
+            BookshelfId: Guid.NewGuid(),
+            Authors: ["Updated Author"],
+            Isbn: new Isbn("978-4-0000-0000-0"),
+            Publisher: "Updated Publisher",
+            PublishDate: new DateTime(2023, 1, 1),
+            Notes: "Updated notes"
+        );
+
+        var existingBook = new Book(
+            bookId,
+            "Original Book",
+            command.BookshelfId,
+            ["Original Author"],
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            DateTime.UtcNow.AddDays(-1),
+            DateTime.UtcNow.AddDays(-1));
+
+        var expectedBook = new Book(
+            command.Id,
+            command.Title,
+            command.BookshelfId,
+            command.Authors,
+            command.Isbn,
+            command.Publisher,
+            command.PublishDate,
+            command.CCode,
+            command.CategoryId,
+            command.CoverImageUrl,
+            command.Notes,
+            existingBook.CreatedAt,
+            DateTime.UtcNow);
+
+        _mockBookRepository.Setup(r => r.GetByIdAsync(bookId))
+            .ReturnsAsync(existingBook);
+
+        _mockBookRepository.Setup(r => r.UpdateAsync(It.IsAny<Book>()))
+            .ReturnsAsync((Book book) => book);
+
+        // Act
+        var result = await _service.UpdateBookAsync(command);
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.Equal(command.Title, result.Title);
+        Assert.Equal(command.Authors, result.Authors);
+        Assert.Equal(command.Isbn, result.Isbn);
+        Assert.Equal(command.Publisher, result.Publisher);
+        Assert.Equal(command.PublishDate, result.PublishDate);
+        Assert.Equal(command.Notes, result.Notes);
+
+        _mockBookRepository.Verify(r => r.GetByIdAsync(bookId), Times.Once);
+        _mockBookRepository.Verify(r => r.UpdateAsync(It.IsAny<Book>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task UpdateBook_WithNonExistingBook_ReturnsNull()
+    {
+        // Arrange
+        var bookId = Guid.NewGuid();
+        var command = new UpdateBookCommand(
+            Id: bookId,
+            Title: "Updated Book",
+            BookshelfId: Guid.NewGuid());
+
+        _mockBookRepository.Setup(r => r.GetByIdAsync(bookId))
+            .ReturnsAsync((Book?)null);
+
+        // Act
+        var result = await _service.UpdateBookAsync(command);
+
+        // Assert
+        Assert.Null(result);
+        _mockBookRepository.Verify(r => r.GetByIdAsync(bookId), Times.Once);
+        _mockBookRepository.Verify(r => r.UpdateAsync(It.IsAny<Book>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task DeleteBook_WithValidCommand_CallsDeleteAsync()
+    {
+        // Arrange
+        var bookId = Guid.NewGuid();
+        var command = new DeleteBookCommand(bookId);
+
+        _mockBookRepository.Setup(r => r.DeleteAsync(bookId))
+            .Returns(Task.CompletedTask);
+
+        // Act
+        await _service.DeleteBookAsync(command);
+
+        // Assert
+        _mockBookRepository.Verify(r => r.DeleteAsync(bookId), Times.Once);
+    }
+}

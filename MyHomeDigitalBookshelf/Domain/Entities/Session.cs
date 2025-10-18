@@ -92,6 +92,38 @@ public class Session
         RefreshToken = refreshToken;
         User = user;
     }
+    /// <summary>
+    /// Creates a new session with the specified parameters.
+    /// </summary>
+    /// <param name="userId">The ID of the user for the session.</param>
+    /// <param name="token">The authentication token.</param>
+    /// <param name="expiresAt">The expiration time for the session.</param>
+    /// <param name="ipAddress">Optional. The IP address from which the session was created.</param>
+    /// <param name="userAgent">Optional. The user agent string from which the session was created.</param>
+    /// <param name="refreshToken">Optional. The refresh token for the session.</param>
+    /// <param name="user">Optional. The user entity associated with the session.</param>
+    /// <returns>A new session instance.</returns>
+    public static Session CreateNew(
+        Guid userId,
+        string token,
+        DateTime expiresAt,
+        string? ipAddress = null,
+        string? userAgent = null,
+        string? refreshToken = null,
+        User? user = null)
+    {
+        return new Session(
+            Guid.NewGuid(),
+            userId,
+            token,
+            DateTime.UtcNow,
+            expiresAt,
+            ipAddress,
+            userAgent,
+            refreshToken,
+            user);
+    }
+
     public override string ToString()
     {
         return Utilities.ClassUtilities.GetPropertiesInfo(this);

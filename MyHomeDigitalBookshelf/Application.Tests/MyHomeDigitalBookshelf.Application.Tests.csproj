@@ -1,0 +1,31 @@
+&lt;Project Sdk="Microsoft.NET.Sdk">
+
+  &lt;PropertyGroup>
+    &lt;TargetFramework>net8.0&lt;/TargetFramework>
+    &lt;ImplicitUsings>enable&lt;/ImplicitUsings>
+    &lt;Nullable>enable&lt;/Nullable>
+
+    &lt;IsPackable>false&lt;/IsPackable>
+    &lt;IsTestProject>true&lt;/IsTestProject>
+  &lt;/PropertyGroup>
+
+  &lt;ItemGroup>
+    &lt;PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
+    &lt;PackageReference Include="xunit" Version="2.6.2" />
+    &lt;PackageReference Include="xunit.runner.visualstudio" Version="2.5.4">
+      &lt;IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive&lt;/IncludeAssets>
+      &lt;PrivateAssets>all&lt;/PrivateAssets>
+    &lt;/PackageReference>
+    &lt;PackageReference Include="coverlet.collector" Version="6.0.0">
+      &lt;IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive&lt;/IncludeAssets>
+      &lt;PrivateAssets>all&lt;/PrivateAssets>
+    &lt;/PackageReference>
+    &lt;PackageReference Include="Moq" Version="4.20.69" />
+  &lt;/ItemGroup>
+
+  &lt;ItemGroup>
+    &lt;ProjectReference Include="..\Application\MyHomeDigitalBookshelf.Application.csproj" />
+    &lt;ProjectReference Include="..\Domain\MyHomeDigitalBookshelf.Domain.csproj" />
+  &lt;/ItemGroup>
+
+&lt;/Project>
