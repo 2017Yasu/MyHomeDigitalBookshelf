@@ -43,7 +43,7 @@ jobs:
             --host localhost \
             --port 35432 \
             --database my_home_bookshelves \
-            --username test_user \
+            --user test_user \
             --password test \
             --dir sql/up
 
