@@ -27,6 +27,10 @@ public partial class CCode : ValueObjectBase<string>
             && CCodePattern().IsMatch(value);
     }
 
+    /// <summary>
+    /// Gets the audience category from the C-Code.
+    /// </summary>
+    /// <returns>The audience code from the C-Code</returns>
     public int GetAudience()
     {
         // C-Code format is 'C' followed by 4 digits
@@ -39,6 +43,10 @@ public partial class CCode : ValueObjectBase<string>
         return 99; // Return a default value for invalid formats
     }
 
+    /// <summary>
+    /// Gets the format category from the C-Code.
+    /// </summary>
+    /// <returns>The format category from the C-Code</returns>
     public int GetFormat()
     {
         // C-Code format is 'C' followed by 4 digits
