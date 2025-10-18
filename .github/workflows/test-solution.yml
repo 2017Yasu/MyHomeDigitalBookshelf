@@ -37,7 +37,9 @@ jobs:
 
       - name: Initialize DB
         run: |
-          dotnet run --project ./MyHomeDigitalBookshelf/DbMigrator/DbMigrator.csproj -- \
+          dotnet run \
+            --project ./MyHomeDigitalBookshelf/DbMigrator/MyHomeDigitalBookshelf.DbMigrator.csproj \
+            -- \
             --host localhost \
             --port 35432 \
             --database my_home_bookshelves \
