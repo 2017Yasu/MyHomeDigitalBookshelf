@@ -15,9 +15,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyHomeDigitalBookshelf.Infr
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MyHomeDigitalBookshelf", "MyHomeDigitalBookshelf", "{8AA17CC6-39F2-4706-AAB7-740554C25DDA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyHomeDigitalBookshelf.DbMigrator", "MyHomeDigitalBookshelf\DbMigrator\MyHomeDigitalBookshelf.DbMigrator.csproj", "{824E0EB6-468D-4C68-B41C-8A6876FD16C8}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyHomeDigitalBookshelf.Application.Tests", "MyHomeDigitalBookshelf\Application.Tests\MyHomeDigitalBookshelf.Application.Tests.csproj", "{A58C03F8-421F-4991-988D-9FB765576D1D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{BF8C1E4E-41AA-4948-AD1B-26B3F20668D3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyHomeDigitalBookshelf.Tools.DbMigrator", "MyHomeDigitalBookshelf\Tools\DbMigrator\MyHomeDigitalBookshelf.Tools.DbMigrator.csproj", "{9F452D57-482A-4708-BAC3-8DB7819E4E22}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -48,17 +50,18 @@ Global
 		{D34E7C7A-C7EF-446F-94D0-0DDC63ACF32D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D34E7C7A-C7EF-446F-94D0-0DDC63ACF32D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D34E7C7A-C7EF-446F-94D0-0DDC63ACF32D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{824E0EB6-468D-4C68-B41C-8A6876FD16C8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{824E0EB6-468D-4C68-B41C-8A6876FD16C8}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{824E0EB6-468D-4C68-B41C-8A6876FD16C8}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{824E0EB6-468D-4C68-B41C-8A6876FD16C8}.Release|Any CPU.Build.0 = Release|Any CPU
 		{A58C03F8-421F-4991-988D-9FB765576D1D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{A58C03F8-421F-4991-988D-9FB765576D1D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A58C03F8-421F-4991-988D-9FB765576D1D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A58C03F8-421F-4991-988D-9FB765576D1D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9F452D57-482A-4708-BAC3-8DB7819E4E22}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9F452D57-482A-4708-BAC3-8DB7819E4E22}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9F452D57-482A-4708-BAC3-8DB7819E4E22}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9F452D57-482A-4708-BAC3-8DB7819E4E22}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{824E0EB6-468D-4C68-B41C-8A6876FD16C8} = {8AA17CC6-39F2-4706-AAB7-740554C25DDA}
 		{A58C03F8-421F-4991-988D-9FB765576D1D} = {8AA17CC6-39F2-4706-AAB7-740554C25DDA}
+		{BF8C1E4E-41AA-4948-AD1B-26B3F20668D3} = {8AA17CC6-39F2-4706-AAB7-740554C25DDA}
+		{9F452D57-482A-4708-BAC3-8DB7819E4E22} = {BF8C1E4E-41AA-4948-AD1B-26B3F20668D3}
 	EndGlobalSection
 EndGlobal
