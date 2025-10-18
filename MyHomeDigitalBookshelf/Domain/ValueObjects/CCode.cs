@@ -34,9 +34,9 @@ public partial class CCode : ValueObjectBase<string>
     public int GetGenre()
     {
         // C-Code format is 'C' followed by 4 digits
-        // Digits 1-2 (00-98) represent the genre category
-        // Extract and parse the first two digits of the four-digit code
-        if (int.TryParse(Value[1..3], out int genre))
+        // Digits 3-4 (00-98) represent the genre category
+        // Extract and parse the last two digits of the four-digit code
+        if (int.TryParse(Value[2..], out int genre))
         {
             return genre;
         }

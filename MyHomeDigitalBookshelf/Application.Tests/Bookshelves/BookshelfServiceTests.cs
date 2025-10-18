@@ -156,7 +156,12 @@ public class BookshelfServiceTests
         var bookshelfId = Guid.NewGuid();
         var command = new UpdateBookshelfUserCommand(userId, bookshelfId, BookshelfUserRole.Administrator);
 
-        var existingRelationship = BookshelfUser.CreateNew(userId, bookshelfId, BookshelfUserRole.Member);
+        var existingRelationship = new BookshelfUser(
+            userId,
+            bookshelfId,
+            BookshelfUserRole.Member,
+            DateTime.UtcNow.AddDays(-1),
+            DateTime.UtcNow.AddDays(-1));
 
         _mockBookshelfUserRepository.Setup(r => r.GetAsync(userId, bookshelfId))
             .ReturnsAsync(existingRelationship);

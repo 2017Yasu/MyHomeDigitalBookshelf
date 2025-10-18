@@ -224,10 +224,10 @@ public class CategoryServiceTests
     }
 
     [Theory]
-    [InlineData("0093", "Literature")] // Japanese Novels
-    [InlineData("0037", "Social Sciences")] // Education
-    [InlineData("0040", "Science & Mathematics")] // Natural Sciences
-    [InlineData("0070", "Arts & Entertainment")] // Arts
+    [InlineData("C0093", "Literature")] // Japanese Novels
+    [InlineData("C0037", "Social Sciences")] // Education
+    [InlineData("C0040", "Science & Mathematics")] // Natural Sciences
+    [InlineData("C0070", "Arts & Entertainment")] // Arts
     public async Task SuggestCategory_WithValidCCode_ReturnsSuggestedCategory(string cCodeValue, string expectedCategoryName)
     {
         // Arrange
