@@ -11,14 +11,14 @@ public class BookshelfServiceTests
     private readonly Mock<IBookshelfRepository> _mockBookshelfRepository;
     private readonly Mock<IBookshelfUserRepository> _mockBookshelfUserRepository;
     private readonly Mock<IUserRepository> _mockUserRepository;
-    private readonly Bookshelves.BookshelfService _service;
+    private readonly MyHomeDigitalBookshelf.Application.Bookshelves.BookshelfService _service;
 
     public BookshelfServiceTests()
     {
         _mockBookshelfRepository = new Mock<IBookshelfRepository>();
         _mockBookshelfUserRepository = new Mock<IBookshelfUserRepository>();
         _mockUserRepository = new Mock<IUserRepository>();
-        _service = new Bookshelves.BookshelfService(
+        _service = new MyHomeDigitalBookshelf.Application.Bookshelves.BookshelfService(
             _mockBookshelfRepository.Object,
             _mockBookshelfUserRepository.Object,
             _mockUserRepository.Object);
@@ -58,7 +58,7 @@ public class BookshelfServiceTests
         var bookshelfId = Guid.NewGuid();
         var query = new GetBookshelfByIdQuery(bookshelfId);
 
-        var expectedBookshelf = Bookshelf.CreateNew("Test Bookshelf");
+        var expectedBookshelf = Bookshelf.CreateNew("Test Bookshelf", "Test description");
 
         _mockBookshelfRepository.Setup(r => r.GetByIdAsync(bookshelfId))
             .ReturnsAsync(expectedBookshelf);
@@ -80,8 +80,8 @@ public class BookshelfServiceTests
 
         var expectedBookshelves = new[]
         {
-            Bookshelf.CreateNew("Bookshelf 1"),
-            Bookshelf.CreateNew("Bookshelf 2")
+            Bookshelf.CreateNew("Bookshelf 1", "First bookshelf"),
+            Bookshelf.CreateNew("Bookshelf 2", "Second bookshelf")
         };
 
         _mockBookshelfRepository.Setup(r => r.GetAllAsync())
@@ -104,7 +104,7 @@ public class BookshelfServiceTests
         var command = new AddBookshelfUserCommand(userId, bookshelfId, BookshelfUserRole.Member);
 
         var user = new User(userId, "testuser", null, null, UserRole.Member, DateTime.UtcNow);
-        var bookshelf = Bookshelf.CreateNew("Test Bookshelf");
+        var bookshelf = Bookshelf.CreateNew("Test Bookshelf", "Test description");
         var expectedBookshelfUser = BookshelfUser.CreateNew(userId, bookshelfId, command.Role);
 
         _mockUserRepository.Setup(r => r.GetByIdAsync(userId))
@@ -154,7 +154,7 @@ public class BookshelfServiceTests
         // Arrange
         var userId = Guid.NewGuid();
         var bookshelfId = Guid.NewGuid();
-        var command = new UpdateBookshelfUserCommand(userId, bookshelfId, BookshelfUserRole.Admin);
+        var command = new UpdateBookshelfUserCommand(userId, bookshelfId, BookshelfUserRole.Administrator);
 
         var existingRelationship = BookshelfUser.CreateNew(userId, bookshelfId, BookshelfUserRole.Member);
 
@@ -221,10 +221,10 @@ public class BookshelfServiceTests
         var bookshelfId = Guid.NewGuid();
         var query = new GetBookshelfUsersQuery(bookshelfId);
 
-        var bookshelf = Bookshelf.CreateNew("Test Bookshelf");
+        var bookshelf = Bookshelf.CreateNew("Test Bookshelf", "Test description");
         var expectedUsers = new[]
         {
-            BookshelfUser.CreateNew(Guid.NewGuid(), bookshelfId, BookshelfUserRole.Admin),
+            BookshelfUser.CreateNew(Guid.NewGuid(), bookshelfId, BookshelfUserRole.Administrator),
             BookshelfUser.CreateNew(Guid.NewGuid(), bookshelfId, BookshelfUserRole.Member)
         };
 

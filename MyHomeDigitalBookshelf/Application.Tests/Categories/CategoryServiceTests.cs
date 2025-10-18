@@ -11,13 +11,13 @@ public class CategoryServiceTests
 {
     private readonly Mock<ICategoryRepository> _mockCategoryRepository;
     private readonly Mock<IBookshelfRepository> _mockBookshelfRepository;
-    private readonly Categories.CategoryService _service;
+    private readonly Application.Categories.CategoryService _service;
 
     public CategoryServiceTests()
     {
         _mockCategoryRepository = new Mock<ICategoryRepository>();
         _mockBookshelfRepository = new Mock<IBookshelfRepository>();
-        _service = new Categories.CategoryService(_mockCategoryRepository.Object, _mockBookshelfRepository.Object);
+        _service = new Application.Categories.CategoryService(_mockCategoryRepository.Object, _mockBookshelfRepository.Object);
     }
 
     [Fact]
@@ -40,8 +40,8 @@ public class CategoryServiceTests
 
         var expectedCategory = Category.CreateNew(
             command.Name,
-            command.BookshelfId,
-            command.Description);
+            command.Description,
+            command.BookshelfId);
 
         _mockBookshelfRepository.Setup(r => r.GetByIdAsync(bookshelfId))
             .ReturnsAsync(bookshelf);
@@ -94,8 +94,8 @@ public class CategoryServiceTests
 
         var expectedCategories = new[]
         {
-            Category.CreateNew("Category 1", bookshelfId),
-            Category.CreateNew("Category 2", bookshelfId)
+            Category.CreateNew("Category 1", null, bookshelfId),
+            Category.CreateNew("Category 2", null, bookshelfId)
         };
 
         _mockBookshelfRepository.Setup(r => r.GetByIdAsync(bookshelfId))
@@ -120,7 +120,7 @@ public class CategoryServiceTests
         var categoryId = Guid.NewGuid();
         var query = new GetCategoryByIdQuery(categoryId);
 
-        var expectedCategory = Category.CreateNew("Test Category", Guid.NewGuid());
+        var expectedCategory = Category.CreateNew("Test Category", null, Guid.NewGuid());
 
         _mockCategoryRepository.Setup(r => r.GetByIdAsync(categoryId))
             .ReturnsAsync(expectedCategory);
@@ -157,8 +157,8 @@ public class CategoryServiceTests
         var existingCategory = new Category(
             categoryId,
             "Original Category",
-            bookshelfId,
             "Original description",
+            bookshelfId,
             DateTime.UtcNow.AddDays(-1),
             DateTime.UtcNow.AddDays(-1));
 
@@ -232,14 +232,14 @@ public class CategoryServiceTests
     {
         // Arrange
         var bookshelfId = Guid.NewGuid();
-        var cCode = CCode.Parse(cCodeValue);
+        var cCode = new CCode(cCodeValue);
         var categories = new[]
         {
-            Category.CreateNew("Literature", bookshelfId),
-            Category.CreateNew("Social Sciences", bookshelfId),
-            Category.CreateNew("Science & Mathematics", bookshelfId),
-            Category.CreateNew("Arts & Entertainment", bookshelfId),
-            Category.CreateNew("General", bookshelfId)
+            Category.CreateNew("Literature", null, bookshelfId),
+            Category.CreateNew("Social Sciences", null, bookshelfId),
+            Category.CreateNew("Science & Mathematics", null, bookshelfId),
+            Category.CreateNew("Arts & Entertainment", null, bookshelfId),
+            Category.CreateNew("General", null, bookshelfId)
         };
 
         _mockCategoryRepository.Setup(r => r.GetAllByBookshelfAsync(bookshelfId))

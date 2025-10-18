@@ -1,31 +1,35 @@
-&lt;Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
-  &lt;PropertyGroup>
-    &lt;TargetFramework>net8.0&lt;/TargetFramework>
-    &lt;ImplicitUsings>enable&lt;/ImplicitUsings>
-    &lt;Nullable>enable&lt;/Nullable>
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
 
-    &lt;IsPackable>false&lt;/IsPackable>
-    &lt;IsTestProject>true&lt;/IsTestProject>
-  &lt;/PropertyGroup>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+  </PropertyGroup>
 
-  &lt;ItemGroup>
-    &lt;PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
-    &lt;PackageReference Include="xunit" Version="2.6.2" />
-    &lt;PackageReference Include="xunit.runner.visualstudio" Version="2.5.4">
-      &lt;IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive&lt;/IncludeAssets>
-      &lt;PrivateAssets>all&lt;/PrivateAssets>
-    &lt;/PackageReference>
-    &lt;PackageReference Include="coverlet.collector" Version="6.0.0">
-      &lt;IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive&lt;/IncludeAssets>
-      &lt;PrivateAssets>all&lt;/PrivateAssets>
-    &lt;/PackageReference>
-    &lt;PackageReference Include="Moq" Version="4.20.69" />
-  &lt;/ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="coverlet.collector" Version="6.0.4">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.0.0" />
+    <PackageReference Include="Moq" Version="4.20.72" />
+    <PackageReference Include="xunit" Version="2.9.3" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="3.1.5">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+  </ItemGroup>
 
-  &lt;ItemGroup>
-    &lt;ProjectReference Include="..\Application\MyHomeDigitalBookshelf.Application.csproj" />
-    &lt;ProjectReference Include="..\Domain\MyHomeDigitalBookshelf.Domain.csproj" />
-  &lt;/ItemGroup>
+  <ItemGroup>
+    <Using Include="Xunit" />
+  </ItemGroup>
 
-&lt;/Project>
+  <ItemGroup>
+    <ProjectReference Include="..\Application\MyHomeDigitalBookshelf.Application.csproj" />
+    <ProjectReference Include="..\Domain\MyHomeDigitalBookshelf.Domain.csproj" />
+  </ItemGroup>
+
+</Project>

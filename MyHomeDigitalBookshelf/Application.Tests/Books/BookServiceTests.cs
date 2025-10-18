@@ -12,14 +12,14 @@ public class BookServiceTests
     private readonly Mock<IBookRepository> _mockBookRepository;
     private readonly Mock<IUserBookRepository> _mockUserBookRepository;
     private readonly Mock<ICategoryRepository> _mockCategoryRepository;
-    private readonly Books.BookService _service;
+    private readonly MyHomeDigitalBookshelf.Application.Books.BookService _service;
 
     public BookServiceTests()
     {
         _mockBookRepository = new Mock<IBookRepository>();
         _mockUserBookRepository = new Mock<IUserBookRepository>();
         _mockCategoryRepository = new Mock<ICategoryRepository>();
-        _service = new Books.BookService(_mockBookRepository.Object, _mockUserBookRepository.Object, _mockCategoryRepository.Object);
+        _service = new MyHomeDigitalBookshelf.Application.Books.BookService(_mockBookRepository.Object, _mockUserBookRepository.Object, _mockCategoryRepository.Object);
     }
 
     [Fact]
@@ -91,23 +91,29 @@ public class BookServiceTests
         var query = new SearchBooksQuery(
             Title: "Test",
             Author: "Author",
-            Isbn: new Isbn("978-4-0000-0000-0")
+            Isbn: "978-4-0000-0000-0"
         );
 
         var expectedBooks = new[]
         {
-            Book.CreateNew("Test Book 1", Guid.NewGuid(), ["Test Author"]),
-            Book.CreateNew("Test Book 2", Guid.NewGuid(), ["Test Author"])
+            Book.CreateNew(
+                title: "Test Book 1",
+                bookshelfId: Guid.NewGuid(),
+                authors: ["Test Author"]),
+            Book.CreateNew(
+                title: "Test Book 2",
+                bookshelfId: Guid.NewGuid(),
+                authors: ["Test Author"])
         };
 
         _mockBookRepository.Setup(r => r.SearchAsync(
-            query.Title,
-            query.Author,
-            query.Isbn?.ToString(),
-            query.CategoryId,
-            query.CCode?.ToString(),
-            query.OwnerId,
-            query.ReadingStatus))
+            It.Is<string?>(s => s == query.Title),
+            It.Is<string?>(s => s == query.Author),
+            It.Is<string?>(s => s == (query.Isbn != null ? query.Isbn.ToString() : null)),
+            It.Is<Guid?>(g => g == query.CategoryId),
+            It.Is<string?>(s => s == (query.CCode != null ? query.CCode.ToString() : null)),
+            It.Is<Guid?>(g => g == query.OwnerId),
+            It.Is<ReadingStatus?>(s => s == query.ReadingStatus)))
             .ReturnsAsync(expectedBooks);
 
         // Act
@@ -116,13 +122,13 @@ public class BookServiceTests
         // Assert
         Assert.Equal(expectedBooks.Length, result.Length);
         _mockBookRepository.Verify(r => r.SearchAsync(
-            query.Title,
-            query.Author,
-            query.Isbn?.ToString(),
-            query.CategoryId,
-            query.CCode?.ToString(),
-            query.OwnerId,
-            query.ReadingStatus), Times.Once);
+            It.Is<string?>(s => s == query.Title),
+            It.Is<string?>(s => s == query.Author),
+            It.Is<string?>(s => s == (query.Isbn != null ? query.Isbn.ToString() : null)),
+            It.Is<Guid?>(g => g == query.CategoryId),
+            It.Is<string?>(s => s == (query.CCode != null ? query.CCode.ToString() : null)),
+            It.Is<Guid?>(g => g == query.OwnerId),
+            It.Is<ReadingStatus?>(s => s == query.ReadingStatus)), Times.Once);
     }
 
     [Fact]
@@ -132,7 +138,10 @@ public class BookServiceTests
         var bookId = Guid.NewGuid();
         var query = new GetBookByIdQuery(bookId);
 
-        var expectedBook = Book.CreateNew("Test Book", Guid.NewGuid(), ["Test Author"]);
+        var expectedBook = Book.CreateNew(
+            title: "Test Book",
+            bookshelfId: Guid.NewGuid(),
+            authors: ["Test Author"]);
 
         _mockBookRepository.Setup(r => r.GetByIdAsync(bookId))
             .ReturnsAsync(expectedBook);
