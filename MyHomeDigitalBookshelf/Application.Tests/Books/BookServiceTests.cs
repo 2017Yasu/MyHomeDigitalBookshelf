@@ -12,14 +12,14 @@ public class BookServiceTests
     private readonly Mock<IBookRepository> _mockBookRepository;
     private readonly Mock<IUserBookRepository> _mockUserBookRepository;
     private readonly Mock<ICategoryRepository> _mockCategoryRepository;
-    private readonly MyHomeDigitalBookshelf.Application.Books.BookService _service;
+    private readonly Application.Books.BookService _service;
 
     public BookServiceTests()
     {
         _mockBookRepository = new Mock<IBookRepository>();
         _mockUserBookRepository = new Mock<IUserBookRepository>();
         _mockCategoryRepository = new Mock<ICategoryRepository>();
-        _service = new MyHomeDigitalBookshelf.Application.Books.BookService(_mockBookRepository.Object, _mockUserBookRepository.Object, _mockCategoryRepository.Object);
+        _service = new Application.Books.BookService(_mockBookRepository.Object, _mockUserBookRepository.Object, _mockCategoryRepository.Object);
     }
 
     [Fact]
