@@ -1,5 +1,5 @@
 ---
-applyTo: "MyHomeDigitalBookshelf/Infrastructure/Database/Repositories/**/*.cs"
+applyTo: "MyHomeDigitalBookshelf/Infrastructure/Database/Repositories/**/*.cs, MyHomeDigitalBookshelf/Infrastructure.Tests/Database/Repositories/**/*.cs"
 ---
 
 # Repository Implementation Instruction

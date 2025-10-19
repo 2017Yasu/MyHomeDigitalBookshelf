@@ -1,34 +1,74 @@
 using Microsoft.Extensions.Logging;
 using MyHomeDigitalBookshelf.Domain.Entities;
 using MyHomeDigitalBookshelf.Domain.Repositories;
+using MyHomeDigitalBookshelf.Infrastructure.Database.Repositories.Sql;
 
 namespace MyHomeDigitalBookshelf.Infrastructure.Database.Repositories;
 
 public class CategoryRepository(ILogger<CategoryRepository> logger, DbConnectionProvider connectionProvider)
     : RepositoryBase(logger, connectionProvider), ICategoryRepository
 {
-    public Task<Category?> GetByIdAsync(Guid id)
+    public async Task<Category?> GetByIdAsync(Guid id)
     {
-        return QueryAndTraceAsync<Category?>(conn => throw new NotImplementedException(), "Get Category By Id", $"id: {id}");
+        var result = await QueryAndTraceAsync(
+            async conn =>
+            {
+                var schema = await new GetCategoryByIdSql(conn, transaction: null!).ExecuteAsync(id);
+                return schema?.ToEntity();
+            },
+            "Get Category By Id",
+            $"id: {id}");
+
+        return result;
     }
 
-    public Task<Category[]> GetAllByBookshelfAsync(Guid bookshelfId)
+    public async Task<Category[]> GetAllByBookshelfAsync(Guid bookshelfId)
     {
-        return QueryAndTraceAsync<Category[]>(conn => throw new NotImplementedException(), "Get Categories By Bookshelf", $"bookshelfId: {bookshelfId}");
+        var results = await QueryAndTraceAsync(
+            async conn =>
+            {
+                var schemas = await new GetCategoriesByBookshelfSql(conn, transaction: null!).ExecuteAsync(bookshelfId);
+                return schemas.Select(s => s.ToEntity()).ToArray();
+            },
+            "Get Categories By Bookshelf",
+            $"bookshelfId: {bookshelfId}");
+
+        return results;
     }
 
-    public Task<Category> AddAsync(Category category)
+    public async Task<Category> AddAsync(Category category)
     {
-        return ExecuteAndTraceAsync<Category>((conn, tran) => throw new NotImplementedException(), "Add Category", category.ToString());
+        var result = await ExecuteAndTraceAsync(
+            async (conn, tran) =>
+            {
+                var schema = await new AddCategorySql(conn, tran).ExecuteAsync(category);
+                return schema.ToEntity();
+            },
+            "Add Category",
+            category.ToString());
+
+        return result;
     }
 
-    public Task<Category?> UpdateAsync(Category category)
+    public async Task<Category?> UpdateAsync(Category category)
     {
-        return ExecuteAndTraceAsync<Category?>((conn, tran) => throw new NotImplementedException(), "Update Category", category.ToString());
+        var result = await ExecuteAndTraceAsync(
+            async (conn, tran) =>
+            {
+                var schema = await new UpdateCategorySql(conn, tran).ExecuteAsync(category);
+                return schema?.ToEntity();
+            },
+            "Update Category",
+            category.ToString());
+
+        return result;
     }
 
     public async Task DeleteAsync(Guid id)
     {
-        _ = await ExecuteAndTraceAsync<int>((conn, tran) => throw new NotImplementedException(), "Delete Category", $"id: {id}");
+        _ = await ExecuteAndTraceAsync<int>(
+            (conn, tran) => new DeleteCategorySql(conn, tran).ExecuteAsync(id),
+            "Delete Category",
+            $"id: {id}");
     }
 }
