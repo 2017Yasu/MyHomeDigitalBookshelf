@@ -162,7 +162,7 @@ Per user, track:
 | ----------------- | -------- | ---------------------------- | -------- |
 | id                | UUID     | Primary key                  | True     |
 | title             | String   | Book title                   | True     |
-| authors           | String   | JSON array of authors        | False    |
+| authors           | String   | Authors separated by `,`     | False    |
 | isbn              | String   | ISBN-10 or ISBN-13           | False    |
 | publisher         | String   | Publisher                    | False    |
 | publish\_date     | Date     | Publish date                 | False    |
