@@ -5,12 +5,41 @@ namespace MyHomeDigitalBookshelf.Domain.ValueObjects;
 /// <summary>
 /// Value object representing a Japanese C-Code classification with validation.
 /// </summary>
-public partial class CCode : ValueObjectBase<string>
+public partial class CCode : ValueObjectBase<string>, IEquatable<CCode>
 {
     /// <summary>
     /// Gets the C-Code value as a string.
     /// </summary>
     public override string Value { get; }
+
+    public bool Equals(CCode? other)
+    {
+        if (other is null) return false;
+        return Value.Equals(other.Value, StringComparison.OrdinalIgnoreCase);
+    }
+
+    public override bool Equals(object? obj)
+    {
+        if (obj is null) return false;
+        if (ReferenceEquals(this, obj)) return true;
+        return obj is CCode other && Equals(other);
+    }
+
+    public override int GetHashCode()
+    {
+        return Value.ToUpperInvariant().GetHashCode();
+    }
+
+    public static bool operator ==(CCode? left, CCode? right)
+    {
+        if (left is null) return right is null;
+        return left.Equals(right);
+    }
+
+    public static bool operator !=(CCode? left, CCode? right)
+    {
+        return !(left == right);
+    }
 
     public CCode(string value)
     {

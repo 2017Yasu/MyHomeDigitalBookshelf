@@ -31,7 +31,7 @@ CREATE TABLE categories (
 CREATE TABLE books (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4 (),
     title VARCHAR(255) NOT NULL,
-    authors JSONB,
+    authors TEXT,
     isbn VARCHAR(20),
     publisher VARCHAR(255),
     publish_date DATE,
