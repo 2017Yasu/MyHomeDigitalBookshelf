@@ -97,7 +97,7 @@ public class BookshelfSchema
 
 ### Example: Insert
 
-````csharp
+```csharp
 namespace MyHomeDigitalBookshelf.Infrastructure.Database.Repositories.Sql;
 
 internal class AddBookshelfSql(DbConnection connection, DbTransaction transaction)
@@ -113,6 +113,7 @@ returning
     created_at,
     updated_at";
 }
+```
 
 ### Example: Select
 
@@ -123,7 +124,7 @@ internal class GetBookshelvesSql(DbConnection connection, DbTransaction? transac
 {
     private const string Sql = @"SELECT id, name, description, created_at, updated_at FROM bookshelves /**where**/ ORDER BY created_at";
 }
-````
+```
 
 ### Notice
 
