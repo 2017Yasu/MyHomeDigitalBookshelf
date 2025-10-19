@@ -1,10 +1,7 @@
-using System;
 using System.Data.Common;
-using System.Text.Json;
-using System.Threading.Tasks;
 using Dapper;
 using MyHomeDigitalBookshelf.Domain.Entities;
-using Npgsql;
+using MyHomeDigitalBookshelf.Infrastructure.Database.Repositories.Schema;
 
 namespace MyHomeDigitalBookshelf.Infrastructure.Database.Repositories.Sql;
 
@@ -25,9 +22,9 @@ RETURNING id, title, bookshelf_id, authors, isbn, publisher,
           notes, created_at, updated_at;
 ";
 
-    public async Task<Book> ExecuteAsync(Book book)
+    public async Task<BookSchema> ExecuteAsync(Book book)
     {
-        var schema = await _connection.QuerySingleAsync<Schema.BookSchema>(Sql,
+        return await _connection.QuerySingleAsync<BookSchema>(Sql,
             new
             {
                 title = book.Title,
@@ -42,7 +39,5 @@ RETURNING id, title, bookshelf_id, authors, isbn, publisher,
                 notes = book.Notes
             },
             transaction: _transaction);
-
-        return schema.ToEntity();
     }
 }

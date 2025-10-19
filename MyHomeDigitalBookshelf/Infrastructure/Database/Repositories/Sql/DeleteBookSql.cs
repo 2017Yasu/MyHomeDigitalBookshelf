@@ -1,18 +1,10 @@
-using System;
 using System.Data.Common;
-using System.Threading.Tasks;
 using Dapper;
-using Npgsql;
 
 namespace MyHomeDigitalBookshelf.Infrastructure.Database.Repositories.Sql;
 
-internal class DeleteBookSql : ExecSqlBase
+internal class DeleteBookSql(DbConnection connection, DbTransaction transaction) : ExecSqlBase(connection, transaction)
 {
-    public DeleteBookSql(DbConnection connection, DbTransaction transaction)
-        : base(connection, transaction)
-    {
-    }
-
     private const string Sql = @"DELETE FROM books WHERE id = @id";
 
     public async Task<int> ExecuteAsync(Guid id)

@@ -1,7 +1,7 @@
-using System.Data;
 using System.Data.Common;
 using Dapper;
 using MyHomeDigitalBookshelf.Domain.Entities;
+using MyHomeDigitalBookshelf.Infrastructure.Database.Repositories.Schema;
 
 namespace MyHomeDigitalBookshelf.Infrastructure.Database.Repositories.Sql;
 
@@ -18,13 +18,13 @@ internal class GetBooksSql(DbConnection connection, DbTransaction? transaction =
         /**leftjoin**/
         /**where**/";
 
-    public async Task<Book?> QuerySingleAsync(Guid id)
+    public async Task<BookWithCategorySchema?> QuerySingleAsync(Guid id)
     {
         var builder = new SqlBuilder().Where(@$"b.id = @{nameof(id)}", new { id });
         return (await QueryAsync(builder)).FirstOrDefault();
     }
 
-    public async Task<Book[]> QueryAsync(
+    public async Task<BookWithCategorySchema[]> QueryAsync(
         string? title, string? author, string? isbn, Guid? categoryId,
         string? cCode, Guid? ownerId, ReadingStatus? readingStatus)
     {
@@ -61,10 +61,9 @@ internal class GetBooksSql(DbConnection connection, DbTransaction? transaction =
         return await QueryAsync(builder);
     }
 
-    private async Task<Book[]> QueryAsync(SqlBuilder builder)
+    private async Task<BookWithCategorySchema[]> QueryAsync(SqlBuilder builder)
     {
         var sql = builder.AddTemplate(Sql);
-        var schema = await _connection.QueryAsync<Schema.BookSchema>(sql.RawSql, sql.Parameters, _transaction);
-        return schema.Select(s => s.ToEntity()).ToArray();
+        return (await _connection.QueryAsync<BookWithCategorySchema>(sql.RawSql, sql.Parameters, _transaction)).ToArray();
     }
 }

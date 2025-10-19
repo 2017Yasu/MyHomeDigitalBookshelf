@@ -13,7 +13,7 @@ public class CategoryRepository(ILogger<CategoryRepository> logger, DbConnection
         var result = await QueryAndTraceAsync(
             async conn =>
             {
-                var schema = await new GetCategoryByIdSql(conn, transaction: null!).ExecuteAsync(id);
+                var schema = await new GetCategoriesSql(conn).ExecuteSingleAsync(id);
                 return schema?.ToEntity();
             },
             "Get Category By Id",
@@ -27,7 +27,7 @@ public class CategoryRepository(ILogger<CategoryRepository> logger, DbConnection
         var results = await QueryAndTraceAsync(
             async conn =>
             {
-                var schemas = await new GetCategoriesByBookshelfSql(conn, transaction: null!).ExecuteAsync(bookshelfId);
+                var schemas = await new GetCategoriesSql(conn).ExecuteAsync(bookshelfId);
                 return schemas.Select(s => s.ToEntity()).ToArray();
             },
             "Get Categories By Bookshelf",

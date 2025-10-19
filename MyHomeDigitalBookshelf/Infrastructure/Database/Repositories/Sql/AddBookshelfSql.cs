@@ -1,5 +1,7 @@
 using System.Data.Common;
 using Dapper;
+using MyHomeDigitalBookshelf.Domain.Entities;
+using MyHomeDigitalBookshelf.Infrastructure.Database.Repositories.Schema;
 
 namespace MyHomeDigitalBookshelf.Infrastructure.Database.Repositories.Sql;
 
@@ -16,9 +18,9 @@ returning
     created_at,
     updated_at";
 
-    internal async Task<Domain.Entities.Bookshelf> ExecuteAsync(Domain.Entities.Bookshelf bookshelf)
+    internal async Task<BookshelfSchema> ExecuteAsync(Bookshelf bookshelf)
     {
-        var result = await _connection.QuerySingleAsync<Schema.BookshelfSchema>(
+        return await _connection.QuerySingleAsync<BookshelfSchema>(
             Sql,
             new
             {
@@ -26,6 +28,5 @@ returning
                 description = bookshelf.Description,
             },
             _transaction);
-        return result.ToEntity();
     }
 }

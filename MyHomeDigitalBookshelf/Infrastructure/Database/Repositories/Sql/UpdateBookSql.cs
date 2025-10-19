@@ -2,6 +2,7 @@ using System.Data.Common;
 using System.Text.Json;
 using Dapper;
 using MyHomeDigitalBookshelf.Domain.Entities;
+using MyHomeDigitalBookshelf.Infrastructure.Database.Repositories.Schema;
 
 namespace MyHomeDigitalBookshelf.Infrastructure.Database.Repositories.Sql;
 
@@ -25,9 +26,9 @@ internal class UpdateBookSql(DbConnection connection, DbTransaction transaction)
                   publish_date, c_code, category_id, cover_image_url,
                   notes, created_at, updated_at";
 
-    public async Task<Book?> ExecuteAsync(Book book)
+    public async Task<BookSchema?> ExecuteAsync(Book book)
     {
-        var schema = await _connection.QuerySingleOrDefaultAsync<Schema.BookSchema>(Sql,
+        return await _connection.QuerySingleOrDefaultAsync<BookSchema>(Sql,
             new
             {
                 id = book.Id,
@@ -43,7 +44,5 @@ internal class UpdateBookSql(DbConnection connection, DbTransaction transaction)
                 notes = book.Notes
             },
             transaction: _transaction);
-
-        return schema?.ToEntity();
     }
 }

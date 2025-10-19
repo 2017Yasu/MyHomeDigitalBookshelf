@@ -95,9 +95,9 @@ public class BookshelfSchema
 - Use `ExecSqlBase` for **update/insert/delete** queries.
 - Use `QuerySqlBase` for **select** queries.
 
-### Example
+### Example: Insert
 
-```csharp
+````csharp
 namespace MyHomeDigitalBookshelf.Infrastructure.Database.Repositories.Sql;
 
 internal class AddBookshelfSql(DbConnection connection, DbTransaction transaction)
@@ -113,7 +113,17 @@ returning
     created_at,
     updated_at";
 }
-```
+
+### Example: Select
+
+```csharp
+namespace MyHomeDigitalBookshelf.Infrastructure.Database.Repositories.Sql;
+
+internal class GetBookshelvesSql(DbConnection connection, DbTransaction? transaction = null) : QuerySqlBase(connection, transaction)
+{
+    private const string Sql = @"SELECT id, name, description, created_at, updated_at FROM bookshelves /**where**/ ORDER BY created_at";
+}
+````
 
 ### Notice
 
@@ -135,7 +145,7 @@ returning
   - `QueryAsync<T>()` → for queries returning multiple rows
   - `QuerySingleAsync<T>()` → for queries returning one row
 
-### Example
+### Example: Insert
 
 ```csharp
 internal async Task<Domain.Entities.Bookshelf> ExecuteAsync(Domain.Entities.Bookshelf bookshelf)
@@ -149,6 +159,30 @@ internal async Task<Domain.Entities.Bookshelf> ExecuteAsync(Domain.Entities.Book
         },
         _transaction);
     return result.ToEntity();
+}
+```
+
+### Example: Select
+
+```csharp
+internal async Task<BookshelfSchema?> QuerySingleAsync(Guid id)
+{
+    var builder = new SqlBuilder();
+    builder.Where($@"id = @{nameof(id)}", new { id });
+    var results = await QueryAsync(builder);
+    return results.FirstOrDefault();
+}
+
+internal async Task<BookshelfSchema[]> QueryAsync()
+{
+    var builder = new SqlBuilder();
+    return await QueryAsync(builder);
+}
+
+private async Task<BookshelfSchema[]> QueryAsync(SqlBuilder builder)
+{
+    var sql = builder.AddTemplate(Sql);
+    return (await _connection.QueryAsync<BookshelfSchema>(sql.RawSql, sql.Parameters, _transaction)).ToArray();
 }
 ```
 
@@ -172,12 +206,42 @@ namespace MyHomeDigitalBookshelf.Infrastructure.Database.Repositories;
 public class BookshelfRepository(ILogger<BookshelfRepository> logger, DbConnectionProvider connectionProvider)
     : RepositoryBase(logger, connectionProvider), IBookshelfRepository
 {
-    public Task<Bookshelf> AddAsync(Bookshelf bookshelf)
+    public async Task<Bookshelf?> GetByIdAsync(Guid id)
     {
-        return ExecuteAndTraceAsync(
-            (conn, tran) => new AddBookshelfSql(conn, tran).ExecuteAsync(bookshelf),
+        var result = await QueryAndTraceAsync(
+            async conn =>
+            {
+                var schema = await new GetBookshelvesSql(conn).QuerySingleAsync(id);
+                return schema?.ToEntity();
+            },
+            "Get Bookshelf By Id",
+            $"id: {id}");
+        return result;
+    }
+
+    public async Task<Bookshelf[]> GetAllAsync()
+    {
+        var result = await QueryAndTraceAsync(
+            async conn =>
+            {
+                var schemas = await new GetBookshelvesSql(conn).QueryAsync();
+                return schemas.Select(s => s.ToEntity()).ToArray();
+            },
+            "Get All Bookshelves");
+        return result;
+    }
+
+    public async Task<Bookshelf> AddAsync(Bookshelf bookshelf)
+    {
+        var result = await ExecuteAndTraceAsync(
+            async (conn, tran) =>
+            {
+                var schema = await new AddBookshelfSql(conn, tran).ExecuteAsync(bookshelf);
+                return schema.ToEntity();
+            },
             "Add Bookshelf",
             bookshelf.ToString());
+        return result;
     }
 }
 ```

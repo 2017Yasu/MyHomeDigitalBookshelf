@@ -1,6 +1,4 @@
-using System;
 using System.Data.Common;
-using System.Threading.Tasks;
 using Dapper;
 using MyHomeDigitalBookshelf.Domain.Entities;
 using MyHomeDigitalBookshelf.Infrastructure.Database.Repositories.Schema;
