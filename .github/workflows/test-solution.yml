@@ -35,18 +35,23 @@ jobs:
         with:
           dotnet-version: 8.0.x
 
-      - name: Install PostgreSQL Client
-        run: sudo apt update && sudo apt install -y postgresql-client
-
-      - name: Initialize database
+      - name: Initialize DB
         run: |
-          for file in $(ls ./sql/up); do
-            echo "Executing $file"
-            psql -h localhost -p 35432 -U test_user -d my_home_bookshelves -f ./sql/up/$file
-          done
+          dotnet run \
+            --project ./MyHomeDigitalBookshelf/Tools/DbMigrator/ \
+            -- \
+            --host localhost \
+            --port 35432 \
+            --database my_home_bookshelves \
+            --user test_user \
+            --password test \
+            --dir sql/up
 
       - name: Install dependencies
         run: dotnet restore
 
+      - name: Build solution
+        run: dotnet build --no-restore --configuration Release
+
       - name: Run tests
-        run: dotnet test MyHomeDigitalBookshelf/Infrastructure.Tests
+        run: dotnet test --verbosity normal --no-build --configuration Release

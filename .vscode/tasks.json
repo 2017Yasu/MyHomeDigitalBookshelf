@@ -37,6 +37,19 @@
       "isTestCommand": true
     },
     {
+      "label": "test: application",
+      "command": "dotnet",
+      "type": "process",
+      "args": [
+        "test",
+        "${workspaceFolder}/MyHomeDigitalBookshelf/Application.Tests/MyHomeDigitalBookshelf.Application.Tests.csproj",
+        "-v",
+        "normal"
+      ],
+      "problemMatcher": [],
+      "isTestCommand": true
+    },
+    {
       "label": "up db_test",
       "command": "docker",
       "type": "process",
