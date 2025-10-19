@@ -1,0 +1,221 @@
+---
+applyTo: "MyHomeDigitalBookshelf/Infrastructure/Database/Repositories/**/*.cs"
+---
+
+# Repository Implementation Instruction
+
+Follow the steps below when implementing a new repository in the **MyHomeDigitalBookshelf** project.
+
+## 1. Analyze Database Tables
+
+- Review the SQL definitions in the directory:
+
+  ```
+  sql/up/*.sql
+  ```
+
+- Identify the table(s) related to your repository.
+- Understand the columns, types, constraints, and relationships.
+
+---
+
+## 2. Create Schema Class
+
+- Create a schema class that represents the database table’s structure.
+
+**Location:**
+`MyHomeDigitalBookshelf/Infrastructure/Database/Repositories/Schema`
+
+**Naming Convention:**
+`<EntityName>Schema.cs`
+
+**Example:**
+
+```csharp
+namespace MyHomeDigitalBookshelf.Infrastructure.Database.Repositories.Schema;
+
+public class BookshelfSchema
+{
+    public Guid Id { get; set; }
+    public string Name { get; set; } = string.Empty;
+    public string? Description { get; set; }
+    public DateTime CreatedAt { get; set; }
+    public DateTime UpdatedAt { get; set; }
+}
+```
+
+If necessary, add a method to convert to the domain model.
+
+```csharp
+namespace MyHomeDigitalBookshelf.Infrastructure.Database.Repositories.Schema;
+
+public class BookshelfSchema
+{
+    public Guid Id { get; set; }
+    public string Name { get; set; } = string.Empty;
+    public string? Description { get; set; }
+    public DateTime CreatedAt { get; set; }
+    public DateTime UpdatedAt { get; set; }
+
+    public Domain.Entities.Bookshelf ToEntity()
+    {
+        return new Domain.Entities.Bookshelf(
+            id: this.Id,
+            name: this.Name,
+            description: this.Description,
+            createdAt: this.CreatedAt,
+            updatedAt: this.UpdatedAt);
+    }
+}
+```
+
+---
+
+## 3. Create SQL Class
+
+- Create a new class under:
+
+  ```
+  MyHomeDigitalBookshelf/Infrastructure/Database/Repositories/Sql
+  ```
+
+- Define the SQL command as a constant string named `Sql`.
+- The class name should begin with a verb, followed by the entity name.
+
+**Naming Convention:**
+`<Get|Add|Update|Delete><EntityName>Sql.cs`
+
+**Base Class:**
+
+- Use `ExecSqlBase` for **update/insert/delete** queries.
+- Use `QuerySqlBase` for **select** queries.
+
+**Example:**
+
+```csharp
+namespace MyHomeDigitalBookshelf.Infrastructure.Database.Repositories.Sql;
+
+internal class AddBookshelfSql(DbConnection connection, DbTransaction transaction)
+: ExecSqlBase(connection, transaction)
+{
+    private const string Sql = @"insert into
+    bookshelves (name, description)
+values (@name, @description)
+returning
+    id,
+    name,
+    description,
+    created_at,
+    updated_at";
+}
+```
+
+---
+
+## 4. Implement Execution Method
+
+- Implement database operations using **Dapper**.
+- Return Domain instances or the number of affected rows as appropriate.
+- Use the `Sql` constant and the corresponding `Schema` class.
+- Choose the appropriate method:
+
+  - `ExecuteAsync()` → for non-query commands
+  - `QueryAsync<T>()` → for queries returning multiple rows
+  - `QuerySingleAsync<T>()` → for queries returning one row
+
+**Example:**
+
+```csharp
+internal async Task<Domain.Entities.Bookshelf> ExecuteAsync(Domain.Entities.Bookshelf bookshelf)
+{
+    var result = await _connection.QuerySingleAsync<Schema.BookshelfSchema>(
+        Sql,
+        new
+        {
+            name = bookshelf.Name,
+            description = bookshelf.Description,
+        },
+        _transaction);
+    return result.ToEntity();
+}
+```
+
+---
+
+## 5. Implement Repository
+
+- Create or update the repository class under:
+
+  ```
+  MyHomeDigitalBookshelf/Infrastructure/Database/Repositories
+  ```
+
+- Use the generated SQL classes to compose methods for CRUD operations.
+
+**Example:**
+
+```csharp
+namespace MyHomeDigitalBookshelf.Infrastructure.Database.Repositories;
+
+public class BookshelfRepository(ILogger<BookshelfRepository> logger, DbConnectionProvider connectionProvider)
+    : RepositoryBase(logger, connectionProvider), IBookshelfRepository
+{
+    public Task<Bookshelf> AddAsync(Bookshelf bookshelf)
+    {
+        return ExecuteAndTraceAsync(
+            (conn, tran) => new AddBookshelfSql(conn, tran).ExecuteAsync(bookshelf),
+            "Add Bookshelf",
+            bookshelf.ToString());
+    }
+}
+```
+
+---
+
+## 6. Testing
+
+- Write unit tests for the repository methods under:
+
+  ```
+  MyHomeDigitalBookshelf/Infrastructure.Tests/Database/Repositories
+  ```
+
+- Ensure all CRUD operations work as expected.
+
+**Example:**
+
+```csharp
+namespace MyHomeDigitalBookshelf.Infrastructure.Tests.Database.Repositories;
+
+public class BookshelfRepositoryTests : RepositoryTestBase
+{
+    private readonly BookshelfRepository _repository;
+
+    public BookshelfRepositoryTests(ITestOutputHelper outputHelper) : base(outputHelper)
+    {
+        _repository = new BookshelfRepository(CreateLogger<BookshelfRepository>(), GetConnectionProvider());
+    }
+
+    [Fact(DisplayName = "AddAsync should add a bookshelf and return the created entity")]
+    public async Task AddAsync_ShouldAddBookshelfAndReturnCreated()
+    {
+        // Arrange
+        var bookshelf = Bookshelf.CreateNew("Test Bookshelf", "A bookshelf for testing");
+
+        // Act
+        var newBookshelf = await _repository.AddAsync(bookshelf);
+
+        // Assert
+        Assert.NotNull(newBookshelf);
+        Assert.Equal(bookshelf.Name, newBookshelf.Name);
+        Assert.Equal(bookshelf.Description, newBookshelf.Description);
+
+        // Act
+        var fetchedBookshelf = await _repository.GetByIdAsync(newBookshelf.Id);
+
+        // Assert
+        Assert.NotNull(fetchedBookshelf);
+        Assert.Equal(newBookshelf.Id, fetchedBookshelf.Id);
+    }
+}
+```
