@@ -13,9 +13,9 @@ public class UserBookSchema
     public decimal? Price { get; set; }
 
     public UserSchema? User { get; set; }
-    public BookWithCategorySchema? Book { get; set; }
+    public BookSchema? Book { get; set; }
 
-    public Domain.Entities.UserBook ToEntity()
+    public UserBook ToEntity()
     {
         return new(
             userId: UserId,
