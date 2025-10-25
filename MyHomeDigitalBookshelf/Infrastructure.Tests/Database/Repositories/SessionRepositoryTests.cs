@@ -1,4 +1,3 @@
-using Microsoft.Extensions.Logging;
 using MyHomeDigitalBookshelf.Domain.Entities;
 using MyHomeDigitalBookshelf.Domain.ValueObjects;
 using MyHomeDigitalBookshelf.Infrastructure.Database.Repositories;
@@ -107,17 +106,16 @@ public class SessionRepositoryTests : RepositoryTestBase
     {
         // Arrange
         var user = await CreateTestUser();
-        var expiredSession = Session.CreateNew(
+        var sessionExpired = Session.CreateNew(
             userId: user.Id,
             token: "expired_token",
             expiresAt: DateTime.UtcNow.AddHours(-1));
-        var validSession = Session.CreateNew(
+        var sessionValid = Session.CreateNew(
             userId: user.Id,
             token: "valid_token",
             expiresAt: DateTime.UtcNow.AddHours(1));
-
-        await _repository.AddAsync(expiredSession);
-        await _repository.AddAsync(validSession);
+        await _repository.AddAsync(sessionExpired);
+        await _repository.AddAsync(sessionValid);
 
         // Act
         var deletedCount = await _repository.DeleteExpiredAsync();
@@ -126,6 +124,6 @@ public class SessionRepositoryTests : RepositoryTestBase
         // Assert
         Assert.Equal(1, deletedCount);
         Assert.Single(remainingSessions);
-        Assert.Equal(validSession.Token, remainingSessions[0].Token);
+        Assert.Equal("valid_token", remainingSessions[0].Token);
     }
 }

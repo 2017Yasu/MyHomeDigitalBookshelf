@@ -63,7 +63,7 @@ public class BookshelfRepositoryTests : RepositoryTestBase
         // Act
         foreach (var shelf in bookshelves)
         {
-            await _repository.AddAsync(shelf);
+            var created = await _repository.AddAsync(shelf);
         }
         var allBookshelves = await _repository.GetAllAsync();
 

@@ -46,17 +46,26 @@ public abstract class RepositoryTestBase : IAsyncDisposable
             35432);
     }
 
-    async ValueTask IAsyncDisposable.DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
         if (_dbConnectionProvider is not null)
         {
+            var tables = string.Join(",", [
+                "user_books",
+                "bookshelf_users",
+                "sessions",
+                "user_identities",
+                "books",
+                "categories",
+                "bookshelves",
+                "users",
+            ]);
             using var conn = await _dbConnectionProvider.GetConnection();
             await conn.OpenAsync();
             using var cmd = conn.CreateCommand();
 
             // Set autocommit to true since we're doing DDL
-            cmd.CommandText = @"
-                TRUNCATE TABLE sessions, bookshelf_users, user_books, user_identities, users, books, categories, bookshelves RESTART IDENTITY CASCADE;";
+            cmd.CommandText = $@"TRUNCATE TABLE {tables} RESTART IDENTITY CASCADE;";
 
             await cmd.ExecuteNonQueryAsync();
             await conn.CloseAsync();
