@@ -1,0 +1,25 @@
+{
+  "name": "my-home-digital-bookshelf-client-apps",
+  "version": "1.0.0",
+  "description": "Client applications for My Home Digital Bookshelf",
+  "main": "index.js",
+  "scripts": {
+    "apps/mobile": "pnpm -C 'apps/mobile'",
+    "apps/web": "pnpm -C 'apps/web'",
+    "common/ui": "pnpm -C 'common/ui'"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.24.0",
+  "dependencies": {
+    "react": "19.2.3",
+    "react-dom": "19.2.3"
+  },
+  "devDependencies": {
+    "@types/react": "~19.2.0",
+    "@types/react-dom": "~19.2.0",
+    "eslint": "^9.39.2",
+    "typescript": "^5.9.3"
+  }
+}
