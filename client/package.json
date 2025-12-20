@@ -6,7 +6,10 @@
   "scripts": {
     "apps/mobile": "pnpm -C 'apps/mobile'",
     "apps/web": "pnpm -C 'apps/web'",
-    "common/ui": "pnpm -C 'common/ui'"
+    "common/ui": "pnpm -C 'common/ui'",
+    "format": "prettier --write .",
+    "lint": "pnpm -C 'apps/web' lint && pnpm -C 'apps/mobile' lint",
+    "lint:fix": "pnpm -C 'apps/web' lint --fix && pnpm -C 'apps/mobile' lint --fix"
   },
   "keywords": [],
   "author": "",
@@ -20,6 +23,8 @@
     "@types/react": "~19.2.0",
     "@types/react-dom": "~19.2.0",
     "eslint": "^9.39.2",
+    "eslint-config-prettier": "^10.1.8",
+    "prettier": "^3.7.4",
     "typescript": "^5.9.3"
   }
 }

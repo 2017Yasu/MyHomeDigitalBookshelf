@@ -1,3 +1,3 @@
 export function greet() {
-  console.log("Hello from UI package!");
+  console.log('Hello from UI package!');
 }
