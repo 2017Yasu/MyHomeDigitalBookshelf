@@ -106,8 +106,8 @@ importers:
 
   apps/web:
     dependencies:
-      ui:
-        specifier: link:../../common/ui
+      '@mhdb/ui':
+        specifier: workspace:*
         version: link:../../common/ui
     devDependencies:
       '@eslint/js':
@@ -135,7 +135,11 @@ importers:
         specifier: ^7.2.4
         version: 7.2.7(@types/node@24.10.4)(lightningcss@1.30.2)(terser@5.44.1)(yaml@2.8.2)
 
-  common/ui: {}
+  common/ui:
+    dependencies:
+      '@mhdb/ui':
+        specifier: workspace:*
+        version: 'link:'
 
 packages:
 
