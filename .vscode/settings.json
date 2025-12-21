@@ -1,4 +1,7 @@
 {
   "editor.formatOnSave": true,
-  "editor.defaultFormatter": "ms-dotnettools.csharp"
+  "editor.defaultFormatter": "ms-dotnettools.csharp",
+  "[sql]": {
+    "editor.defaultFormatter": "cweijan.vscode-postgresql-client2"
+  }
 }
