@@ -61,6 +61,12 @@ public abstract class RepositoryBase
         catch (Npgsql.NpgsqlException sqlEx)
         {
             LogSqlError(operationDescription, sqlEx);
+            if (sqlEx.ErrorCode == -2147467259) // Unique violation
+            {
+                throw new Application.Common.Exceptions.DuplicateEntityException(
+                    $"A duplicate entity was detected during the operation {operationDescription}.",
+                    sqlEx);
+            }
             throw;
         }
         catch (Exception ex)

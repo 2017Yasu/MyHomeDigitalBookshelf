@@ -1,29 +1,62 @@
+using System.Data.Common;
 using Microsoft.Extensions.Logging;
 using MyHomeDigitalBookshelf.Domain.Entities;
 using MyHomeDigitalBookshelf.Domain.Repositories;
+using MyHomeDigitalBookshelf.Infrastructure.Database.Repositories.Sql;
 
 namespace MyHomeDigitalBookshelf.Infrastructure.Database.Repositories;
 
+/// <summary>
+/// Repository implementation for managing user identities in the PostgreSQL database.
+/// </summary>
 public class UserIdentityRepository(ILogger<UserIdentityRepository> logger, DbConnectionProvider connectionProvider)
     : RepositoryBase(logger, connectionProvider), IUserIdentityRepository
 {
-    public Task<UserIdentity?> GetByIdAsync(Guid id)
+    /// <inheritdoc />
+    public async Task<UserIdentity?> GetByIdAsync(Guid id)
     {
-        return QueryAndTraceAsync<UserIdentity?>(conn => throw new NotImplementedException(), "Get UserIdentity By Id", $"id: {id}");
+        return await QueryAndTraceAsync(
+            async conn =>
+            {
+                var schema = await new GetUserIdentitiesSql(conn).QuerySingleAsync(id);
+                return schema?.ToEntity();
+            },
+            "Get UserIdentity By Id",
+            $"id: {id}");
     }
 
-    public Task<UserIdentity?> GetByProviderAndSubjectAsync(string provider, string subject)
+    /// <inheritdoc />
+    public async Task<UserIdentity?> GetByProviderAndSubjectAsync(string provider, string subject)
     {
-        return QueryAndTraceAsync<UserIdentity?>(conn => throw new NotImplementedException(), "Get UserIdentity By Provider/Subject", $"provider: {provider}, subject: {subject}");
+        return await QueryAndTraceAsync(
+            async conn =>
+            {
+                var schema = await new GetUserIdentitiesSql(conn).QueryByProviderAndSubjectAsync(provider, subject);
+                return schema?.ToEntity();
+            },
+            "Get UserIdentity By Provider/Subject",
+            $"provider: {provider}, subject: {subject}");
     }
 
-    public Task<UserIdentity> AddAsync(UserIdentity identity)
+    /// <inheritdoc />
+    public async Task<UserIdentity> AddAsync(UserIdentity identity)
     {
-        return ExecuteAndTraceAsync<UserIdentity>((conn, tran) => throw new NotImplementedException(), "Add UserIdentity", identity.ToString());
+        return await ExecuteAndTraceAsync(
+            async (conn, tran) =>
+            {
+                var schema = await new AddUserIdentitySql(conn, tran).ExecuteAsync(identity);
+                return schema.ToEntity();
+            },
+            "Add UserIdentity",
+            identity.ToString());
     }
 
+    /// <inheritdoc />
     public async Task DeleteAsync(Guid id)
     {
-        _ = await ExecuteAndTraceAsync<int>((conn, tran) => throw new NotImplementedException(), "Delete UserIdentity", $"id: {id}");
+        _ = await ExecuteAndTraceAsync(
+            async (conn, tran) => await new DeleteUserIdentitySql(conn, tran).ExecuteAsync(id),
+            "Delete UserIdentity",
+            $"id: {id}");
     }
 }

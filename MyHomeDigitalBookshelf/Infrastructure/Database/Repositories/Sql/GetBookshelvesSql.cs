@@ -6,7 +6,16 @@ namespace MyHomeDigitalBookshelf.Infrastructure.Database.Repositories.Sql;
 
 internal class GetBookshelvesSql(DbConnection connection, DbTransaction? transaction = null) : QuerySqlBase(connection, transaction)
 {
-    private const string Sql = @"SELECT id, name, description, created_at, updated_at FROM bookshelves /**where**/ ORDER BY created_at";
+    private const string Sql = @"
+    SELECT
+        id,
+        name,
+        description,
+        created_at,
+        updated_at
+    FROM bookshelves
+    /**where**/
+    ORDER BY created_at";
 
     internal async Task<BookshelfSchema?> QuerySingleAsync(Guid id)
     {
@@ -25,6 +34,6 @@ internal class GetBookshelvesSql(DbConnection connection, DbTransaction? transac
     private async Task<BookshelfSchema[]> QueryAsync(SqlBuilder builder)
     {
         var sql = builder.AddTemplate(Sql);
-        return (await _connection.QueryAsync<BookshelfSchema>(sql.RawSql, sql.Parameters, _transaction)).ToArray();
+        return [.. await _connection.QueryAsync<BookshelfSchema>(sql.RawSql, sql.Parameters, _transaction)];
     }
 }

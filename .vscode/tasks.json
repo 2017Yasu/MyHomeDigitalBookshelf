@@ -11,6 +11,18 @@
       "dependsOrder": "parallel"
     },
     {
+      "label": "build all",
+      "command": "dotnet",
+      "type": "process",
+      "args": [
+        "build",
+        "${workspaceFolder}/MyHomeDigitalBookshelf.sln",
+        "/property:GenerateFullPaths=true",
+        "/consoleloggerparameters:NoSummary"
+      ],
+      "problemMatcher": "$msCompile"
+    },
+    {
       "label": "build Api",
       "command": "dotnet",
       "type": "process",

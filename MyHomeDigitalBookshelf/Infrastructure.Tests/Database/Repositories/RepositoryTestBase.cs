@@ -4,7 +4,7 @@ using Xunit.Abstractions;
 
 namespace MyHomeDigitalBookshelf.Infrastructure.Tests.Database.Repositories;
 
-public abstract class RepositoryTestBase
+public abstract class RepositoryTestBase : IAsyncDisposable
 {
     private readonly ITestOutputHelper _outputHelper;
     private readonly LoggerFactory _loggerFactory;
@@ -44,5 +44,31 @@ public abstract class RepositoryTestBase
             "test_user",
             "test",
             35432);
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_dbConnectionProvider is not null)
+        {
+            var tables = string.Join(",", [
+                "user_books",
+                "bookshelf_users",
+                "sessions",
+                "user_identities",
+                "books",
+                "categories",
+                "bookshelves",
+                "users",
+            ]);
+            using var conn = await _dbConnectionProvider.GetConnection();
+            await conn.OpenAsync();
+            using var cmd = conn.CreateCommand();
+
+            // Set autocommit to true since we're doing DDL
+            cmd.CommandText = $@"TRUNCATE TABLE {tables} RESTART IDENTITY CASCADE;";
+
+            await cmd.ExecuteNonQueryAsync();
+            await conn.CloseAsync();
+        }
     }
 }

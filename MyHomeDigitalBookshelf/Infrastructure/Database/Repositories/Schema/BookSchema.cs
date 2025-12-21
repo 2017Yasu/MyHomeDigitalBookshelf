@@ -18,7 +18,9 @@ public class BookSchema
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
 
-    public Domain.Entities.Book ToEntity(Domain.Entities.Category? category = null)
+    public CategorySchema? Category { get; set; }
+
+    public Domain.Entities.Book ToEntity()
     {
         return new Domain.Entities.Book(
             id: Id,
@@ -34,6 +36,6 @@ public class BookSchema
             notes: Notes,
             createdAt: CreatedAt,
             updatedAt: UpdatedAt,
-            category: category);
+            category: Category?.ToEntity());
     }
 }

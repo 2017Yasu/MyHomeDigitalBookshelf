@@ -1,9 +1,6 @@
-using System;
-using System.Threading.Tasks;
 using MyHomeDigitalBookshelf.Domain.Entities;
 using MyHomeDigitalBookshelf.Domain.ValueObjects;
 using MyHomeDigitalBookshelf.Infrastructure.Database.Repositories;
-using Xunit;
 using Xunit.Abstractions;
 
 namespace MyHomeDigitalBookshelf.Infrastructure.Tests.Database.Repositories;
@@ -11,17 +8,19 @@ namespace MyHomeDigitalBookshelf.Infrastructure.Tests.Database.Repositories;
 public class BookRepositoryTests : RepositoryTestBase
 {
     private readonly BookRepository _repository;
+    private readonly BookshelfRepository _bookshelfRepository;
 
     public BookRepositoryTests(ITestOutputHelper outputHelper) : base(outputHelper)
     {
         _repository = new BookRepository(CreateLogger<BookRepository>(), GetConnectionProvider());
+        _bookshelfRepository = new BookshelfRepository(CreateLogger<BookshelfRepository>(), GetConnectionProvider());
     }
 
     [Fact]
     public async Task AddAsync_Should_Add_Book()
     {
         // Arrange
-        var bookshelf = await CreateTestBookshelfAsync();
+        var bookshelf = await CreateBookshelfInDb();
         var book = Book.CreateNew(
             "Test Book",
             bookshelf.Id,
@@ -55,7 +54,7 @@ public class BookRepositoryTests : RepositoryTestBase
     public async Task GetByIdAsync_Should_Return_Book()
     {
         // Arrange
-        var bookshelf = await CreateTestBookshelfAsync();
+        var bookshelf = await CreateBookshelfInDb();
         var book = await CreateTestBookAsync(bookshelf.Id);
 
         // Act
@@ -89,7 +88,7 @@ public class BookRepositoryTests : RepositoryTestBase
     public async Task UpdateAsync_Should_Update_Book()
     {
         // Arrange
-        var bookshelf = await CreateTestBookshelfAsync();
+        var bookshelf = await CreateBookshelfInDb();
         var book = await CreateTestBookAsync(bookshelf.Id);
         var updatedBook = new Book(
             book.Id,
@@ -127,7 +126,7 @@ public class BookRepositoryTests : RepositoryTestBase
     public async Task UpdateAsync_Should_Return_Null_For_Nonexistent_Book()
     {
         // Arrange
-        var bookshelf = await CreateTestBookshelfAsync();
+        var bookshelf = await CreateBookshelfInDb();
         var book = Book.CreateNew(
             "Test Book",
             bookshelf.Id,
@@ -144,7 +143,7 @@ public class BookRepositoryTests : RepositoryTestBase
     public async Task DeleteAsync_Should_Delete_Book()
     {
         // Arrange
-        var bookshelf = await CreateTestBookshelfAsync();
+        var bookshelf = await CreateBookshelfInDb();
         var book = await CreateTestBookAsync(bookshelf.Id);
 
         // Act
@@ -160,7 +159,7 @@ public class BookRepositoryTests : RepositoryTestBase
     {
         // Arrange
         var num = DateTime.UtcNow.Ticks;
-        var bookshelf = await CreateTestBookshelfAsync();
+        var bookshelf = await CreateBookshelfInDb();
         var book1 = await CreateTestBookAsync(bookshelf.Id, title: $"Test Book {num} 1");
         var book2 = await CreateTestBookAsync(bookshelf.Id, title: $"Test Book {num} 2");
         await CreateTestBookAsync(bookshelf.Id, title: "Different Title");
@@ -180,7 +179,7 @@ public class BookRepositoryTests : RepositoryTestBase
     {
         // Arrange
         var num = DateTime.UtcNow.Ticks;
-        var bookshelf = await CreateTestBookshelfAsync();
+        var bookshelf = await CreateBookshelfInDb();
         var book1 = await CreateTestBookAsync(bookshelf.Id, authors: [$"Test Author {num}", "Other Author"]);
         var book2 = await CreateTestBookAsync(bookshelf.Id, authors: [$"Test Author {num}"]);
         await CreateTestBookAsync(bookshelf.Id, authors: ["Different Author"]);
@@ -201,23 +200,27 @@ public class BookRepositoryTests : RepositoryTestBase
         string[]? authors = null)
     {
         var book = Book.CreateNew(
-            title ?? "Test Book",
-            bookshelfId,
-            authors ?? ["Test Author"],
-            new Isbn("9784873119656"),
-            "Test Publisher",
-            new DateTime(2025, 1, 1),
-            new CCode("C3055"),
-            null,
-            "https://example.com/cover.jpg",
-            "Test notes");
+                title: title ?? "Test Book",
+                bookshelfId,
+                authors: authors ?? ["Test Author"],
+                isbn: new Isbn("9784873119656"),
+                publisher: "Test Publisher",
+                publishDate: new DateTime(2025, 1, 1),
+                cCode: new CCode("C3055"),
+                coverImageUrl: "https://example.com/cover.jpg",
+                notes: "Test notes");
 
-        return await _repository.AddAsync(book);
+        var created = await _repository.AddAsync(book);
+        return created;
     }
 
-    private async Task<Bookshelf> CreateTestBookshelfAsync()
+    private async Task<Bookshelf> CreateBookshelfInDb()
     {
-        var bookshelfRepository = new BookshelfRepository(CreateLogger<BookshelfRepository>(), GetConnectionProvider());
-        return await bookshelfRepository.AddAsync(Bookshelf.CreateNew("Test Bookshelf", "Test Description"));
+        var bookshelf = Bookshelf.CreateNew(
+            name: "Test Bookshelf " + Guid.NewGuid().ToString("N"),
+            description: "A bookshelf for testing purposes.");
+
+        var created = await _bookshelfRepository.AddAsync(bookshelf);
+        return created;
     }
 }
