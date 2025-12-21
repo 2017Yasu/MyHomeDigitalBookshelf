@@ -480,3 +480,4 @@ appsettings.*.json
 
 # AI related files
 .github/prompts/*.prompt.md
+.gemini
