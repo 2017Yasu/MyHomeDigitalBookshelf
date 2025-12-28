@@ -6,7 +6,6 @@ A comprehensive web-based platform for personal and family book collection manag
 ## Tech Stack
 - **Backend:**
   - .NET Core (Clean Architecture)
-  - Entity Framework Core
   - PostgreSQL Database
 - **Frontend:**
   - React 19
