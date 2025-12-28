@@ -20,10 +20,12 @@ description: "Task list template for feature implementation"
 
 ## Path Conventions
 
-- **Single project**: `src/`, `tests/` at repository root
-- **Web app**: `backend/src/`, `frontend/src/`
-- **Mobile**: `api/src/`, `ios/src/` or `android/src/`
-- Paths shown below assume single project - adjust based on plan.md structure
+- **Backend**: `MyHomeDigitalBookshelf/Application`, `MyHomeDigitalBookshelf/Domain`, `MyHomeDigitalBookshelf/Infrastructure`, `MyHomeDigitalBookshelf/Api`
+- **Backend Tests**: `MyHomeDigitalBookshelf/Application.Tests`, `MyHomeDigitalBookshelf/Infrastructure.Tests`
+- **Web Frontend**: `client/web/src`
+- **Mobile Frontend**: `client/mobile/app`
+- **Shared UI**: `client/common/ui/src`
+- Paths shown below are examples; adjust based on `plan.md` structure for the specific feature.
 
 <!-- 
   ============================================================================
@@ -48,9 +50,9 @@ description: "Task list template for feature implementation"
 
 **Purpose**: Project initialization and basic structure
 
-- [ ] T001 Create project structure per implementation plan
-- [ ] T002 Initialize [language] project with [framework] dependencies
-- [ ] T003 [P] Configure linting and formatting tools
+- [ ] T001 Create feature branch and solution folders if needed
+- [ ] T002 [P] Configure linting and formatting tools if new ones are required
+- [ ] T003 [P] Add any new NuGet/npm packages to respective projects
 
 ---
 
@@ -62,12 +64,11 @@ description: "Task list template for feature implementation"
 
 Examples of foundational tasks (adjust based on your project):
 
-- [ ] T004 Setup database schema and migrations framework
-- [ ] T005 [P] Implement authentication/authorization framework
-- [ ] T006 [P] Setup API routing and middleware structure
-- [ ] T007 Create base models/entities that all stories depend on
-- [ ] T008 Configure error handling and logging infrastructure
-- [ ] T009 Setup environment configuration management
+- [ ] T004 Create or update database migration script in `sql/up/`
+- [ ] T005 Implement core authentication/authorization updates in `MyHomeDigitalBookshelf.Infrastructure`
+- [ ] T006 Setup new API controller structure in `MyHomeDigitalBookshelf.Api/Controllers`
+- [ ] T007 Create base Domain entities in `MyHomeDigitalBookshelf.Domain/Entities`
+- [ ] T008 Configure shared error handling and logging in `MyHomeDigitalBookshelf.Api`
 
 **Checkpoint**: Foundation ready - user story implementation can now begin in parallel
 
@@ -83,17 +84,19 @@ Examples of foundational tasks (adjust based on your project):
 
 > **NOTE: Write these tests FIRST, ensure they FAIL before implementation**
 
-- [ ] T010 [P] [US1] Contract test for [endpoint] in tests/contract/test_[name].py
-- [ ] T011 [P] [US1] Integration test for [user journey] in tests/integration/test_[name].py
+- [ ] T010 [P] [US1] Unit test for command/query in `MyHomeDigitalBookshelf.Application.Tests`
+- [ ] T011 [P] [US1] Integration test for repository in `MyHomeDigitalBookshelf.Infrastructure.Tests`
+- [ ] T012 [P] [US1] E2E test for the feature in the web/mobile client
 
 ### Implementation for User Story 1
 
-- [ ] T012 [P] [US1] Create [Entity1] model in src/models/[entity1].py
-- [ ] T013 [P] [US1] Create [Entity2] model in src/models/[entity2].py
-- [ ] T014 [US1] Implement [Service] in src/services/[service].py (depends on T012, T013)
-- [ ] T015 [US1] Implement [endpoint/feature] in src/[location]/[file].py
-- [ ] T016 [US1] Add validation and error handling
-- [ ] T017 [US1] Add logging for user story 1 operations
+- [ ] T013 [P] [US1] Create `[Entity]` in `MyHomeDigitalBookshelf.Domain/Entities/`
+- [ ] T014 [P] [US1] Define `I[Entity]Repository` interface in `MyHomeDigitalBookshelf.Domain/Repositories/`
+- [ ] T015 [US1] Implement repository in `MyHomeDigitalBookshelf.Infrastructure/Database/Repositories/`
+- [ ] T016 [US1] Implement `[Command/Query]` in `MyHomeDigitalBookshelf.Application/[Feature]/`
+- [ ] T017 [US1] Implement API endpoint in `MyHomeDigitalBookshelf.Api/Controllers/`
+- [ ] T018 [US1] Implement UI component in `client/common/ui/src/[Component].tsx`
+- [ ] T019 [US1] Implement feature screen in `client/web/src/pages/` or `client/mobile/app/screens/`
 
 **Checkpoint**: At this point, User Story 1 should be fully functional and testable independently
 

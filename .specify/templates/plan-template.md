@@ -17,26 +17,26 @@
   the iteration process.
 -->
 
-**Language/Version**: [e.g., Python 3.11, Swift 5.9, Rust 1.75 or NEEDS CLARIFICATION]  
-**Primary Dependencies**: [e.g., FastAPI, UIKit, LLVM or NEEDS CLARIFICATION]  
-**Storage**: [if applicable, e.g., PostgreSQL, CoreData, files or N/A]  
-**Testing**: [e.g., pytest, XCTest, cargo test or NEEDS CLARIFICATION]  
-**Security**: [e.g., OWASP ZAP, Snyk, or manual review steps]  
-**Target Platform**: [e.g., Linux server, iOS 15+, WASM or NEEDS CLARIFICATION]
-**Project Type**: [single/web/mobile - determines source structure]  
-**Performance Goals**: [domain-specific, e.g., 1000 req/s, 10k lines/sec, 60 fps or NEEDS CLARIFICATION]  
-**Constraints**: [domain-specific, e.g., <200ms p95, <100MB memory, offline-capable or NEEDS CLARIFICATION]  
+**Language/Version**: C# (NET 8), TypeScript  
+**Primary Dependencies**: ASP.NET Core, Entity Framework Core, xUnit, React, Expo (React Native)
+**Storage**: PostgreSQL (via raw SQL migrations)
+**Testing**: xUnit for backend, React Testing Library / Jest for frontend
+**Security**: Manual review, dependency scanning via GitHub Actions.
+**Target Platform**: Web (Modern Browsers), iOS, Android
+**Project Type**: Multi-project .NET Solution with Web and Mobile clients
+**Performance Goals**: <200ms p95 API response time, smooth UI rendering
+**Constraints**: Adherence to Clean Architecture, use of shared UI library.
 **Scale/Scope**: [domain-specific, e.g., 10k users, 1M LOC, 50 screens or NEEDS CLARIFICATION]
 
 ## Constitution Check
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-- **I. Code Quality**: Code must be well-structured, maintainable, and follow SOLID principles.
-- **II. Testing Standards**: All features must have comprehensive unit and integration tests. TDD is strongly encouraged.
-- **III. User Experience Consistency**: The UI/UX must be consistent with the rest of the application.
-- **IV. Performance Requirements**: The feature must meet the defined performance goals.
-- **V. Security**: All code must be written with security in mind.
+- **1. Architectural Integrity**: Does the plan adhere to the Clean Architecture (`Domain`, `Application`, `Infrastructure`, `Api`) and CQRS patterns?
+- **2. Comprehensive Testing**: Does the plan include tasks for creating unit tests (xUnit) for all business logic and integration tests for infrastructure components?
+- **3. Unified UX**: Does the plan ensure new UI components are sourced from or added to the `client/common/ui` library?
+- **4. System Performance**: Does the plan consider API response times and efficient database access patterns?
+- **5. Security by Design**: Does the plan account for secure coding practices and handling of secrets?
 
 ## Project Structure
 
