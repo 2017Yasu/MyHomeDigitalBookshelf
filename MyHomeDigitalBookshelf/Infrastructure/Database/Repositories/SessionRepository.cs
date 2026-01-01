@@ -3,12 +3,14 @@ using Microsoft.Extensions.Logging;
 using MyHomeDigitalBookshelf.Domain.Entities;
 using MyHomeDigitalBookshelf.Domain.Repositories;
 using MyHomeDigitalBookshelf.Infrastructure.Database.Repositories.Sql;
+using MyHomeDigitalBookshelf.Utilities.Attributes.Registration;
 
 namespace MyHomeDigitalBookshelf.Infrastructure.Database.Repositories;
 
 /// <summary>
 /// Repository implementation for managing user sessions in the PostgreSQL database.
 /// </summary>
+[SingletonService]
 public class SessionRepository(ILogger<SessionRepository> logger, DbConnectionProvider connectionProvider)
     : RepositoryBase(logger, connectionProvider), ISessionRepository
 {

@@ -3,13 +3,16 @@
   <ItemGroup>
     <ProjectReference Include="..\Domain\MyHomeDigitalBookshelf.Domain.csproj" />
     <ProjectReference Include="..\Application\MyHomeDigitalBookshelf.Application.csproj" />
+    <ProjectReference Include="..\Utilities\MyHomeDigitalBookshelf.Utilities.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Dapper" Version="2.1.66" />
     <PackageReference Include="Dapper.SqlBuilder" Version="2.1.66" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.1" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="10.0.1" />
     <PackageReference Include="Npgsql" Version="9.0.3" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.15.0" />
   </ItemGroup>
 
   <PropertyGroup>

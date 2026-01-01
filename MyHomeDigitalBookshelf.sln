@@ -21,6 +21,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{BF8C1E4E
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyHomeDigitalBookshelf.Tools.DbMigrator", "MyHomeDigitalBookshelf\Tools\DbMigrator\MyHomeDigitalBookshelf.Tools.DbMigrator.csproj", "{9F452D57-482A-4708-BAC3-8DB7819E4E22}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyHomeDigitalBookshelf.Utilities", "MyHomeDigitalBookshelf\Utilities\MyHomeDigitalBookshelf.Utilities.csproj", "{C36C563C-1DDD-494F-AAFF-A23DCE6C3B25}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -58,10 +60,15 @@ Global
 		{9F452D57-482A-4708-BAC3-8DB7819E4E22}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9F452D57-482A-4708-BAC3-8DB7819E4E22}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9F452D57-482A-4708-BAC3-8DB7819E4E22}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C36C563C-1DDD-494F-AAFF-A23DCE6C3B25}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C36C563C-1DDD-494F-AAFF-A23DCE6C3B25}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C36C563C-1DDD-494F-AAFF-A23DCE6C3B25}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C36C563C-1DDD-494F-AAFF-A23DCE6C3B25}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{A58C03F8-421F-4991-988D-9FB765576D1D} = {8AA17CC6-39F2-4706-AAB7-740554C25DDA}
 		{BF8C1E4E-41AA-4948-AD1B-26B3F20668D3} = {8AA17CC6-39F2-4706-AAB7-740554C25DDA}
 		{9F452D57-482A-4708-BAC3-8DB7819E4E22} = {BF8C1E4E-41AA-4948-AD1B-26B3F20668D3}
+		{C36C563C-1DDD-494F-AAFF-A23DCE6C3B25} = {8AA17CC6-39F2-4706-AAB7-740554C25DDA}
 	EndGlobalSection
 EndGlobal

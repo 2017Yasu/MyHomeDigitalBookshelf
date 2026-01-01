@@ -1,12 +1,14 @@
 using MyHomeDigitalBookshelf.Domain.Entities;
 using MyHomeDigitalBookshelf.Domain.Repositories;
 using MyHomeDigitalBookshelf.Domain.ValueObjects;
+using MyHomeDigitalBookshelf.Utilities.Attributes.Registration;
 
 namespace MyHomeDigitalBookshelf.Application.Categories;
 
 /// <summary>
 /// Service for managing categories in the system.
 /// </summary>
+[SingletonService]
 public class CategoryService
 {
     private readonly ICategoryRepository _categoryRepository;

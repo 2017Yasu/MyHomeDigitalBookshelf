@@ -1,12 +1,14 @@
 using MyHomeDigitalBookshelf.Application.Common.Interfaces;
 using MyHomeDigitalBookshelf.Domain.Entities;
 using MyHomeDigitalBookshelf.Domain.Repositories;
+using MyHomeDigitalBookshelf.Utilities.Attributes.Registration;
 
 namespace MyHomeDigitalBookshelf.Application.Bookshelves;
 
 /// <summary>
 /// Service for managing bookshelves in the system.
 /// </summary>
+[SingletonService]
 public class BookshelfService
 {
     private readonly IBookshelfRepository _bookshelfRepository;

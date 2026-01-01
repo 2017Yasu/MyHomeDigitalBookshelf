@@ -1,8 +1,10 @@
 using MyHomeDigitalBookshelf.Application.Common.Interfaces;
 using Microsoft.Extensions.Logging;
+using MyHomeDigitalBookshelf.Utilities.Attributes.Registration;
 
 namespace MyHomeDigitalBookshelf.Infrastructure.Services;
 
+[SingletonService]
 public class SmtpEmailService : IEmailService
 {
     private readonly ILogger<SmtpEmailService> _logger;

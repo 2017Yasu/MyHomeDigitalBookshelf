@@ -1,9 +1,11 @@
 using MyHomeDigitalBookshelf.Application.UserBooks.Commands;
 using MyHomeDigitalBookshelf.Domain.Entities;
 using MyHomeDigitalBookshelf.Domain.Repositories;
+using MyHomeDigitalBookshelf.Utilities.Attributes.Registration;
 
 namespace MyHomeDigitalBookshelf.Application.UserBooks;
 
+[SingletonService]
 public class UserBookService
 {
     private readonly IUserBookRepository _userBookRepository;

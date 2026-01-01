@@ -2,14 +2,26 @@ namespace MyHomeDigitalBookshelf.Infrastructure.Database;
 
 public class DbSettings
 {
+    /// <summary>
+    /// Initializes a new instance of the DbSettings class.
+    /// </summary>
+    /// <param name="host"></param>
+    /// <param name="database"></param>
+    /// <param name="username"></param>
+    /// <param name="password"></param>
+    /// <param name="port"></param>
+    /// <param name="connectionTimeoutSeconds"></param>
+    /// <param name="commandTimeoutSeconds"></param>
+    /// <exception cref="ArgumentException"></exception>
+    /// <exception cref="ArgumentOutOfRangeException"></exception>
     public DbSettings(
         string host,
         string database,
         string username,
         string password,
-        int port = 5432,
-        int connectionTimeoutSeconds = 15,
-        int commandTimeoutSeconds = 30)
+        int? port = null, // Default 5432
+        int? connectionTimeoutSeconds = null, // Default 15 seconds
+        int? commandTimeoutSeconds = null) // Default 30 seconds
     {
         if (string.IsNullOrWhiteSpace(host))
         {
@@ -27,15 +39,15 @@ public class DbSettings
         {
             throw new ArgumentException("Password must not be null or whitespace.", nameof(password));
         }
-        if (port <= 0 || port > 65535)
+        if (port.HasValue && (port <= 0 || port > 65535))
         {
             throw new ArgumentOutOfRangeException(nameof(port), "Port must be between 1 and 65535.");
         }
-        if (connectionTimeoutSeconds < 0)
+        if (connectionTimeoutSeconds.HasValue && connectionTimeoutSeconds < 0)
         {
             throw new ArgumentOutOfRangeException(nameof(connectionTimeoutSeconds), "ConnectionTimeoutSeconds must be non-negative.");
         }
-        if (commandTimeoutSeconds < 0)
+        if (commandTimeoutSeconds.HasValue && commandTimeoutSeconds < 0)
         {
             throw new ArgumentOutOfRangeException(nameof(commandTimeoutSeconds), "CommandTimeoutSeconds must be non-negative.");
         }
@@ -44,9 +56,9 @@ public class DbSettings
         Database = database;
         Username = username;
         Password = password;
-        Port = port;
-        ConnectionTimeoutSeconds = connectionTimeoutSeconds;
-        CommandTimeoutSeconds = commandTimeoutSeconds;
+        Port = port ?? 5432;
+        ConnectionTimeoutSeconds = connectionTimeoutSeconds ?? 15;
+        CommandTimeoutSeconds = commandTimeoutSeconds ?? 30;
     }
 
     public string ConnectionString

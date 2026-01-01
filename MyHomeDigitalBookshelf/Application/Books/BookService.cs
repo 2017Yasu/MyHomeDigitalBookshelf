@@ -2,12 +2,14 @@ using MyHomeDigitalBookshelf.Application.Books.Interfaces;
 using MyHomeDigitalBookshelf.Domain.Entities;
 using MyHomeDigitalBookshelf.Domain.Repositories;
 using MyHomeDigitalBookshelf.Domain.ValueObjects;
+using MyHomeDigitalBookshelf.Utilities.Attributes.Registration;
 
 namespace MyHomeDigitalBookshelf.Application.Books;
 
 /// <summary>
 /// Service for managing books in the system.
 /// </summary>
+[SingletonService]
 public class BookService
 {
     private readonly IBookRepository _bookRepository;

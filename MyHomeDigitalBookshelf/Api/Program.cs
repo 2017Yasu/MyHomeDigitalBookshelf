@@ -1,3 +1,7 @@
+using MyHomeDigitalBookshelf.Application;
+using MyHomeDigitalBookshelf.Infrastructure;
+using MyHomeDigitalBookshelf.Api.Settings;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -6,6 +10,13 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services
+    .AddInfrastructureServices(
+        builder.Configuration.GetSection("Database").Get<DbSettings>()?.ToInfrastructureDbSettings()
+            ?? throw new InvalidOperationException("Database settings are not configured properly.")
+    )
+    .AddApplicationServices();
 
 var app = builder.Build();
 

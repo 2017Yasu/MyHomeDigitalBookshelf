@@ -1,18 +1,22 @@
 using System.Text.Json;
-using Microsoft.Extensions.Http;
+using Microsoft.Extensions.Logging;
 using MyHomeDigitalBookshelf.Application.Books.Interfaces;
 using MyHomeDigitalBookshelf.Domain.Entities;
+using MyHomeDigitalBookshelf.Utilities.Attributes.Registration;
 
 namespace MyHomeDigitalBookshelf.Infrastructure.Api;
 
+[SingletonService]
 public class GoogleBooksFinderService : IBookFinderService
 {
     private readonly IHttpClientFactory _httpClientFactory;
-    private const string ApiKey = "YOUR_GOOGLE_BOOKS_API_KEY"; // This should be loaded from a secure configuration
+    private readonly ILogger<GoogleBooksFinderService> _logger;
+    private const string ApiKey = "YOUR_GOOGLE_BOOKS_API_KEY"; // TODO: This should be loaded from a secure configuration
 
-    public GoogleBooksFinderService(IHttpClientFactory httpClientFactory)
+    public GoogleBooksFinderService(IHttpClientFactory httpClientFactory, ILogger<GoogleBooksFinderService> logger)
     {
         _httpClientFactory = httpClientFactory;
+        _logger = logger;
     }
 
     public async Task<Book?> FindByIsbnAsync(string isbn)
@@ -55,7 +59,7 @@ public class GoogleBooksFinderService : IBookFinderService
         }
         catch (Exception ex)
         {
-            // Log exception
+            _logger.LogError(ex, "Error occurred while fetching book data from Google Books API for ISBN: {Isbn}", isbn);
             return null;
         }
     }
