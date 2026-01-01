@@ -3,6 +3,7 @@ import { Text, View, StyleSheet, ActivityIndicator, Alert, Button as RNButton } 
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { books } from '../../src/services/apiClient'; // Adjust path as needed
 import { useAuth } from '../../src/context/AuthContext'; // Adjust path as needed
+import { AxiosError } from 'axios'; // Added
 
 interface Book {
   id: string;
@@ -14,7 +15,7 @@ interface Book {
 
 export default function BookDetail() {
   const { id } = useLocalSearchParams();
-  const { isAuthenticated, isLoading, token } = useAuth();
+  const { isAuthenticated, isLoading } = useAuth(); // Removed token
   const router = useRouter();
   const [book, setBook] = useState<Book | null>(null);
   const [loading, setLoading] = useState(true);
@@ -37,16 +38,17 @@ export default function BookDetail() {
           const fetchedBook = await books.getBookById(id);
           setBook(fetchedBook);
         }
-      } catch (err: any) {
-        setError(err.response?.data?.message || 'Failed to fetch book details');
-        Alert.alert('Error', err.response?.data?.message || 'Failed to fetch book details');
+      } catch (err: unknown) {
+        const axiosError = err as AxiosError<{ message: string }>;
+        setError(axiosError.response?.data?.message || 'Failed to fetch book details');
+        Alert.alert('Error', axiosError.response?.data?.message || 'Failed to fetch book details');
       } finally {
         setLoading(false);
       }
     };
 
     fetchBookDetails();
-  }, [id, isAuthenticated, isLoading]);
+  }, [id, isAuthenticated, isLoading, router]); // Added router to dependency array
 
   const handleUpdateStatus = async (newReadingStatus?: string, newLoanStatus?: string) => {
     if (!book || !token) return; // Add proper ownerId logic
@@ -59,8 +61,9 @@ export default function BookDetail() {
       await books.updateUserBookStatus(book.id, ownerId, newReadingStatus, newLoanStatus);
       Alert.alert('Success', 'Book status updated!');
       // Optionally re-fetch book details or update local state
-    } catch (err: any) {
-      Alert.alert('Error', err.response?.data?.message || 'Failed to update status');
+    } catch (err: unknown) {
+      const axiosError = err as AxiosError<{ message: string }>;
+      Alert.alert('Error', axiosError.response?.data?.message || 'Failed to update status');
     }
   };
 

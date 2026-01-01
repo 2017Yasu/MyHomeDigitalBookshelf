@@ -2,9 +2,10 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { books } from '../services/apiClient';
 import { useAuth } from '../context/AuthContext';
+import { AxiosError } from 'axios'; // Added
 
 const AddBook: React.FC = () => {
-  const { isAuthenticated, token } = useAuth();
+  const { isAuthenticated } = useAuth(); // Removed token
   const navigate = useNavigate();
   const [title, setTitle] = useState('');
   const [authors, setAuthors] = useState('');
@@ -38,8 +39,9 @@ const AddBook: React.FC = () => {
         ownerId,
       });
       navigate('/library');
-    } catch (err: any) {
-      setError(err.response?.data?.message || 'Failed to add book manually');
+    } catch (err: unknown) {
+      const axiosError = err as AxiosError<{ message: string }>;
+      setError(axiosError.response?.data?.message || 'Failed to add book manually');
     } finally {
       setLoading(false);
     }
@@ -62,8 +64,9 @@ const AddBook: React.FC = () => {
       setPublisher(bookData.publisher || '');
       setPublishDate(bookData.publishDate || '');
       alert('Book data pre-filled from ISBN scan!');
-    } catch (err: any) {
-      setError(err.response?.data?.message || 'Failed to fetch book data from ISBN');
+    } catch (err: unknown) {
+      const axiosError = err as AxiosError<{ message: string }>;
+      setError(axiosError.response?.data?.message || 'Failed to fetch book data from ISBN');
     } finally {
       setLoading(false);
     }

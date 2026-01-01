@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { books } from '../services/apiClient';
 import { useAuth } from '../context/AuthContext';
+import { AxiosError } from 'axios'; // Added
 
 interface Book {
   id: string;
@@ -14,7 +15,7 @@ interface Book {
 const BookDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { isAuthenticated, token } = useAuth();
+  const { isAuthenticated } = useAuth(); // Removed token
   const [book, setBook] = useState<Book | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -33,8 +34,9 @@ const BookDetail: React.FC = () => {
           const fetchedBook = await books.getBookById(id);
           setBook(fetchedBook);
         }
-      } catch (err: any) {
-        setError(err.response?.data?.message || 'Failed to fetch book details');
+      } catch (err: unknown) {
+        const axiosError = err as AxiosError<{ message: string }>;
+        setError(axiosError.response?.data?.message || 'Failed to fetch book details');
       } finally {
         setLoading(false);
       }

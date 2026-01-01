@@ -26,7 +26,7 @@ export const books = {
     const response = await apiClient.post('/books/from-isbn', { isbn, bookshelfId, ownerId });
     return response.data;
   },
-  getBooksForBookshelf: async (bookshelfId: string, params?: any) => {
+  getBooksForBookshelf: async (bookshelfId: string, params?: object) => {
     const response = await apiClient.get(`/bookshelves/${bookshelfId}/books`, { params });
     return response.data;
   },

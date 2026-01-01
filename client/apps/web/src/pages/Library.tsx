@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { books } from '../services/apiClient';
 import { useAuth } from '../context/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
+import { AxiosError } from 'axios'; // Added
 
 interface Book {
   id: string;
@@ -12,7 +13,7 @@ interface Book {
 }
 
 const Library: React.FC = () => {
-  const { isAuthenticated, token } = useAuth();
+  const { isAuthenticated } = useAuth(); // Removed token
   const navigate = useNavigate();
   const [bookshelfId, setBookshelfId] = useState<string>(''); // Placeholder for actual bookshelf ID
   const [userBooks, setUserBooks] = useState<Book[]>([]);
@@ -37,8 +38,9 @@ const Library: React.FC = () => {
         // This assumes the API endpoint for books for a bookshelf is secured and uses the token
         const fetchedBooks = await books.getBooksForBookshelf(dummyBookshelfId);
         setUserBooks(fetchedBooks);
-      } catch (err: any) {
-        setError(err.response?.data?.message || 'Failed to fetch books');
+      } catch (err: unknown) {
+        const axiosError = err as AxiosError<{ message: string }>;
+        setError(axiosError.response?.data?.message || 'Failed to fetch books');
       } finally {
         setLoading(false);
       }

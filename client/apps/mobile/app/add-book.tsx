@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { Text, View, TextInput, Button, StyleSheet, Alert, ScrollView } from 'react-native';
-import { books } from '../../src/services/apiClient'; // Adjust path as needed
-import { useAuth } from '../../src/context/AuthContext'; // Adjust path as needed
+import { Text, View, TextInput, Button, StyleSheet, Alert, ScrollView, ActivityIndicator } from 'react-native'; // Added ActivityIndicator
+import { books } from '../src/services/apiClient'; // Fixed path
+import { useAuth } from '../src/context/AuthContext'; // Fixed path
 import { useRouter, Link } from 'expo-router';
+import { AxiosError } from 'axios'; // Added
 
 export default function AddBook() {
-  const { isAuthenticated, isLoading, token } = useAuth();
+  const { isAuthenticated, isLoading } = useAuth(); // Removed token
   const router = useRouter();
   const [title, setTitle] = useState('');
   const [authors, setAuthors] = useState('');
@@ -37,8 +38,9 @@ export default function AddBook() {
       });
       Alert.alert('Success', 'Book added manually!');
       router.replace('/library');
-    } catch (err: any) {
-      Alert.alert('Error', err.response?.data?.message || 'Failed to add book manually');
+    } catch (err: unknown) {
+      const axiosError = err as AxiosError<{ message: string }>;
+      Alert.alert('Error', axiosError.response?.data?.message || 'Failed to add book manually');
     } finally {
       setLoading(false);
     }
@@ -62,8 +64,9 @@ export default function AddBook() {
           setPublisher(bookData.publisher || '');
           setPublishDate(bookData.publishDate || '');
           Alert.alert('Success', 'Book data pre-filled from ISBN scan!');
-        } catch (err: any) {
-          Alert.alert('Error', err.response?.data?.message || 'Failed to fetch book data from ISBN');
+        } catch (err: unknown) {
+          const axiosError = err as AxiosError<{ message: string }>;
+          Alert.alert('Error', axiosError.response?.data?.message || 'Failed to fetch book data from ISBN');
         } finally {
           setLoading(false);
         }
