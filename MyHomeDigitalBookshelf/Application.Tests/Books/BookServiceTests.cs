@@ -4,6 +4,7 @@ using MyHomeDigitalBookshelf.Application.Books.Queries;
 using MyHomeDigitalBookshelf.Domain.Entities;
 using MyHomeDigitalBookshelf.Domain.Repositories;
 using MyHomeDigitalBookshelf.Domain.ValueObjects;
+using MyHomeDigitalBookshelf.Application.Books.Interfaces;
 
 namespace MyHomeDigitalBookshelf.Application.Tests.Books;
 
@@ -12,6 +13,7 @@ public class BookServiceTests
     private readonly Mock<IBookRepository> _mockBookRepository;
     private readonly Mock<IUserBookRepository> _mockUserBookRepository;
     private readonly Mock<ICategoryRepository> _mockCategoryRepository;
+    private readonly Mock<IBookFinderService> _bookFinderServiceMock;
     private readonly Application.Books.BookService _service;
 
     public BookServiceTests()
@@ -19,7 +21,8 @@ public class BookServiceTests
         _mockBookRepository = new Mock<IBookRepository>();
         _mockUserBookRepository = new Mock<IUserBookRepository>();
         _mockCategoryRepository = new Mock<ICategoryRepository>();
-        _service = new Application.Books.BookService(_mockBookRepository.Object, _mockUserBookRepository.Object, _mockCategoryRepository.Object);
+        _bookFinderServiceMock = new Mock<IBookFinderService>();
+        _service = new Application.Books.BookService(_mockBookRepository.Object, _mockUserBookRepository.Object, _mockCategoryRepository.Object, _bookFinderServiceMock.Object);
     }
 
     [Fact]
@@ -278,5 +281,44 @@ public class BookServiceTests
 
         // Assert
         _mockBookRepository.Verify(r => r.DeleteAsync(bookId), Times.Once);
+    }
+
+    [Fact]
+    public async Task AddBookFromIsbnAsync_ShouldSucceed_WhenBookFoundByIsbn()
+    {
+        // Arrange
+        var command = new AddBookFromIsbnCommand { Isbn = "978-0321765723", BookshelfId = Guid.NewGuid(), OwnerId = Guid.NewGuid() };
+        var foundBook = Book.CreateNew("The Lord of the Rings", command.BookshelfId, new[] { "J.R.R. Tolkien" }, new Isbn("978-0321765723"));
+
+        _bookFinderServiceMock.Setup(s => s.FindByIsbnAsync(command.Isbn)).ReturnsAsync(foundBook);
+        _mockBookRepository.Setup(r => r.GetByIsbnAsync(It.IsAny<Isbn>())).ReturnsAsync((Book?)null);
+        _mockBookRepository.Setup(r => r.AddAsync(It.IsAny<Book>())).ReturnsAsync((Book book) => book);
+        _mockUserBookRepository.Setup(r => r.AddAsync(It.IsAny<UserBook>())).ReturnsAsync((UserBook ub) => ub);
+
+        // Act
+        var result = await _service.AddBookFromIsbnAsync(command);
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.Equal(foundBook.Title, result.Title);
+        _bookFinderServiceMock.Verify(s => s.FindByIsbnAsync(command.Isbn), Times.Once);
+        _mockBookRepository.Verify(r => r.AddAsync(It.IsAny<Book>()), Times.Once);
+        _mockUserBookRepository.Verify(r => r.AddAsync(It.IsAny<UserBook>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task AddBookFromIsbnAsync_ShouldThrowException_WhenBookNotFoundByIsbn()
+    {
+        // Arrange
+        var command = new AddBookFromIsbnCommand { Isbn = "978-0321765723", BookshelfId = Guid.NewGuid(), OwnerId = Guid.NewGuid() };
+
+        _bookFinderServiceMock.Setup(s => s.FindByIsbnAsync(command.Isbn)).ReturnsAsync((Book?)null);
+        _mockBookRepository.Setup(r => r.GetByIsbnAsync(It.IsAny<Isbn>())).ReturnsAsync((Book?)null);
+
+        // Act & Assert
+        await Assert.ThrowsAsync<ArgumentException>(() => _service.AddBookFromIsbnAsync(command));
+        _bookFinderServiceMock.Verify(s => s.FindByIsbnAsync(command.Isbn), Times.Once);
+        _mockBookRepository.Verify(r => r.AddAsync(It.IsAny<Book>()), Times.Never);
+        _mockUserBookRepository.Verify(r => r.AddAsync(It.IsAny<UserBook>()), Times.Never);
     }
 }
