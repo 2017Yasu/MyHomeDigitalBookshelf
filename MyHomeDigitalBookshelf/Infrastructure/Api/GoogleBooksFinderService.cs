@@ -1,6 +1,7 @@
 using System.Text.Json;
 using MyHomeDigitalBookshelf.Application.Books.Interfaces;
 using MyHomeDigitalBookshelf.Domain.Entities;
+using System.Net.Http; // Added
 
 namespace MyHomeDigitalBookshelf.Infrastructure.Api;
 

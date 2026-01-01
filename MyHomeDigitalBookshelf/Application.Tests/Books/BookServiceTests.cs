@@ -52,7 +52,7 @@ public class BookServiceTests
             command.Notes);
 
         _mockBookRepository.Setup(r => r.AddAsync(It.IsAny<Book>()))
-            .ReturnsAsync((Book book) => book);
+            .ReturnsAsync((Book book) => new Book(Guid.NewGuid(), book.Title, book.BookshelfId, book.Authors, book.Isbn, book.Publisher, book.PublishDate, book.CCode, book.CategoryId, book.CoverImageUrl, book.Notes, DateTime.UtcNow, DateTime.UtcNow));
 
         // Act
         var result = await _service.AddBookAsync(command);
@@ -293,7 +293,8 @@ public class BookServiceTests
 
         _bookFinderServiceMock.Setup(s => s.FindByIsbnAsync(command.Isbn)).ReturnsAsync(foundBook);
         _mockBookRepository.Setup(r => r.GetByIsbnAsync(It.IsAny<Isbn>())).ReturnsAsync((Book?)null);
-        _mockBookRepository.Setup(r => r.AddAsync(It.IsAny<Book>())).ReturnsAsync((Book book) => book);
+                _mockBookRepository.Setup(r => r.AddAsync(It.IsAny<Book>()))
+                    .ReturnsAsync((Book book) => new Book(Guid.NewGuid(), book.Title, book.BookshelfId, book.Authors, book.Isbn, book.Publisher, book.PublishDate, book.CCode, book.CategoryId, book.CoverImageUrl, book.Notes, DateTime.UtcNow, DateTime.UtcNow, book.Category));
         _mockUserBookRepository.Setup(r => r.AddAsync(It.IsAny<UserBook>())).ReturnsAsync((UserBook ub) => ub);
 
         // Act

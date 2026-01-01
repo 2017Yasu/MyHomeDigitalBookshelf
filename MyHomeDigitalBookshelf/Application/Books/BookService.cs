@@ -66,10 +66,12 @@ public class BookService
             foundBook.Notes
         );
 
-        // Also create a UserBook entry to associate the owner with the book and initial status
+        var addedBook = await _bookRepository.AddAsync(bookToAdd); // Add book first to get assigned Id
+
+        // Now create a UserBook entry using the assigned Id from addedBook
         var userBook = UserBook.CreateNew(
             command.OwnerId,
-            bookToAdd.Id,
+            addedBook.Id, // Use the assigned Id from addedBook
             true, // Assuming the user owns the book if they add it
             ReadingStatus.WantToRead,
             LoanStatus.None,
@@ -77,11 +79,10 @@ public class BookService
             null // No price on ISBN add
         );
 
-        await _bookRepository.AddAsync(bookToAdd);
         await _userBookRepository.AddAsync(userBook); // Add the user-book association
 
-        return bookToAdd;
-    }
+        return addedBook;
+    } // Correct closing brace for AddBookFromIsbnAsync method
 
     /// <summary>
     /// Adds a new book to the system.
