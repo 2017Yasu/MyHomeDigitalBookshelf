@@ -4,24 +4,16 @@ namespace MyHomeDigitalBookshelf.Application.UserBooks.Commands;
 
 public class UpdateUserBookStatusCommand
 {
-    public Guid UserId { get; set; }
-    public Guid BookId { get; set; }
-    public ReadingStatus? NewReadingStatus { get; set; }
-    public LoanStatus? NewLoanStatus { get; set; }
+    public Guid UserBookId { get; set; }
+    public ReadingStatus NewReadingStatus { get; set; }
 
     public void Validate()
     {
-        if (UserId == Guid.Empty)
+        if (UserBookId == Guid.Empty)
         {
-            throw new ArgumentException("UserId must not be empty.", nameof(UserId));
+            throw new ArgumentException("UserBookId must not be empty.", nameof(UserBookId));
         }
-        if (BookId == Guid.Empty)
-        {
-            throw new ArgumentException("BookId must not be empty.", nameof(BookId));
-        }
-        if (!NewReadingStatus.HasValue && !NewLoanStatus.HasValue)
-        {
-            throw new ArgumentException("At least one status (Reading or Loan) must be provided for update.", nameof(NewReadingStatus));
-        }
+        // Basic validation for ReadingStatus enum values could be added if necessary,
+        // but typically the enum itself provides type safety.
     }
 }

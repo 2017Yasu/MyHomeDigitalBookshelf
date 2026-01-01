@@ -323,4 +323,59 @@ public class BookServiceTests
         _mockBookRepository.Verify(r => r.AddAsync(It.IsAny<Book>()), Times.Never);
         _mockUserBookRepository.Verify(r => r.AddAsync(It.IsAny<UserBook>()), Times.Never);
     }
+
+    [Fact]
+    public async Task GetBooksForBookshelfAsync_WithValidQuery_ReturnsFilteredAndPagedBooks()
+    {
+        // Arrange
+        var bookshelfId = Guid.NewGuid();
+        var query = new GetBooksForBookshelfQuery
+        {
+            BookshelfId = bookshelfId,
+            Title = "Lord",
+            Author = "Tolkien",
+            PageNumber = 1,
+            PageSize = 10,
+            SortBy = "TitleAsc"
+        };
+
+        var expectedBooks = new[]
+        {
+            Book.CreateNew("The Lord of the Rings: Fellowship", bookshelfId, new[] { "J.R.R. Tolkien" }),
+            Book.CreateNew("The Lord of the Rings: Two Towers", bookshelfId, new[] { "J.R.R. Tolkien" })
+        };
+
+        _mockBookRepository.Setup(r => r.GetBooksForBookshelfAsync(
+                It.Is<Guid>(g => g == query.BookshelfId),
+                It.Is<string?>(s => s == query.Title),
+                It.Is<string?>(s => s == query.Author),
+                It.Is<string?>(s => s == query.Isbn),
+                It.Is<Guid?>(g => g == query.CategoryId),
+                It.Is<ReadingStatus?>(s => s == query.ReadingStatus),
+                It.Is<Guid?>(g => g == query.OwnerId),
+                It.Is<int>(i => i == query.PageNumber),
+                It.Is<int>(i => i == query.PageSize),
+                It.Is<string?>(s => s == query.SortBy)
+            ))
+            .ReturnsAsync(expectedBooks);
+
+        // Act
+        var result = await _service.GetBooksForBookshelfAsync(query);
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.Equal(expectedBooks.Length, result.Length);
+        _mockBookRepository.Verify(r => r.GetBooksForBookshelfAsync(
+                It.Is<Guid>(g => g == query.BookshelfId),
+                It.Is<string?>(s => s == query.Title),
+                It.Is<string?>(s => s == query.Author),
+                It.Is<string?>(s => s == query.Isbn),
+                It.Is<Guid?>(g => g == query.CategoryId),
+                It.Is<ReadingStatus?>(s => s == query.ReadingStatus),
+                It.Is<Guid?>(g => g == query.OwnerId),
+                It.Is<int>(i => i == query.PageNumber),
+                It.Is<int>(i => i == query.PageSize),
+                It.Is<string?>(s => s == query.SortBy)
+            ), Times.Once);
+    }
 }
