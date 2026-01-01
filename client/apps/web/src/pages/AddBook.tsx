@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { books } from '../services/apiClient';
-import { useAuth } from '../context/AuthContext';
-import { AxiosError } from 'axios'; // Added
+import { useAuth } from '../context/useAuth';
+import { type AxiosError } from 'axios'; // Added
 
 const AddBook: React.FC = () => {
   const { isAuthenticated } = useAuth(); // Removed token
@@ -16,7 +16,7 @@ const AddBook: React.FC = () => {
   const [loading, setLoading] = useState(false);
 
   // Placeholder bookshelfId and ownerId - in a real app, these would come from context/user profile
-  const bookshelfId = '00000000-0000-0000-0000-000000000001'; 
+  const bookshelfId = '00000000-0000-0000-0000-000000000001';
   const ownerId = '00000000-0000-0000-0000-000000000001'; // Assuming a logged in user with this ID
 
   if (!isAuthenticated) {
@@ -31,7 +31,7 @@ const AddBook: React.FC = () => {
     try {
       await books.addBookManually({
         title,
-        authors: authors.split(',').map(a => a.trim()),
+        authors: authors.split(',').map((a) => a.trim()),
         isbn: isbn || undefined,
         publisher: publisher || undefined,
         publishDate: publishDate || undefined,
@@ -50,7 +50,7 @@ const AddBook: React.FC = () => {
   const handleScanIsbn = async () => {
     // TODO: Implement actual barcode scanning logic
     // For now, simulate with a prompt or pre-filled ISBN
-    const scannedIsbn = prompt("Enter ISBN (e.g., 978-0321765723) for auto-fill:");
+    const scannedIsbn = prompt('Enter ISBN (e.g., 978-0321765723) for auto-fill:');
     if (!scannedIsbn) return;
 
     setError('');

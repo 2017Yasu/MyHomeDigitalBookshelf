@@ -9,7 +9,8 @@
     "common/ui": "pnpm -C 'common/ui'",
     "format": "prettier --write .",
     "lint": "pnpm -C 'apps/web' lint && pnpm -C 'apps/mobile' lint",
-    "lint:fix": "pnpm -C 'apps/web' lint --fix && pnpm -C 'apps/mobile' lint --fix"
+    "lint:fix": "pnpm -C 'apps/web' lint --fix && pnpm -C 'apps/mobile' lint --fix",
+    "type-check": "pnpm -C 'apps/web' type-check && pnpm -C 'apps/mobile' type-check && pnpm -C 'common/ui' type-check"
   },
   "keywords": [],
   "author": "",

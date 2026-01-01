@@ -8,5 +8,11 @@ module.exports = defineConfig([
   prettierConfig,
   {
     ignores: ['dist/*'],
+    rules: {
+      '@typescript-eslint/consistent-type-imports': [
+        'warn',
+        { prefer: 'type-imports', fixStyle: 'inline-type-imports' },
+      ],
+    },
   },
 ]);

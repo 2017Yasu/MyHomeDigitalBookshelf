@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { books } from '../services/apiClient';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../context/useAuth';
 import { useNavigate, Link } from 'react-router-dom';
-import { AxiosError } from 'axios'; // Added
+import { type AxiosError } from 'axios'; // Added
 
 interface Book {
   id: string;
@@ -28,7 +28,7 @@ const Library: React.FC = () => {
 
     // TODO: Fetch actual bookshelfId for the authenticated user
     // For now, using a placeholder. In a real app, you'd fetch user's primary bookshelf or allow selection.
-    const dummyBookshelfId = '00000000-0000-0000-0000-000000000001'; 
+    const dummyBookshelfId = '00000000-0000-0000-0000-000000000001';
     setBookshelfId(dummyBookshelfId);
 
     const fetchBooks = async () => {
@@ -46,8 +46,9 @@ const Library: React.FC = () => {
       }
     };
 
-    if (bookshelfId) { // Only fetch if bookshelfId is set
-        fetchBooks();
+    if (bookshelfId) {
+      // Only fetch if bookshelfId is set
+      fetchBooks();
     }
   }, [isAuthenticated, navigate, bookshelfId]);
 

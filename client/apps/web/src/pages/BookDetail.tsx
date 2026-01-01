@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { books } from '../services/apiClient';
-import { useAuth } from '../context/AuthContext';
-import { AxiosError } from 'axios'; // Added
+import { useAuth } from '../context/useAuth';
+import { type AxiosError } from 'axios'; // Added
 
 interface Book {
   id: string;

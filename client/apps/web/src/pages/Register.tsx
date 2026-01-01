@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { auth } from '../services/apiClient';
 import { useNavigate } from 'react-router-dom';
-import { AxiosError } from 'axios';
+import { type AxiosError } from 'axios';
 
 const Register: React.FC = () => {
   const [username, setUsername] = useState('');

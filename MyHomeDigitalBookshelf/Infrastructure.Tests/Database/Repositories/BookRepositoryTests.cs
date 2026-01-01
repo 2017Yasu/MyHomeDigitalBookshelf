@@ -165,7 +165,7 @@ public class BookRepositoryTests : RepositoryTestBase
         await CreateTestBookAsync(bookshelf.Id, title: "Different Title");
 
         // Act
-        var results = await _repository.SearchAsync($"Test Book {num}", null, null, null, null, null, null);
+        var results = await _repository.SearchAsync($"Test Book {num}", null, null, null, null, null, null, null);
 
         // Assert
         Assert.NotNull(results);
@@ -185,7 +185,7 @@ public class BookRepositoryTests : RepositoryTestBase
         await CreateTestBookAsync(bookshelf.Id, authors: ["Different Author"]);
 
         // Act
-        var results = await _repository.SearchAsync(null, $"Test Author {num}", null, null, null, null, null);
+        var results = await _repository.SearchAsync(null, $"Test Author {num}", null, null, null, null, null, null);
 
         // Assert
         Assert.NotNull(results);

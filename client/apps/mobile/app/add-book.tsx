@@ -3,7 +3,7 @@ import { Text, View, TextInput, Button, StyleSheet, Alert, ScrollView, ActivityI
 import { books } from '../src/services/apiClient'; // Fixed path
 import { useAuth } from '../src/context/AuthContext'; // Fixed path
 import { useRouter, Link } from 'expo-router';
-import { AxiosError } from 'axios'; // Added
+import { type AxiosError } from 'axios'; // Added
 
 export default function AddBook() {
   const { isAuthenticated, isLoading } = useAuth(); // Removed token
@@ -16,7 +16,7 @@ export default function AddBook() {
   const [loading, setLoading] = useState(false);
 
   // Placeholder bookshelfId and ownerId - in a real app, these would come from context/user profile
-  const bookshelfId = '00000000-0000-0000-0000-000000000001'; 
+  const bookshelfId = '00000000-0000-0000-0000-000000000001';
   const ownerId = '00000000-0000-0000-0000-000000000001'; // Assuming a logged in user with this ID
 
   if (!isAuthenticated && !isLoading) {
@@ -29,7 +29,7 @@ export default function AddBook() {
     try {
       await books.addBookManually({
         title,
-        authors: authors.split(',').map(a => a.trim()),
+        authors: authors.split(',').map((a) => a.trim()),
         isbn: isbn || undefined,
         publisher: publisher || undefined,
         publishDate: publishDate || undefined,
@@ -49,29 +49,25 @@ export default function AddBook() {
   const handleScanIsbn = async () => {
     // TODO: Implement actual barcode scanning logic using expo-barcode-scanner
     // For now, simulate with a prompt or pre-filled ISBN
-    Alert.prompt(
-      "Scan Barcode (ISBN)",
-      "Enter ISBN (e.g., 978-0321765723) for auto-fill:",
-      async (scannedIsbn) => {
-        if (!scannedIsbn) return;
+    Alert.prompt('Scan Barcode (ISBN)', 'Enter ISBN (e.g., 978-0321765723) for auto-fill:', async (scannedIsbn) => {
+      if (!scannedIsbn) return;
 
-        setLoading(true);
-        try {
-          const bookData = await books.addBookFromIsbn(scannedIsbn, bookshelfId, ownerId);
-          setTitle(bookData.title || '');
-          setAuthors(bookData.authors?.join(', ') || '');
-          setIsbn(bookData.isbn || '');
-          setPublisher(bookData.publisher || '');
-          setPublishDate(bookData.publishDate || '');
-          Alert.alert('Success', 'Book data pre-filled from ISBN scan!');
-        } catch (err: unknown) {
-          const axiosError = err as AxiosError<{ message: string }>;
-          Alert.alert('Error', axiosError.response?.data?.message || 'Failed to fetch book data from ISBN');
-        } finally {
-          setLoading(false);
-        }
+      setLoading(true);
+      try {
+        const bookData = await books.addBookFromIsbn(scannedIsbn, bookshelfId, ownerId);
+        setTitle(bookData.title || '');
+        setAuthors(bookData.authors?.join(', ') || '');
+        setIsbn(bookData.isbn || '');
+        setPublisher(bookData.publisher || '');
+        setPublishDate(bookData.publishDate || '');
+        Alert.alert('Success', 'Book data pre-filled from ISBN scan!');
+      } catch (err: unknown) {
+        const axiosError = err as AxiosError<{ message: string }>;
+        Alert.alert('Error', axiosError.response?.data?.message || 'Failed to fetch book data from ISBN');
+      } finally {
+        setLoading(false);
       }
-    );
+    });
   };
 
   if (isLoading) {
@@ -97,26 +93,14 @@ export default function AddBook() {
 
       <Text style={styles.subtitle}>Or Enter Manually:</Text>
 
-      <TextInput
-        style={styles.input}
-        placeholder="Title"
-        value={title}
-        onChangeText={setTitle}
-        required
-      />
+      <TextInput style={styles.input} placeholder="Title" value={title} onChangeText={setTitle} />
       <TextInput
         style={styles.input}
         placeholder="Authors (comma-separated)"
         value={authors}
         onChangeText={setAuthors}
-        required
       />
-      <TextInput
-        style={styles.input}
-        placeholder="ISBN (optional)"
-        value={isbn}
-        onChangeText={setIsbn}
-      />
+      <TextInput style={styles.input} placeholder="ISBN (optional)" value={isbn} onChangeText={setIsbn} />
       <TextInput
         style={styles.input}
         placeholder="Publisher (optional)"
@@ -129,13 +113,11 @@ export default function AddBook() {
         value={publishDate}
         onChangeText={setPublishDate}
       />
-      
-      <Button
-        title={loading ? 'Adding...' : 'Add Book Manually'}
-        onPress={handleManualSubmit}
-        disabled={loading}
-      />
-      <Link href="/library" style={styles.link}>Back to Library</Link>
+
+      <Button title={loading ? 'Adding...' : 'Add Book Manually'} onPress={handleManualSubmit} disabled={loading} />
+      <Link href="/library" style={styles.link}>
+        Back to Library
+      </Link>
     </ScrollView>
   );
 }

@@ -3,7 +3,7 @@ import { Text, View, StyleSheet, ActivityIndicator, Alert } from 'react-native';
 import { books } from '../src/services/apiClient'; // Adjust path as needed
 import { useAuth } from '../src/context/AuthContext'; // Adjust path as needed
 import { useRouter, Link } from 'expo-router';
-import { AxiosError } from 'axios'; // Added
+import { type AxiosError } from 'axios'; // Added
 
 interface Book {
   id: string;
@@ -32,7 +32,7 @@ export default function Library() {
 
     // TODO: Fetch actual bookshelfId for the authenticated user
     // For now, using a placeholder. In a real app, you'd fetch user's primary bookshelf or allow selection.
-    const dummyBookshelfId = '00000000-0000-0000-0000-000000000001'; 
+    const dummyBookshelfId = '00000000-0000-0000-0000-000000000001';
     setBookshelfId(dummyBookshelfId);
 
     const fetchBooks = async () => {
@@ -51,8 +51,9 @@ export default function Library() {
       }
     };
 
-    if (bookshelfId) { // Only fetch if bookshelfId is set
-        fetchBooks();
+    if (bookshelfId) {
+      // Only fetch if bookshelfId is set
+      fetchBooks();
     }
   }, [isAuthenticated, isLoading, bookshelfId, router]); // Added router to dependency array
 
@@ -69,7 +70,9 @@ export default function Library() {
     return (
       <View style={styles.container}>
         <Text style={styles.errorText}>Error: {error}</Text>
-        <Link href="/" style={styles.link}>Go to Home</Link>
+        <Link href="/" style={styles.link}>
+          Go to Home
+        </Link>
       </View>
     );
   }

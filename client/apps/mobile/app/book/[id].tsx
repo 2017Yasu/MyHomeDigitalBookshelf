@@ -3,7 +3,7 @@ import { Text, View, StyleSheet, ActivityIndicator, Alert, Button as RNButton } 
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { books } from '../../src/services/apiClient'; // Adjust path as needed
 import { useAuth } from '../../src/context/AuthContext'; // Adjust path as needed
-import { AxiosError } from 'axios'; // Added
+import { type AxiosError } from 'axios'; // Added
 
 interface Book {
   id: string;
@@ -51,8 +51,8 @@ export default function BookDetail() {
   }, [id, isAuthenticated, isLoading, router]); // Added router to dependency array
 
   const handleUpdateStatus = async (newReadingStatus?: string, newLoanStatus?: string) => {
-    if (!book || !token) return; // Add proper ownerId logic
-    
+    if (!book || !isAuthenticated) return; // Add proper ownerId logic
+
     // Placeholder for ownerId
     const ownerId = '00000000-0000-0000-0000-000000000001'; // This should come from authenticated user
 
@@ -66,7 +66,6 @@ export default function BookDetail() {
       Alert.alert('Error', axiosError.response?.data?.message || 'Failed to update status');
     }
   };
-
 
   if (loading || isLoading) {
     return (

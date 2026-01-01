@@ -1,7 +1,7 @@
 using System.Text.Json;
+using Microsoft.Extensions.Http;
 using MyHomeDigitalBookshelf.Application.Books.Interfaces;
 using MyHomeDigitalBookshelf.Domain.Entities;
-using System.Net.Http; // Added
 
 namespace MyHomeDigitalBookshelf.Infrastructure.Api;
 
@@ -35,17 +35,17 @@ public class GoogleBooksFinderService : IBookFinderService
             }
 
             var content = await response.Content.ReadAsStringAsync();
-            
+
             // This is a simplified parsing logic. A real implementation would use a proper DTO.
             using var doc = JsonDocument.Parse(content);
             var firstItem = doc.RootElement.GetProperty("items")[0];
             var volumeInfo = firstItem.GetProperty("volumeInfo");
 
             var title = volumeInfo.GetProperty("title").GetString() ?? "Unknown Title";
-            var authors = volumeInfo.TryGetProperty("authors", out var authorsProp) 
-                ? authorsProp.EnumerateArray().Select(a => a.GetString() ?? "").ToArray() 
+            var authors = volumeInfo.TryGetProperty("authors", out var authorsProp)
+                ? authorsProp.EnumerateArray().Select(a => a.GetString() ?? "").ToArray()
                 : new string[0];
-            
+
             // This is a placeholder for creating a full Book entity.
             // In a real scenario, you would map all the required fields.
             // The bookshelfId is also a placeholder and would need to be provided.
