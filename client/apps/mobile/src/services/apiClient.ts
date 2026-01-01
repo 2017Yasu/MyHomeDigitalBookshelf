@@ -25,4 +25,38 @@ export const auth = {
   },
 };
 
+export const books = {
+  addBookFromIsbn: async (isbn: string, bookshelfId: string, ownerId: string) => {
+    const response = await apiClient.post('/books/from-isbn', { isbn, bookshelfId, ownerId });
+    return response.data;
+  },
+  getBooksForBookshelf: async (bookshelfId: string, params?: any) => {
+    const response = await apiClient.get(`/bookshelves/${bookshelfId}/books`, { params });
+    return response.data;
+  },
+  getBookById: async (id: string) => {
+    const response = await apiClient.get(`/books/${id}`);
+    return response.data;
+  },
+  updateUserBookStatus: async (bookId: string, userId: string, newReadingStatus?: string, newLoanStatus?: string) => {
+    const response = await apiClient.put(`/user-books/${bookId}/status`, { userId, newReadingStatus, newLoanStatus });
+    return response.data;
+  },
+  addBookManually: async (bookData: { title: string; authors: string[]; isbn?: string; publisher?: string; publishDate?: string; bookshelfId: string; ownerId: string }) => {
+    const response = await apiClient.post('/books', bookData);
+    return response.data;
+  },
+};
+
+export const bookshelves = {
+  createBookshelf: async (name: string, description: string, ownerId: string) => {
+    const response = await apiClient.post('/bookshelves', { name, description, ownerId });
+    return response.data;
+  },
+  getBookshelfById: async (id: string) => {
+    const response = await apiClient.get(`/bookshelves/${id}`);
+    return response.data;
+  },
+};
+
 export default apiClient;
