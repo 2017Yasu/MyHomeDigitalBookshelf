@@ -1,7 +1,6 @@
-using MyHomeDigitalBookshelf.Application.Common.Interfaces; // Added
+using MyHomeDigitalBookshelf.Application.Common.Interfaces;
 using MyHomeDigitalBookshelf.Domain.Entities;
 using MyHomeDigitalBookshelf.Domain.Repositories;
-using MyHomeDigitalBookshelf.Domain.ValueObjects; // Added to handle Email type
 
 namespace MyHomeDigitalBookshelf.Application.Bookshelves;
 
@@ -13,18 +12,18 @@ public class BookshelfService
     private readonly IBookshelfRepository _bookshelfRepository;
     private readonly IBookshelfUserRepository _bookshelfUserRepository;
     private readonly IUserRepository _userRepository;
-    private readonly IEmailService _emailService; // Added
+    private readonly IEmailService _emailService;
 
     public BookshelfService(
         IBookshelfRepository bookshelfRepository,
         IBookshelfUserRepository bookshelfUserRepository,
         IUserRepository userRepository,
-        IEmailService emailService) // Added
+        IEmailService emailService)
     {
         _bookshelfRepository = bookshelfRepository ?? throw new ArgumentNullException(nameof(bookshelfRepository));
         _bookshelfUserRepository = bookshelfUserRepository ?? throw new ArgumentNullException(nameof(bookshelfUserRepository));
         _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
-        _emailService = emailService ?? throw new ArgumentNullException(nameof(emailService)); // Added
+        _emailService = emailService ?? throw new ArgumentNullException(nameof(emailService));
     }
 
     /// <summary>

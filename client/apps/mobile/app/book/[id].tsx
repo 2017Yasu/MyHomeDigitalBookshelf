@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { Text, View, StyleSheet, ActivityIndicator, Alert, Button as RNButton } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { books } from '../../src/services/apiClient'; // Adjust path as needed
-import { useAuth } from '../../src/context/AuthContext'; // Adjust path as needed
-import { type AxiosError } from 'axios'; // Added
+import { books } from '../../src/services/apiClient';
+import { useAuth } from '../../src/context/AuthContext';
+import { AxiosError } from 'axios';
 
 interface Book {
   id: string;
@@ -15,7 +15,7 @@ interface Book {
 
 export default function BookDetail() {
   const { id } = useLocalSearchParams();
-  const { isAuthenticated, isLoading } = useAuth(); // Removed token
+  const { isAuthenticated, isLoading } = useAuth();
   const router = useRouter();
   const [book, setBook] = useState<Book | null>(null);
   const [loading, setLoading] = useState(true);
@@ -38,17 +38,21 @@ export default function BookDetail() {
           const fetchedBook = await books.getBookById(id);
           setBook(fetchedBook);
         }
-      } catch (err: unknown) {
-        const axiosError = err as AxiosError<{ message: string }>;
-        setError(axiosError.response?.data?.message || 'Failed to fetch book details');
-        Alert.alert('Error', axiosError.response?.data?.message || 'Failed to fetch book details');
+      } catch (err) {
+        if (err instanceof AxiosError) {
+          const message = err.response?.data?.message;
+          const msgString = message && typeof message === 'string' ? message : 'Failed to fetch book details';
+          setError(msgString);
+          Alert.alert('Error', msgString);
+          return;
+        }
       } finally {
         setLoading(false);
       }
     };
 
     fetchBookDetails();
-  }, [id, isAuthenticated, isLoading, router]); // Added router to dependency array
+  }, [id, isAuthenticated, isLoading, router]);
 
   const handleUpdateStatus = async (newReadingStatus?: string, newLoanStatus?: string) => {
     if (!book || !isAuthenticated) return; // Add proper ownerId logic
@@ -61,9 +65,13 @@ export default function BookDetail() {
       await books.updateUserBookStatus(book.id, ownerId, newReadingStatus, newLoanStatus);
       Alert.alert('Success', 'Book status updated!');
       // Optionally re-fetch book details or update local state
-    } catch (err: unknown) {
-      const axiosError = err as AxiosError<{ message: string }>;
-      Alert.alert('Error', axiosError.response?.data?.message || 'Failed to update status');
+    } catch (err) {
+      if (err instanceof AxiosError) {
+        const message = err.response?.data?.message;
+        const msgString = message && typeof message === 'string' ? message : 'Failed to update status';
+        Alert.alert('Error', msgString);
+        return;
+      }
     }
   };
 

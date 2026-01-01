@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { Text, View, TextInput, Button, StyleSheet, Alert, ScrollView, ActivityIndicator } from 'react-native'; // Added ActivityIndicator
+import { Text, View, TextInput, Button, StyleSheet, Alert, ScrollView, ActivityIndicator } from 'react-native';
 import { books } from '../src/services/apiClient'; // Fixed path
 import { useAuth } from '../src/context/AuthContext'; // Fixed path
 import { useRouter, Link } from 'expo-router';
-import { type AxiosError } from 'axios'; // Added
+import { AxiosError } from 'axios';
 
 export default function AddBook() {
   const { isAuthenticated, isLoading } = useAuth(); // Removed token
@@ -38,9 +38,13 @@ export default function AddBook() {
       });
       Alert.alert('Success', 'Book added manually!');
       router.replace('/library');
-    } catch (err: unknown) {
-      const axiosError = err as AxiosError<{ message: string }>;
-      Alert.alert('Error', axiosError.response?.data?.message || 'Failed to add book manually');
+    } catch (err) {
+      if (err instanceof AxiosError) {
+        const message = err.response?.data?.message;
+        const msgString = message && typeof message === 'string' ? message : 'Failed to add book manually';
+        Alert.alert('Error', msgString);
+        return;
+      }
     } finally {
       setLoading(false);
     }
@@ -61,9 +65,13 @@ export default function AddBook() {
         setPublisher(bookData.publisher || '');
         setPublishDate(bookData.publishDate || '');
         Alert.alert('Success', 'Book data pre-filled from ISBN scan!');
-      } catch (err: unknown) {
-        const axiosError = err as AxiosError<{ message: string }>;
-        Alert.alert('Error', axiosError.response?.data?.message || 'Failed to fetch book data from ISBN');
+      } catch (err) {
+        if (err instanceof AxiosError) {
+          const message = err.response?.data?.message;
+          const msgString = message && typeof message === 'string' ? message : 'Failed to fetch book data from ISBN';
+          Alert.alert('Error', msgString);
+          return;
+        }
       } finally {
         setLoading(false);
       }

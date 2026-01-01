@@ -1,4 +1,4 @@
-using MyHomeDigitalBookshelf.Domain.Entities; // Added missing using directive
+using MyHomeDigitalBookshelf.Domain.Entities;
 
 namespace MyHomeDigitalBookshelf.Application.Books.Queries;
 

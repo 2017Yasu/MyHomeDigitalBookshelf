@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { books } from '../services/apiClient';
 import { useAuth } from '../context/useAuth';
-import { type AxiosError } from 'axios'; // Added
+import { AxiosError } from 'axios';
 
 const AddBook: React.FC = () => {
   const { isAuthenticated } = useAuth(); // Removed token
@@ -39,9 +39,13 @@ const AddBook: React.FC = () => {
         ownerId,
       });
       navigate('/library');
-    } catch (err: unknown) {
-      const axiosError = err as AxiosError<{ message: string }>;
-      setError(axiosError.response?.data?.message || 'Failed to add book manually');
+    } catch (err) {
+      if (err instanceof AxiosError) {
+        const message = err.response?.data?.message;
+        const msgString = message && typeof message === 'string' ? message : 'Failed to add book manually';
+        setError(msgString);
+        return;
+      }
     } finally {
       setLoading(false);
     }
@@ -65,8 +69,12 @@ const AddBook: React.FC = () => {
       setPublishDate(bookData.publishDate || '');
       alert('Book data pre-filled from ISBN scan!');
     } catch (err: unknown) {
-      const axiosError = err as AxiosError<{ message: string }>;
-      setError(axiosError.response?.data?.message || 'Failed to fetch book data from ISBN');
+      if (err instanceof AxiosError) {
+        const message = err.response?.data?.message;
+        const msgString = message && typeof message === 'string' ? message : 'Failed to fetch book data from ISBN';
+        setError(msgString);
+        return;
+      }
     } finally {
       setLoading(false);
     }

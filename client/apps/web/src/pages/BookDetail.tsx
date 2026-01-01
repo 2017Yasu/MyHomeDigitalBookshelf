@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { books } from '../services/apiClient';
 import { useAuth } from '../context/useAuth';
-import { type AxiosError } from 'axios'; // Added
+import { AxiosError } from 'axios';
 
 interface Book {
   id: string;
@@ -34,9 +34,13 @@ const BookDetail: React.FC = () => {
           const fetchedBook = await books.getBookById(id);
           setBook(fetchedBook);
         }
-      } catch (err: unknown) {
-        const axiosError = err as AxiosError<{ message: string }>;
-        setError(axiosError.response?.data?.message || 'Failed to fetch book details');
+      } catch (err) {
+        if (err instanceof AxiosError) {
+          const message = err.response?.data?.message;
+          const msgString = message && typeof message === 'string' ? message : 'Failed to fetch book details';
+          setError(msgString);
+          return;
+        }
       } finally {
         setLoading(false);
       }

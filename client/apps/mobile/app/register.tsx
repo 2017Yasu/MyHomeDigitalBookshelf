@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Text, View, TextInput, Button, StyleSheet, Alert } from 'react-native';
 import { Link, useRouter } from 'expo-router';
-import { auth } from '../src/services/apiClient'; // Adjust path as needed
+import { auth } from '../src/services/apiClient';
 
 export default function Register() {
   const [username, setUsername] = useState('');
@@ -45,7 +45,9 @@ export default function Register() {
         secureTextEntry
       />
       <Button title="Register" onPress={handleSubmit} />
-      <Link href="/login" style={styles.link}>Already have an account? Log In</Link>
+      <Link href="/login" style={styles.link}>
+        Already have an account? Log In
+      </Link>
     </View>
   );
 }

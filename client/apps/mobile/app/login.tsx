@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Text, View, TextInput, Button, StyleSheet, Alert } from 'react-native';
 import { Link, useRouter } from 'expo-router';
-import { auth } from '../src/services/apiClient'; // Adjust path as needed
+import { auth } from '../src/services/apiClient';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -12,7 +12,7 @@ export default function Login() {
     try {
       const response = await auth.login(email, password);
       // For now, just log the token. In a real app, you'd store it securely (e.g., using expo-secure-store)
-      console.log("Logged in successfully, token:", response.token);
+      console.log('Logged in successfully, token:', response.token);
       Alert.alert('Success', 'Logged in successfully!');
       router.push('/'); // Redirect to home page on successful login
     } catch (err: any) {
@@ -39,7 +39,9 @@ export default function Login() {
         secureTextEntry
       />
       <Button title="Login" onPress={handleSubmit} />
-      <Link href="/register" style={styles.link}>Don&apos;t have an account? Register</Link>
+      <Link href="/register" style={styles.link}>
+        Don&apos;t have an account? Register
+      </Link>
     </View>
   );
 }

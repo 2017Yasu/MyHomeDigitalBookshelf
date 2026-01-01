@@ -1,7 +1,6 @@
 using System.Data.Common;
 using Dapper;
 using MyHomeDigitalBookshelf.Domain.Entities;
-using MyHomeDigitalBookshelf.Domain.ValueObjects; // Added for Isbn
 using MyHomeDigitalBookshelf.Infrastructure.Database.Repositories.Schema;
 
 namespace MyHomeDigitalBookshelf.Infrastructure.Database.Repositories.Sql;
@@ -75,7 +74,7 @@ internal class GetBooksSql(DbConnection connection, DbTransaction? transaction =
         {
             builder = builder.Where(@$"ub.user_id = @{nameof(ownerId)}", new { ownerId });
         }
-        if (bookshelfId.HasValue) // Added
+        if (bookshelfId.HasValue)
         {
             builder = builder.Where(@$"b.bookshelf_id = @{nameof(bookshelfId)}", new { bookshelfId });
         }

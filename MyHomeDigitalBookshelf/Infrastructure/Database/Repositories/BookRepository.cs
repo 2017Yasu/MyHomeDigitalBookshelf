@@ -1,7 +1,7 @@
 using Microsoft.Extensions.Logging;
 using MyHomeDigitalBookshelf.Domain.Entities;
 using MyHomeDigitalBookshelf.Domain.Repositories;
-using MyHomeDigitalBookshelf.Domain.ValueObjects; // Added for Isbn
+using MyHomeDigitalBookshelf.Domain.ValueObjects;
 using MyHomeDigitalBookshelf.Infrastructure.Database.Repositories.Sql;
 
 namespace MyHomeDigitalBookshelf.Infrastructure.Database.Repositories;

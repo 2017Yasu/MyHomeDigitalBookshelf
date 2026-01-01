@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { Text, View, StyleSheet, ActivityIndicator, Alert } from 'react-native';
-import { books } from '../src/services/apiClient'; // Adjust path as needed
-import { useAuth } from '../src/context/AuthContext'; // Adjust path as needed
+import { books } from '../src/services/apiClient';
+import { useAuth } from '../src/context/AuthContext';
 import { useRouter, Link } from 'expo-router';
-import { type AxiosError } from 'axios'; // Added
+import { AxiosError } from 'axios';
 
 interface Book {
   id: string;
@@ -42,10 +42,14 @@ export default function Library() {
         // This assumes the API endpoint for books for a bookshelf is secured and uses the token
         const fetchedBooks = await books.getBooksForBookshelf(dummyBookshelfId);
         setUserBooks(fetchedBooks);
-      } catch (err: unknown) {
-        const axiosError = err as AxiosError<{ message: string }>;
-        setError(axiosError.response?.data?.message || 'Failed to fetch books');
-        Alert.alert('Error', axiosError.response?.data?.message || 'Failed to fetch books');
+      } catch (err) {
+        if (err instanceof AxiosError) {
+          const message = err.response?.data?.message;
+          const msgString = message && typeof message === 'string' ? message : 'Failed to fetch books';
+          setError(msgString);
+          Alert.alert('Error', msgString);
+          return;
+        }
       } finally {
         setLoading(false);
       }
@@ -55,7 +59,7 @@ export default function Library() {
       // Only fetch if bookshelfId is set
       fetchBooks();
     }
-  }, [isAuthenticated, isLoading, bookshelfId, router]); // Added router to dependency array
+  }, [isAuthenticated, isLoading, bookshelfId, router]);
 
   if (loading || isLoading) {
     return (

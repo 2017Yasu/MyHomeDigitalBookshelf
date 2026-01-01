@@ -2,11 +2,8 @@ using MyHomeDigitalBookshelf.Application.Books.Interfaces;
 using MyHomeDigitalBookshelf.Domain.Entities;
 using MyHomeDigitalBookshelf.Domain.Repositories;
 using MyHomeDigitalBookshelf.Domain.ValueObjects;
-using MyHomeDigitalBookshelf.Application.Books.Commands; // Added
-using MyHomeDigitalBookshelf.Application.Books.Queries; // Added
 
 namespace MyHomeDigitalBookshelf.Application.Books;
-// Removed using MyHomeDigitalBookshelf.Domain.Enums; as enums are in Entities
 
 /// <summary>
 /// Service for managing books in the system.
@@ -211,7 +208,7 @@ public class BookService
             ownerId: query.OwnerId,
             bookshelfId: query.BookshelfId, // Ensure repository filters by bookshelf
             readingStatus: query.ReadingStatus);
-            // TODO: Add support for sorting and pagination in IBookRepository.SearchAsync
+        // TODO: Add support for sorting and pagination in IBookRepository.SearchAsync
     }
 
     /// <summary>

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { auth } from '../services/apiClient';
 import { useNavigate } from 'react-router-dom';
-import { type AxiosError } from 'axios';
+import { AxiosError } from 'axios';
 
 const Register: React.FC = () => {
   const [username, setUsername] = useState('');
@@ -16,9 +16,13 @@ const Register: React.FC = () => {
     try {
       await auth.register(username, email, password);
       navigate('/login'); // Redirect to login page on successful registration
-    } catch (err: unknown) {
-      const axiosError = err as AxiosError<{ message: string }>;
-      setError(axiosError.response?.data?.message || 'Registration failed');
+    } catch (err) {
+      if (err instanceof AxiosError) {
+        const message = err.response?.data?.message;
+        const msgString = message && typeof message === 'string' ? message : 'Registration failed';
+        setError(msgString);
+        return;
+      }
     }
   };
 

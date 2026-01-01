@@ -1,5 +1,5 @@
 using MyHomeDigitalBookshelf.Application.Common.Interfaces;
-using Microsoft.Extensions.Logging; // Added
+using Microsoft.Extensions.Logging;
 
 namespace MyHomeDigitalBookshelf.Infrastructure.Services;
 
