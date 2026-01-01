@@ -11,10 +11,11 @@ export default function Login() {
   const handleSubmit = async () => {
     try {
       const response = await auth.login(email, password);
+      // TODO: Store the token securely
       // For now, just log the token. In a real app, you'd store it securely (e.g., using expo-secure-store)
       console.log('Logged in successfully, token:', response.token);
       Alert.alert('Success', 'Logged in successfully!');
-      router.push('/'); // Redirect to home page on successful login
+      router.push('/');
     } catch (err: any) {
       Alert.alert('Error', err.response?.data?.message || 'Login failed');
     }

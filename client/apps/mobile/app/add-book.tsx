@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { Text, View, TextInput, Button, StyleSheet, Alert, ScrollView, ActivityIndicator } from 'react-native';
-import { books } from '../src/services/apiClient'; // Fixed path
-import { useAuth } from '../src/context/AuthContext'; // Fixed path
+import { books } from '../src/services/apiClient';
+import { useAuth } from '../src/context/AuthContext';
 import { useRouter, Link } from 'expo-router';
 import { AxiosError } from 'axios';
 
 export default function AddBook() {
-  const { isAuthenticated, isLoading } = useAuth(); // Removed token
+  const { isAuthenticated, isLoading } = useAuth();
   const router = useRouter();
   const [title, setTitle] = useState('');
   const [authors, setAuthors] = useState('');
@@ -15,9 +15,10 @@ export default function AddBook() {
   const [publishDate, setPublishDate] = useState('');
   const [loading, setLoading] = useState(false);
 
-  // Placeholder bookshelfId and ownerId - in a real app, these would come from context/user profile
+  // TODO: These should come from context/user profile
   const bookshelfId = '00000000-0000-0000-0000-000000000001';
-  const ownerId = '00000000-0000-0000-0000-000000000001'; // Assuming a logged in user with this ID
+  // TODO: This should come from authenticated user
+  const ownerId = '00000000-0000-0000-0000-000000000001';
 
   if (!isAuthenticated && !isLoading) {
     router.replace('/login');

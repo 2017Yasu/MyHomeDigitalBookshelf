@@ -14,9 +14,9 @@ interface Book {
 }
 
 export default function Library() {
-  const { isAuthenticated, isLoading } = useAuth(); // Removed token
+  const { isAuthenticated, isLoading } = useAuth();
   const router = useRouter();
-  const [bookshelfId, setBookshelfId] = useState<string>(''); // Placeholder for actual bookshelf ID
+  const [bookshelfId, setBookshelfId] = useState<string>('');
   const [userBooks, setUserBooks] = useState<Book[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');

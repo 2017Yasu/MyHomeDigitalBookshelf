@@ -1,13 +1,13 @@
 import React, { createContext, useState, useContext, useEffect, type ReactNode } from 'react';
 import * as SecureStore from 'expo-secure-store';
-import { router } from 'expo-router'; // For redirection
+import { router } from 'expo-router';
 
 interface AuthContextType {
   token: string | null;
   login: (newToken: string) => void;
   logout: () => void;
   isAuthenticated: boolean;
-  isLoading: boolean; // To indicate if auth state is being loaded
+  isLoading: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -16,7 +16,7 @@ interface AuthProviderProps {
   children: ReactNode;
 }
 
-export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
+export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -51,9 +51,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const isAuthenticated = !!token;
 
   return (
-    <AuthContext.Provider value={{ token, login, logout, isAuthenticated, isLoading }}>
-      {children}
-    </AuthContext.Provider>
+    <AuthContext.Provider value={{ token, login, logout, isAuthenticated, isLoading }}>{children}</AuthContext.Provider>
   );
 };
 

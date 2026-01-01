@@ -55,16 +55,15 @@ export default function BookDetail() {
   }, [id, isAuthenticated, isLoading, router]);
 
   const handleUpdateStatus = async (newReadingStatus?: string, newLoanStatus?: string) => {
-    if (!book || !isAuthenticated) return; // Add proper ownerId logic
+    if (!book || !isAuthenticated) return; // TODO: Add proper ownerId logic
 
     // Placeholder for ownerId
-    const ownerId = '00000000-0000-0000-0000-000000000001'; // This should come from authenticated user
+    const ownerId = '00000000-0000-0000-0000-000000000001'; // TODO: This should come from authenticated user
 
     try {
       // Assuming a userId is associated with the token or a global context
       await books.updateUserBookStatus(book.id, ownerId, newReadingStatus, newLoanStatus);
       Alert.alert('Success', 'Book status updated!');
-      // Optionally re-fetch book details or update local state
     } catch (err) {
       if (err instanceof AxiosError) {
         const message = err.response?.data?.message;

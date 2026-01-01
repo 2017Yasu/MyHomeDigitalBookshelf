@@ -1,9 +1,7 @@
 import axios from 'axios';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api/v1'; // Default to localhost
-
 const apiClient = axios.create({
-  baseURL: API_BASE_URL,
+  baseURL: '/api/v1',
   headers: {
     'Content-Type': 'application/json',
   },
@@ -38,7 +36,15 @@ export const books = {
     const response = await apiClient.put(`/user-books/${bookId}/status`, { userId, newReadingStatus, newLoanStatus });
     return response.data;
   },
-  addBookManually: async (bookData: { title: string; authors: string[]; isbn?: string; publisher?: string; publishDate?: string; bookshelfId: string; ownerId: string }) => {
+  addBookManually: async (bookData: {
+    title: string;
+    authors: string[];
+    isbn?: string;
+    publisher?: string;
+    publishDate?: string;
+    bookshelfId: string;
+    ownerId: string;
+  }) => {
     const response = await apiClient.post('/books', bookData);
     return response.data;
   },

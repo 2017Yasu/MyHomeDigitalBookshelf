@@ -5,7 +5,7 @@ import { useAuth } from '../context/useAuth';
 import { AxiosError } from 'axios';
 
 const AddBook: React.FC = () => {
-  const { isAuthenticated } = useAuth(); // Removed token
+  const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const [title, setTitle] = useState('');
   const [authors, setAuthors] = useState('');
@@ -15,9 +15,10 @@ const AddBook: React.FC = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  // Placeholder bookshelfId and ownerId - in a real app, these would come from context/user profile
+  // TODO: Replace with actual bookshelf and user management
   const bookshelfId = '00000000-0000-0000-0000-000000000001';
-  const ownerId = '00000000-0000-0000-0000-000000000001'; // Assuming a logged in user with this ID
+  // TODO: Replace with actual user ID from auth context
+  const ownerId = '00000000-0000-0000-0000-000000000001';
 
   if (!isAuthenticated) {
     navigate('/login');

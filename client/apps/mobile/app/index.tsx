@@ -7,8 +7,8 @@ export default function Home() {
       <Text>Welcome to My Home Digital Bookshelf (Mobile)</Text>
       <Link href="/login">Go to Login</Link>
       <Link href="/register">Go to Register</Link>
-      <Link href="/library">Go to Library</Link> {/* Added Library link */}
-      <Link href="/add-book">Add Book</Link> {/* Added Add Book link */}
+      <Link href="/library">Go to Library</Link>
+      <Link href="/add-book">Add Book</Link>
     </View>
   );
 }

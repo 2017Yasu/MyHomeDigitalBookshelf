@@ -13,9 +13,9 @@ interface Book {
 }
 
 const Library: React.FC = () => {
-  const { isAuthenticated } = useAuth(); // Removed token
+  const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
-  const [bookshelfId, setBookshelfId] = useState<string>(''); // Placeholder for actual bookshelf ID
+  const [bookshelfId, setBookshelfId] = useState<string>('');
   const [userBooks, setUserBooks] = useState<Book[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
