@@ -8,7 +8,7 @@ using MyHomeDigitalBookshelf.Application.Bookshelves.Queries;
 namespace MyHomeDigitalBookshelf.Api.Controllers;
 
 [ApiController]
-[Route("api/v1/[controller]")]
+[Route("api/v1/bookshelves")]
 public class BookshelvesController : ControllerBase
 {
     private readonly BookshelfService _bookshelfService;
@@ -21,11 +21,11 @@ public class BookshelvesController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreateBookshelf([FromBody] CreateBookshelfCommand command)
+    public async Task<IActionResult> CreateBookshelf([FromBody] CreateBookshelfCommand command) // TODO: Create DTOs for commands and queries
     {
         try
         {
-            // Assuming the owner ID can be retrieved from the authenticated user context
+            // TODO: Retrieve OwnerId from authenticated user context
             // For now, command.OwnerId needs to be set by the client. This should be adjusted for real auth.
             var bookshelf = await _bookshelfService.CreateBookshelfForUserAsync(command);
             return CreatedAtAction(nameof(GetBookshelfById), new { id = bookshelf.Id }, bookshelf);
@@ -56,7 +56,7 @@ public class BookshelvesController : ControllerBase
     }
 
     [HttpGet("{bookshelfId}/books")]
-    public async Task<IActionResult> GetBooksForBookshelf(Guid bookshelfId, [FromQuery] GetBooksForBookshelfQuery query)
+    public async Task<IActionResult> GetBooksForBookshelf(Guid bookshelfId, [FromQuery] GetBooksForBookshelfQuery query) // TODO: Create DTOs for commands and queries
     {
         query.BookshelfId = bookshelfId; // Ensure the bookshelfId from the route is used
         try
@@ -71,10 +71,10 @@ public class BookshelvesController : ControllerBase
     }
 
     [HttpPost("{id}/members")]
-    public async Task<IActionResult> InviteUserToBookshelf(Guid id, [FromBody] InviteUserToBookshelfCommand command)
+    public async Task<IActionResult> InviteUserToBookshelf(Guid id, [FromBody] InviteUserToBookshelfCommand command) // TODO: Create DTOs for commands and queries
     {
         command.BookshelfId = id; // Ensure the bookshelfId from the route is used
-        // Assuming InvitingUserId can be retrieved from authenticated user context
+        // TODO: Retrieve InvitingUserId from authenticated user context
         // For now, command.InvitingUserId needs to be set by the client. This should be adjusted for real auth.
         command.InvitingUserId = Guid.NewGuid(); // Placeholder
 

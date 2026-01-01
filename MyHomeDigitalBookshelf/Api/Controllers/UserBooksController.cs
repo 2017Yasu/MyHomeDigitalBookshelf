@@ -1,12 +1,11 @@
 using Microsoft.AspNetCore.Mvc;
 using MyHomeDigitalBookshelf.Application.UserBooks;
 using MyHomeDigitalBookshelf.Application.UserBooks.Commands;
-using System.Security.Claims; // For HttpContext.User
 
 namespace MyHomeDigitalBookshelf.Api.Controllers;
 
 [ApiController]
-[Route("api/v1/[controller]")]
+[Route("api/v1/user-books")]
 public class UserBooksController : ControllerBase
 {
     private readonly UserBookService _userBookService;
@@ -17,10 +16,9 @@ public class UserBooksController : ControllerBase
     }
 
     [HttpPut("{bookId}/status")]
-    public async Task<IActionResult> UpdateBookStatus(Guid bookId, [FromBody] UpdateUserBookStatusCommand command)
+    public async Task<IActionResult> UpdateBookStatus(Guid bookId, [FromBody] UpdateUserBookStatusCommand command) // TODO: Create DTOs for commands and queries
     {
-        // For now, assume UserId is passed directly or can be retrieved from an authenticated context.
-        // In a real application, this would come from HttpContext.User.Claims
+        // TODO: Retrieve UserId from authenticated user context
         // Placeholder for authenticated UserId
         var userId = Guid.NewGuid(); // Replace with actual authenticated user ID
 

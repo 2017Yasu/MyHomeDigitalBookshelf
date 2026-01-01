@@ -15,7 +15,7 @@ public class SmtpEmailService : IEmailService
     public Task SendEmailAsync(string toEmail, string subject, string body)
     {
         _logger.LogInformation("Sending email to {ToEmail} with subject {Subject}. Body: {Body}", toEmail, subject, body);
-        // In a real application, this would integrate with an actual SMTP client or email service provider.
+        // TODO: Implement actual email sending logic here.
         return Task.CompletedTask;
     }
 }

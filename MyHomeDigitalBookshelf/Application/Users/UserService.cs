@@ -34,7 +34,7 @@ public class UserService
         command.Validate();
 
         var email = new Email(command.Email);
-        var existingUserByEmail = await _userRepository.GetByEmailAsync(email.Value); // Corrected
+        var existingUserByEmail = await _userRepository.GetByEmailAsync(email.Value);
         if (existingUserByEmail != null)
         {
             throw new InvalidOperationException($"Email {command.Email} is already registered.");
@@ -230,16 +230,6 @@ public class UserService
     /// </summary>
     /// <param name="command">The command containing user identity details.</param>
     /// <returns>The created user identity.</returns>
-    /// <summary>
-    /// Adds a new user identity to the system.
-    /// </summary>
-    /// <param name="command">The command containing user identity details.</param>
-    /// <returns>The created user identity.</returns>
-    /// <summary>
-    /// Adds a new user identity to the system.
-    /// </summary>
-    /// <param name="command">The command containing user identity details.</param>
-    /// <returns>The created user identity.</returns>
     public async Task<UserIdentity> AddUserIdentityAsync(Commands.AddUserIdentityCommand command)
     {
         command.Validate();
@@ -258,9 +248,7 @@ public class UserService
             throw new InvalidOperationException($"Identity with provider {command.Provider} and subject {command.Subject} already exists.");
         }
 
-        Domain.ValueObjects.Email? email = !string.IsNullOrWhiteSpace(command.Email) 
-            ? new Domain.ValueObjects.Email(command.Email) 
-            : null;
+        var email = !string.IsNullOrWhiteSpace(command.Email) ? new Email(command.Email) : null;
 
         var identity = UserIdentity.CreateNew(
             command.UserId,

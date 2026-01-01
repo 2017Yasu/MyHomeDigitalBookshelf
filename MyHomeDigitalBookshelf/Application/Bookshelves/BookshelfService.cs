@@ -47,10 +47,11 @@ public class BookshelfService
             throw new ArgumentException($"Inviting user with ID {command.InvitingUserId} not found.", nameof(command.InvitingUserId));
         }
 
-        var invitedUser = await _userRepository.GetByEmailAsync(command.InvitedUserEmail); // Corrected
+        var invitedUser = await _userRepository.GetByEmailAsync(command.InvitedUserEmail);
         if (invitedUser == null)
         {
             // User not yet registered, send invite to register
+            // TODO: Apply i18n/localization as needed
             await _emailService.SendEmailAsync(
                 command.InvitedUserEmail,
                 "Invitation to MyHomeDigitalBookshelf",
@@ -73,6 +74,7 @@ public class BookshelfService
 
         await _bookshelfUserRepository.AddAsync(bookshelfUser);
 
+        // TODO: Apply i18n/localization as needed
         await _emailService.SendEmailAsync(
             command.InvitedUserEmail,
             "Invitation to MyHomeDigitalBookshelf",
@@ -95,7 +97,7 @@ public class BookshelfService
             throw new ArgumentException($"User with ID {command.OwnerId} not found.", nameof(command.OwnerId));
         }
 
-        // Note: In a real application, this should be a single database transaction.
+        // TODO: In a real application, this should be a single database transaction.
         // Assuming the repository implementation handles transactions or this is handled at a higher level (e.g., Unit of Work).
 
         var bookshelf = Bookshelf.CreateNew(

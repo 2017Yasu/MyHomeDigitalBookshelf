@@ -9,7 +9,7 @@ public class GetBooksForBookshelfQuery
     public string? Author { get; set; }
     public string? Isbn { get; set; }
     public Guid? CategoryId { get; set; }
-    public ReadingStatus? ReadingStatus { get; set; } // Corrected type to remove 'Entities.' prefix
+    public ReadingStatus? ReadingStatus { get; set; }
     public Guid? OwnerId { get; set; }
 
     // Pagination/Sorting

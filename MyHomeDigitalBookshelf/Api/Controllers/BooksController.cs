@@ -5,7 +5,7 @@ using MyHomeDigitalBookshelf.Application.Books.Commands;
 namespace MyHomeDigitalBookshelf.Api.Controllers;
 
 [ApiController]
-[Route("api/v1/[controller]")]
+[Route("api/v1/books")]
 public class BooksController : ControllerBase
 {
     private readonly BookService _bookService;
@@ -16,7 +16,7 @@ public class BooksController : ControllerBase
     }
 
     [HttpPost("from-isbn")]
-    public async Task<IActionResult> AddBookFromIsbn([FromBody] AddBookFromIsbnCommand command)
+    public async Task<IActionResult> AddBookFromIsbn([FromBody] AddBookFromIsbnCommand command) // TODO: Create DTOs for commands and queries
     {
         try
         {
@@ -33,7 +33,7 @@ public class BooksController : ControllerBase
         }
     }
 
-    // Placeholder for GetBookById - will be implemented later
+    // TODO: Implement this method to retrieve a book by its ID
     [HttpGet("{id}")]
     public IActionResult GetBookById(Guid id)
     {

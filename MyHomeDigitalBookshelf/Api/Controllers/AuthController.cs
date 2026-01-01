@@ -7,7 +7,7 @@ using MyHomeDigitalBookshelf.Application.Common.Interfaces;
 namespace MyHomeDigitalBookshelf.Api.Controllers;
 
 [ApiController]
-[Route("api/v1/[controller]")]
+[Route("api/v1/auth")]
 public class AuthController : ControllerBase
 {
     private readonly UserService _userService;
@@ -20,7 +20,7 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("register")]
-    public async Task<IActionResult> Register(CreateUserCommand command)
+    public async Task<IActionResult> Register([FromBody] CreateUserCommand command) // TODO: Create DTOs for commands and queries
     {
         try
         {
@@ -34,7 +34,7 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("login")]
-    public async Task<IActionResult> Login(AuthenticateUserQuery query)
+    public async Task<IActionResult> Login([FromBody] AuthenticateUserQuery query) // TODO: Create DTOs for commands and queries
     {
         var user = await _userService.AuthenticateUserAsync(query);
 
