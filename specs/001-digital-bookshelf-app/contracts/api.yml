@@ -1,0 +1,107 @@
+openapi: 3.0.0
+info:
+  title: MyHomeDigitalBookshelf API
+  version: v1
+paths:
+  /api/v1/auth/register:
+    post:
+      summary: Register a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '200':
+          description: User registered successfully
+
+  /api/v1/auth/login:
+    post:
+      summary: Authenticate a user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '200':
+          description: Authentication successful, returns token
+
+  /api/v1/bookshelves:
+    post:
+      summary: Create a new bookshelf
+      responses:
+        '201':
+          description: Bookshelf created successfully
+
+  /api/v1/bookshelves/{id}:
+    get:
+      summary: Get bookshelf details
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Success
+
+  /api/v1/bookshelves/{id}/members:
+    post:
+      summary: Add a member to a bookshelf
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+      responses:
+        '200':
+          description: Member added successfully
+
+  /api/v1/books:
+    post:
+      summary: Add a new book
+      responses:
+        '201':
+          description: Book created successfully
+
+  /api/v1/bookshelves/{bookshelfId}/books:
+    get:
+      summary: Get books for a bookshelf
+      parameters:
+        - name: bookshelfId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Success
