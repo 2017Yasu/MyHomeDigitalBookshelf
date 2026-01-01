@@ -20,6 +20,8 @@
     "vite": "^7.2.4"
   },
   "dependencies": {
-    "@mhdb/ui": "workspace:*"
+    "@mhdb/ui": "workspace:*",
+    "axios": "^1.13.2",
+    "react-router-dom": "^7.11.0"
   }
 }
