@@ -5,82 +5,137 @@ using MyHomeDigitalBookshelf.Domain.Repositories;
 using Xunit;
 using System;
 using System.Threading.Tasks;
-using MyHomeDigitalBookshelf.Application.UserBooks; // Assuming a UserBookService exists
+using MyHomeDigitalBookshelf.Application.UserBooks;
+using MyHomeDigitalBookshelf.Domain.ValueObjects; // Added for Price
 
 namespace MyHomeDigitalBookshelf.Application.Tests.UserBooks;
 
 public class UserBookServiceTests
 {
     private readonly Mock<IUserBookRepository> _mockUserBookRepository;
-    private readonly UserBookService _userBookService; // Assuming a UserBookService
+    private readonly UserBookService _userBookService;
 
     public UserBookServiceTests()
     {
         _mockUserBookRepository = new Mock<IUserBookRepository>();
-        // Initialize UserBookService with its dependencies.
-        // If UserBookService has more dependencies, they would need to be mocked here too.
         _userBookService = new UserBookService(_mockUserBookRepository.Object);
     }
 
     [Fact]
-    public async Task UpdateUserBookStatusAsync_ShouldUpdateStatus_WhenUserBookExists()
+    public async Task UpdateUserBookStatusAsync_ShouldUpdateStatusAndLoanStatus_WhenUserBookExists()
     {
         // Arrange
-        var userBookId = Guid.NewGuid();
+        var userId = Guid.NewGuid();
+        var bookId = Guid.NewGuid();
         var currentReadingStatus = ReadingStatus.Reading;
+        var currentLoanStatus = LoanStatus.Lent; // Corrected
         var newReadingStatus = ReadingStatus.Completed;
+        var newLoanStatus = LoanStatus.None; // Corrected
 
         var command = new UpdateUserBookStatusCommand
         {
-            UserBookId = userBookId,
-            NewReadingStatus = newReadingStatus
+            UserId = userId,
+            BookId = bookId,
+            NewReadingStatus = newReadingStatus,
+            NewLoanStatus = newLoanStatus
         };
 
         var existingUserBook = new UserBook(
-            userBookId,
-            Guid.NewGuid(), // UserId
-            Guid.NewGuid(), // BookId
+            userId,
+            bookId,
+            true, // ownership
             currentReadingStatus,
-            null, null, null, null,
+            currentLoanStatus,
             DateTime.UtcNow,
-            DateTime.UtcNow
+            new Price(10.0m) // Corrected Price constructor
         );
 
-        _mockUserBookRepository.Setup(r => r.GetByIdAsync(userBookId))
+        _mockUserBookRepository.Setup(r => r.GetAsync(userId, bookId))
             .ReturnsAsync(existingUserBook);
         _mockUserBookRepository.Setup(r => r.UpdateAsync(It.IsAny<UserBook>()))
-            .Returns(Task.CompletedTask);
+            .ReturnsAsync((UserBook?)It.IsAny<UserBook>());
 
         // Act
-        await _userBookService.UpdateUserBookStatusAsync(command);
+        var result = await _userBookService.UpdateUserBookStatusAsync(command);
 
         // Assert
-        _mockUserBookRepository.Verify(r => r.GetByIdAsync(userBookId), Times.Once);
+        Assert.NotNull(result);
+        Assert.Equal(newReadingStatus, result.ReadingStatus);
+        Assert.Equal(newLoanStatus, result.LoanStatus);
+        _mockUserBookRepository.Verify(r => r.GetAsync(userId, bookId), Times.Once);
         _mockUserBookRepository.Verify(r => r.UpdateAsync(
-            It.Is<UserBook>(ub => ub.Id == userBookId && ub.ReadingStatus == newReadingStatus)), Times.Once);
+            It.Is<UserBook>(ub => ub.UserId == userId && ub.BookId == bookId && ub.ReadingStatus == newReadingStatus && ub.LoanStatus == newLoanStatus)), Times.Once);
     }
 
     [Fact]
-    public async Task UpdateUserBookStatusAsync_ShouldThrowException_WhenUserBookDoesNotExist()
+    public async Task UpdateUserBookStatusAsync_ShouldReturnNull_WhenUserBookDoesNotExist()
     {
         // Arrange
-        var userBookId = Guid.NewGuid();
+        var userId = Guid.NewGuid();
+        var bookId = Guid.NewGuid();
         var newReadingStatus = ReadingStatus.Completed;
 
         var command = new UpdateUserBookStatusCommand
         {
-            UserBookId = userBookId,
+            UserId = userId,
+            BookId = bookId,
             NewReadingStatus = newReadingStatus
         };
 
-        _mockUserBookRepository.Setup(r => r.GetByIdAsync(userBookId))
+        _mockUserBookRepository.Setup(r => r.GetAsync(userId, bookId))
             .ReturnsAsync((UserBook?)null);
 
-        // Act & Assert
-        await Assert.ThrowsAsync<InvalidOperationException>(() =>
-            _userBookService.UpdateUserBookStatusAsync(command));
+        // Act
+        var result = await _userBookService.UpdateUserBookStatusAsync(command);
 
-        _mockUserBookRepository.Verify(r => r.GetByIdAsync(userBookId), Times.Once);
+        // Assert
+        Assert.Null(result);
+        _mockUserBookRepository.Verify(r => r.GetAsync(userId, bookId), Times.Once);
         _mockUserBookRepository.Verify(r => r.UpdateAsync(It.IsAny<UserBook>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task UpdateUserBookStatusAsync_ShouldOnlyUpdateReadingStatus_WhenLoanStatusIsNull()
+    {
+        // Arrange
+        var userId = Guid.NewGuid();
+        var bookId = Guid.NewGuid();
+        var currentReadingStatus = ReadingStatus.Reading;
+        var currentLoanStatus = LoanStatus.Lent; // Corrected
+        var newReadingStatus = ReadingStatus.Completed;
+
+        var command = new UpdateUserBookStatusCommand
+        {
+            UserId = userId,
+            BookId = bookId,
+            NewReadingStatus = newReadingStatus,
+            NewLoanStatus = null // Only update reading status
+        };
+
+        var existingUserBook = new UserBook(
+            userId,
+            bookId,
+            true, // ownership
+            currentReadingStatus,
+            currentLoanStatus,
+            DateTime.UtcNow,
+            new Price(10.0m) // Corrected Price constructor
+        );
+
+        _mockUserBookRepository.Setup(r => r.GetAsync(userId, bookId))
+            .ReturnsAsync(existingUserBook);
+        _mockUserBookRepository.Setup(r => r.UpdateAsync(It.IsAny<UserBook>()))
+            .ReturnsAsync((UserBook?)It.IsAny<UserBook>());
+
+        // Act
+        var result = await _userBookService.UpdateUserBookStatusAsync(command);
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.Equal(newReadingStatus, result.ReadingStatus);
+        Assert.Equal(currentLoanStatus, result.LoanStatus); // Loan status should remain unchanged
+        _mockUserBookRepository.Verify(r => r.GetAsync(userId, bookId), Times.Once);
+        _mockUserBookRepository.Verify(r => r.UpdateAsync(
+            It.Is<UserBook>(ub => ub.UserId == userId && ub.BookId == bookId && ub.ReadingStatus == newReadingStatus && ub.LoanStatus == currentLoanStatus)), Times.Once);
     }
 }

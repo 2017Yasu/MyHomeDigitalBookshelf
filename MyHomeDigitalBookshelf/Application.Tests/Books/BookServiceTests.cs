@@ -345,17 +345,15 @@ public class BookServiceTests
             Book.CreateNew("The Lord of the Rings: Two Towers", bookshelfId, new[] { "J.R.R. Tolkien" })
         };
 
-        _mockBookRepository.Setup(r => r.GetBooksForBookshelfAsync(
-                It.Is<Guid>(g => g == query.BookshelfId),
+        _mockBookRepository.Setup(r => r.SearchAsync(
                 It.Is<string?>(s => s == query.Title),
                 It.Is<string?>(s => s == query.Author),
-                It.Is<string?>(s => s == query.Isbn),
+                It.Is<string?>(s => s == query.Isbn), // Conversion to string for SearchAsync
                 It.Is<Guid?>(g => g == query.CategoryId),
-                It.Is<ReadingStatus?>(s => s == query.ReadingStatus),
+                It.IsAny<string?>(), // cCode, not in query
                 It.Is<Guid?>(g => g == query.OwnerId),
-                It.Is<int>(i => i == query.PageNumber),
-                It.Is<int>(i => i == query.PageSize),
-                It.Is<string?>(s => s == query.SortBy)
+                It.Is<Guid?>(g => g == query.BookshelfId),
+                It.Is<ReadingStatus?>(s => s == query.ReadingStatus)
             ))
             .ReturnsAsync(expectedBooks);
 
@@ -365,17 +363,15 @@ public class BookServiceTests
         // Assert
         Assert.NotNull(result);
         Assert.Equal(expectedBooks.Length, result.Length);
-        _mockBookRepository.Verify(r => r.GetBooksForBookshelfAsync(
-                It.Is<Guid>(g => g == query.BookshelfId),
+        _mockBookRepository.Verify(r => r.SearchAsync(
                 It.Is<string?>(s => s == query.Title),
                 It.Is<string?>(s => s == query.Author),
-                It.Is<string?>(s => s == query.Isbn),
+                It.Is<string?>(s => s == query.Isbn), // Conversion to string for SearchAsync
                 It.Is<Guid?>(g => g == query.CategoryId),
-                It.Is<ReadingStatus?>(s => s == query.ReadingStatus),
+                It.IsAny<string?>(), // cCode, not in query
                 It.Is<Guid?>(g => g == query.OwnerId),
-                It.Is<int>(i => i == query.PageNumber),
-                It.Is<int>(i => i == query.PageSize),
-                It.Is<string?>(s => s == query.SortBy)
+                It.Is<Guid?>(g => g == query.BookshelfId),
+                It.Is<ReadingStatus?>(s => s == query.ReadingStatus)
             ), Times.Once);
     }
 }

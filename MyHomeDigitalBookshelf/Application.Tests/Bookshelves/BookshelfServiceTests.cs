@@ -1,3 +1,4 @@
+using MyHomeDigitalBookshelf.Domain.ValueObjects;
 using Moq;
 using MyHomeDigitalBookshelf.Application.Bookshelves.Commands;
 using MyHomeDigitalBookshelf.Application.Bookshelves.Queries;
@@ -265,9 +266,9 @@ public class BookshelfServiceTests
             InvitedUserEmail = invitedUserEmail
         };
 
-        var existingBookshelf = Bookshelf.CreateNew("Test Bookshelf", "Test Description");
-        var invitingUser = User.CreateNew("Inviter", "inviter@example.com", "hash", Domain.ValueObjects.UserRole.Member);
-        var invitedUser = User.CreateNew("Invited", invitedUserEmail, "hash", Domain.ValueObjects.UserRole.Member);
+        var existingBookshelf = new Bookshelf(bookshelfId, "Test Bookshelf", "Test Description", DateTime.UtcNow.AddDays(-1), DateTime.UtcNow);
+        var invitingUser = new User(Guid.NewGuid(), "Inviter", new Email("inviter@example.com"), "hash", Domain.Entities.UserRole.Member, DateTime.UtcNow);
+        var invitedUser = new User(Guid.NewGuid(), "Invited", new Email(invitedUserEmail), "hash", Domain.Entities.UserRole.Member, DateTime.UtcNow);
 
         _mockBookshelfRepository.Setup(r => r.GetByIdAsync(bookshelfId)).ReturnsAsync(existingBookshelf);
         _mockUserRepository.Setup(r => r.GetByIdAsync(invitingUserId)).ReturnsAsync(invitingUser);
