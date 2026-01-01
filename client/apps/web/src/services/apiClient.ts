@@ -38,6 +38,10 @@ export const books = {
     const response = await apiClient.put(`/user-books/${bookId}/status`, { userId, newReadingStatus, newLoanStatus });
     return response.data;
   },
+  addBookManually: async (bookData: { title: string; authors: string[]; isbn?: string; publisher?: string; publishDate?: string; bookshelfId: string; ownerId: string }) => {
+    const response = await apiClient.post('/books', bookData);
+    return response.data;
+  },
 };
 
 export const bookshelves = {

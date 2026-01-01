@@ -4,6 +4,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Library from './pages/Library'; // Import Library component
 import BookDetail from './pages/BookDetail'; // Import BookDetail component
+import AddBook from './pages/AddBook'; // Import AddBook component
 import './App.css'; // Keep existing CSS if any
 
 function App() {
@@ -23,6 +24,9 @@ function App() {
           <li>
             <Link to="/library">Library</Link> {/* Added Library link */}
           </li>
+          <li>
+            <Link to="/add-book">Add Book</Link> {/* Added Add Book link */}
+          </li>
         </ul>
       </nav>
       <Routes>
@@ -30,7 +34,8 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/library" element={<Library />} />
-        <Route path="/book/:id" element={<BookDetail />} /> {/* Added BookDetail route */}
+        <Route path="/book/:id" element={<BookDetail />} />
+        <Route path="/add-book" element={<AddBook />} /> {/* Added AddBook route */}
       </Routes>
     </Router>
   );
