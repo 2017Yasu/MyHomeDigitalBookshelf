@@ -1,5 +1,7 @@
+using MyHomeDigitalBookshelf.Application.Common.Interfaces; // Added
 using MyHomeDigitalBookshelf.Domain.Entities;
 using MyHomeDigitalBookshelf.Domain.Repositories;
+using MyHomeDigitalBookshelf.Domain.ValueObjects; // Added to handle Email type
 
 namespace MyHomeDigitalBookshelf.Application.Bookshelves;
 
@@ -11,15 +13,106 @@ public class BookshelfService
     private readonly IBookshelfRepository _bookshelfRepository;
     private readonly IBookshelfUserRepository _bookshelfUserRepository;
     private readonly IUserRepository _userRepository;
+    private readonly IEmailService _emailService; // Added
 
     public BookshelfService(
         IBookshelfRepository bookshelfRepository,
         IBookshelfUserRepository bookshelfUserRepository,
-        IUserRepository userRepository)
+        IUserRepository userRepository,
+        IEmailService emailService) // Added
     {
         _bookshelfRepository = bookshelfRepository ?? throw new ArgumentNullException(nameof(bookshelfRepository));
         _bookshelfUserRepository = bookshelfUserRepository ?? throw new ArgumentNullException(nameof(bookshelfUserRepository));
         _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
+        _emailService = emailService ?? throw new ArgumentNullException(nameof(emailService)); // Added
+    }
+
+    /// <summary>
+    /// Invites a user to a bookshelf.
+    /// </summary>
+    /// <param name="command">The command containing bookshelf ID, invited user's email, and inviting user's ID.</param>
+    /// <returns>A Task representing the asynchronous operation.</returns>
+    public async Task InviteUserToBookshelfAsync(Commands.InviteUserToBookshelfCommand command)
+    {
+        command.Validate();
+
+        var bookshelf = await _bookshelfRepository.GetByIdAsync(command.BookshelfId);
+        if (bookshelf == null)
+        {
+            throw new ArgumentException($"Bookshelf with ID {command.BookshelfId} not found.", nameof(command.BookshelfId));
+        }
+
+        var invitingUser = await _userRepository.GetByIdAsync(command.InvitingUserId);
+        if (invitingUser == null)
+        {
+            throw new ArgumentException($"Inviting user with ID {command.InvitingUserId} not found.", nameof(command.InvitingUserId));
+        }
+
+        var invitedUser = await _userRepository.GetByEmailAsync(command.InvitedUserEmail); // Corrected
+        if (invitedUser == null)
+        {
+            // User not yet registered, send invite to register
+            await _emailService.SendEmailAsync(
+                command.InvitedUserEmail,
+                "Invitation to MyHomeDigitalBookshelf",
+                $"Hello,\n\nYou have been invited by {invitingUser.Username} to join the bookshelf '{bookshelf.Name}'. Please register at [App Registration Link] to accept the invitation."
+            );
+            return;
+        }
+
+        // User is already registered
+        var existingRelationship = await _bookshelfUserRepository.GetAsync(invitedUser.Id, command.BookshelfId);
+        if (existingRelationship != null)
+        {
+            throw new InvalidOperationException($"User {invitedUser.Email} is already a member of bookshelf {bookshelf.Name}");
+        }
+
+        var bookshelfUser = BookshelfUser.CreateNew(
+            invitedUser.Id,
+            bookshelf.Id,
+            BookshelfUserRole.Member); // Invited users join as members initially
+
+        await _bookshelfUserRepository.AddAsync(bookshelfUser);
+
+        await _emailService.SendEmailAsync(
+            command.InvitedUserEmail,
+            "Invitation to MyHomeDigitalBookshelf",
+            $"Hello {invitedUser.Username},\n\nYou have been invited by {invitingUser.Username} to join the bookshelf '{bookshelf.Name}'. You are now a member!"
+        );
+    }
+
+    /// <summary>
+    /// Creates a new bookshelf and assigns the owner as an administrator.
+    /// </summary>
+    /// <param name="command">The command containing the new bookshelf's details and owner.</param>
+    /// <returns>The created bookshelf.</returns>
+    public async Task<Bookshelf> CreateBookshelfForUserAsync(Commands.CreateBookshelfCommand command)
+    {
+        command.Validate();
+
+        var owner = await _userRepository.GetByIdAsync(command.OwnerId);
+        if (owner == null)
+        {
+            throw new ArgumentException($"User with ID {command.OwnerId} not found.", nameof(command.OwnerId));
+        }
+
+        // Note: In a real application, this should be a single database transaction.
+        // Assuming the repository implementation handles transactions or this is handled at a higher level (e.g., Unit of Work).
+
+        var bookshelf = Bookshelf.CreateNew(
+            command.Name,
+            command.Description);
+
+        await _bookshelfRepository.AddAsync(bookshelf);
+
+        var bookshelfUser = BookshelfUser.CreateNew(
+            command.OwnerId,
+            bookshelf.Id,
+            BookshelfUserRole.Administrator); // Corrected to Administrator
+
+        await _bookshelfUserRepository.AddAsync(bookshelfUser);
+
+        return bookshelf;
     }
 
     /// <summary>

@@ -1,5 +1,7 @@
+using MyHomeDigitalBookshelf.Application.Common.Interfaces;
 using MyHomeDigitalBookshelf.Domain.Entities;
 using MyHomeDigitalBookshelf.Domain.Repositories;
+using MyHomeDigitalBookshelf.Domain.ValueObjects;
 
 namespace MyHomeDigitalBookshelf.Application.Users;
 
@@ -10,13 +12,74 @@ public class UserService
 {
     private readonly IUserRepository _userRepository;
     private readonly IUserIdentityRepository _userIdentityRepository;
+    private readonly IPasswordHasher _passwordHasher;
 
     public UserService(
         IUserRepository userRepository,
-        IUserIdentityRepository userIdentityRepository)
+        IUserIdentityRepository userIdentityRepository,
+        IPasswordHasher passwordHasher)
     {
         _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
         _userIdentityRepository = userIdentityRepository ?? throw new ArgumentNullException(nameof(userIdentityRepository));
+        _passwordHasher = passwordHasher ?? throw new ArgumentNullException(nameof(passwordHasher));
+    }
+
+    /// <summary>
+    /// Creates a new user with a password.
+    /// </summary>
+    /// <param name="command">The command containing the new user's details.</param>
+    /// <returns>The created user.</returns>
+    public async Task<User> CreateUserAsync(Commands.CreateUserCommand command)
+    {
+        command.Validate();
+
+        var email = new Email(command.Email);
+        var existingUserByEmail = await _userRepository.GetByEmailAsync(email.Value); // Corrected
+        if (existingUserByEmail != null)
+        {
+            throw new InvalidOperationException($"Email {command.Email} is already registered.");
+        }
+
+        var existingUserByUsername = await _userRepository.GetByUsernameAsync(command.Username);
+        if (existingUserByUsername != null)
+        {
+            throw new InvalidOperationException($"Username {command.Username} is already taken.");
+        }
+
+        var passwordHash = _passwordHasher.Hash(command.Password);
+
+        var user = User.CreateNew(
+            command.Username,
+            email,
+            passwordHash,
+            UserRole.Member);
+
+        return await _userRepository.AddAsync(user);
+    }
+
+    /// <summary>
+    /// Authenticates a user by email and password.
+    /// </summary>
+    /// <param name="query">The query containing the user's credentials.</param>
+    /// <returns>The authenticated user, or null if authentication fails.</returns>
+    public async Task<User?> AuthenticateUserAsync(Queries.AuthenticateUserQuery query)
+    {
+        query.Validate();
+
+        var email = new Email(query.Email);
+        var user = await _userRepository.GetByEmailAsync(email.Value); // Corrected
+
+        if (user == null || user.PasswordHash == null)
+        {
+            return null; // User not found or has no password (e.g., external login)
+        }
+
+        if (!_passwordHasher.Verify(query.Password, user.PasswordHash))
+        {
+            return null; // Invalid password
+        }
+
+        return user;
     }
 
     /// <summary>

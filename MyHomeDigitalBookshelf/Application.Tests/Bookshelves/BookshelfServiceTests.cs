@@ -3,6 +3,7 @@ using MyHomeDigitalBookshelf.Application.Bookshelves.Commands;
 using MyHomeDigitalBookshelf.Application.Bookshelves.Queries;
 using MyHomeDigitalBookshelf.Domain.Entities;
 using MyHomeDigitalBookshelf.Domain.Repositories;
+using MyHomeDigitalBookshelf.Application.Common.Interfaces; // Added
 
 namespace MyHomeDigitalBookshelf.Application.Tests.Bookshelves;
 
@@ -11,6 +12,7 @@ public class BookshelfServiceTests
     private readonly Mock<IBookshelfRepository> _mockBookshelfRepository;
     private readonly Mock<IBookshelfUserRepository> _mockBookshelfUserRepository;
     private readonly Mock<IUserRepository> _mockUserRepository;
+    private readonly Mock<IEmailService> _mockEmailService; // Added
     private readonly Application.Bookshelves.BookshelfService _service;
 
     public BookshelfServiceTests()
@@ -18,10 +20,12 @@ public class BookshelfServiceTests
         _mockBookshelfRepository = new Mock<IBookshelfRepository>();
         _mockBookshelfUserRepository = new Mock<IBookshelfUserRepository>();
         _mockUserRepository = new Mock<IUserRepository>();
+        _mockEmailService = new Mock<IEmailService>(); // Added
         _service = new Application.Bookshelves.BookshelfService(
             _mockBookshelfRepository.Object,
             _mockBookshelfUserRepository.Object,
-            _mockUserRepository.Object);
+            _mockUserRepository.Object,
+            _mockEmailService.Object); // Modified
     }
 
     [Fact]
@@ -56,7 +60,7 @@ public class BookshelfServiceTests
     {
         // Arrange
         var bookshelfId = Guid.NewGuid();
-        var query = new GetBookshelfByIdQuery(bookshelfId);
+        var query = new GetBookshelfByIdQuery { Id = bookshelfId };
 
         var expectedBookshelf = Bookshelf.CreateNew("Test Bookshelf", "Test description");
 
