@@ -3,6 +3,7 @@ import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Library from './pages/Library'; // Import Library component
+import BookDetail from './pages/BookDetail'; // Import BookDetail component
 import './App.css'; // Keep existing CSS if any
 
 function App() {
@@ -28,7 +29,8 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/library" element={<Library />} /> {/* Added Library route */}
+        <Route path="/library" element={<Library />} />
+        <Route path="/book/:id" element={<BookDetail />} /> {/* Added BookDetail route */}
       </Routes>
     </Router>
   );

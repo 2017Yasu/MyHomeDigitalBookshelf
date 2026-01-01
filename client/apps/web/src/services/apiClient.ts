@@ -30,6 +30,14 @@ export const books = {
     const response = await apiClient.get(`/bookshelves/${bookshelfId}/books`, { params });
     return response.data;
   },
+  getBookById: async (id: string) => {
+    const response = await apiClient.get(`/books/${id}`);
+    return response.data;
+  },
+  updateUserBookStatus: async (bookId: string, userId: string, newReadingStatus?: string, newLoanStatus?: string) => {
+    const response = await apiClient.put(`/user-books/${bookId}/status`, { userId, newReadingStatus, newLoanStatus });
+    return response.data;
+  },
 };
 
 export const bookshelves = {

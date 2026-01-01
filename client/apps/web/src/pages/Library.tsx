@@ -65,12 +65,14 @@ const Library: React.FC = () => {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {userBooks.map((book) => (
-            <div key={book.id} className="bg-white shadow-md rounded-lg p-4">
-              <h2 className="text-xl font-semibold">{book.title}</h2>
-              <p className="text-gray-600">by {book.authors?.join(', ')}</p>
-              <p className="text-gray-500">ISBN: {book.isbn}</p>
-              {/* Add more book details or actions here */}
-            </div>
+            <Link to={`/book/${book.id}`} key={book.id} className="block">
+              <div className="bg-white shadow-md rounded-lg p-4 hover:bg-gray-50 cursor-pointer">
+                <h2 className="text-xl font-semibold">{book.title}</h2>
+                <p className="text-gray-600">by {book.authors?.join(', ')}</p>
+                <p className="text-gray-500">ISBN: {book.isbn}</p>
+                {/* Add more book details or actions here */}
+              </div>
+            </Link>
           ))}
         </div>
       )}
