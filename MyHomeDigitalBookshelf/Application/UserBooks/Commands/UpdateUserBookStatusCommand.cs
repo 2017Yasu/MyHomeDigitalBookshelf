@@ -15,13 +15,12 @@ public class UpdateUserBookStatusCommand
         {
             throw new ArgumentException("UserId must not be empty.", nameof(UserId));
         }
+
         if (BookId == Guid.Empty)
         {
             throw new ArgumentException("BookId must not be empty.", nameof(BookId));
         }
-        if (!NewReadingStatus.HasValue && !NewLoanStatus.HasValue)
-        {
-            throw new ArgumentException("At least one status (Reading or Loan) must be provided for update.", nameof(NewReadingStatus));
-        }
+        // Basic validation for ReadingStatus enum values could be added if necessary,
+        // but typically the enum itself provides type safety.
     }
 }
