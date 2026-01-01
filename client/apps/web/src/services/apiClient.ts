@@ -21,12 +21,26 @@ export const auth = {
   },
 };
 
-// You can add more service modules here for books, bookshelves, etc.
-// export const books = {
-//   addBookFromIsbn: async (isbn: string, bookshelfId: string, ownerId: string) => {
-//     const response = await apiClient.post('/books/from-isbn', { isbn, bookshelfId, ownerId });
-//     return response.data;
-//   },
-// };
+export const books = {
+  addBookFromIsbn: async (isbn: string, bookshelfId: string, ownerId: string) => {
+    const response = await apiClient.post('/books/from-isbn', { isbn, bookshelfId, ownerId });
+    return response.data;
+  },
+  getBooksForBookshelf: async (bookshelfId: string, params?: any) => {
+    const response = await apiClient.get(`/bookshelves/${bookshelfId}/books`, { params });
+    return response.data;
+  },
+};
+
+export const bookshelves = {
+  createBookshelf: async (name: string, description: string, ownerId: string) => {
+    const response = await apiClient.post('/bookshelves', { name, description, ownerId });
+    return response.data;
+  },
+  getBookshelfById: async (id: string) => {
+    const response = await apiClient.get(`/bookshelves/${id}`);
+    return response.data;
+  },
+};
 
 export default apiClient;
