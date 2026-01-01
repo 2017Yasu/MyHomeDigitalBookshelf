@@ -2,9 +2,11 @@ using MyHomeDigitalBookshelf.Application.Books.Interfaces;
 using MyHomeDigitalBookshelf.Domain.Entities;
 using MyHomeDigitalBookshelf.Domain.Repositories;
 using MyHomeDigitalBookshelf.Domain.ValueObjects;
-using MyHomeDigitalBookshelf.Domain.Enums; // Added
+using MyHomeDigitalBookshelf.Application.Books.Commands; // Added
+using MyHomeDigitalBookshelf.Application.Books.Queries; // Added
 
 namespace MyHomeDigitalBookshelf.Application.Books;
+// Removed using MyHomeDigitalBookshelf.Domain.Enums; as enums are in Entities
 
 /// <summary>
 /// Service for managing books in the system.
@@ -65,7 +67,15 @@ public class BookService
         );
 
         // Also create a UserBook entry to associate the owner with the book and initial status
-        var userBook = UserBook.CreateNew(command.OwnerId, bookToAdd.Id, UserBookReadingStatus.ToRead, UserBookLoanStatus.Available);
+        var userBook = UserBook.CreateNew(
+            command.OwnerId,
+            bookToAdd.Id,
+            true, // Assuming the user owns the book if they add it
+            ReadingStatus.WantToRead,
+            LoanStatus.None,
+            null, // No purchase date on ISBN add
+            null // No price on ISBN add
+        );
 
         await _bookRepository.AddAsync(bookToAdd);
         await _userBookRepository.AddAsync(userBook); // Add the user-book association
@@ -170,13 +180,14 @@ public class BookService
         query.Validate();
 
         return await _bookRepository.SearchAsync(
-            query.Title,
-            query.Author,
-            query.Isbn?.ToString(),
-            query.CategoryId,
-            query.CCode?.ToString(),
-            query.OwnerId,
-            query.ReadingStatus);
+            title: query.Title,
+            author: query.Author,
+            isbn: query.Isbn?.ToString(),
+            categoryId: query.CategoryId,
+            cCode: query.CCode?.ToString(),
+            ownerId: query.OwnerId,
+            bookshelfId: null, // This is a general search, not tied to a specific bookshelf
+            readingStatus: query.ReadingStatus);
     }
 
     /// <summary>
@@ -195,6 +206,7 @@ public class BookService
             author: query.Author,
             isbn: query.Isbn,
             categoryId: query.CategoryId,
+            cCode: null, // Assuming CCode not part of this specific query in GetBooksForBookshelfQuery
             ownerId: query.OwnerId,
             bookshelfId: query.BookshelfId, // Ensure repository filters by bookshelf
             readingStatus: query.ReadingStatus);

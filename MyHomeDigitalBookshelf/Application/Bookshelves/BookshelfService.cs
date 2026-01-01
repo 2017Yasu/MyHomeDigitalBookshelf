@@ -48,7 +48,7 @@ public class BookshelfService
             throw new ArgumentException($"Inviting user with ID {command.InvitingUserId} not found.", nameof(command.InvitingUserId));
         }
 
-        var invitedUser = await _userRepository.GetByEmailAsync(new Email(command.InvitedUserEmail));
+        var invitedUser = await _userRepository.GetByEmailAsync(command.InvitedUserEmail); // Corrected
         if (invitedUser == null)
         {
             // User not yet registered, send invite to register
@@ -108,7 +108,7 @@ public class BookshelfService
         var bookshelfUser = BookshelfUser.CreateNew(
             command.OwnerId,
             bookshelf.Id,
-            BookshelfUserRole.Admin);
+            BookshelfUserRole.Administrator); // Corrected to Administrator
 
         await _bookshelfUserRepository.AddAsync(bookshelfUser);
 

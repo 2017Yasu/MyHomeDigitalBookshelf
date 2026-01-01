@@ -34,7 +34,7 @@ public class UserService
         command.Validate();
 
         var email = new Email(command.Email);
-        var existingUserByEmail = await _userRepository.GetByEmailAsync(email);
+        var existingUserByEmail = await _userRepository.GetByEmailAsync(email.Value); // Corrected
         if (existingUserByEmail != null)
         {
             throw new InvalidOperationException($"Email {command.Email} is already registered.");
@@ -67,7 +67,7 @@ public class UserService
         query.Validate();
 
         var email = new Email(query.Email);
-        var user = await _userRepository.GetByEmailAsync(email);
+        var user = await _userRepository.GetByEmailAsync(email.Value); // Corrected
 
         if (user == null || user.PasswordHash == null)
         {

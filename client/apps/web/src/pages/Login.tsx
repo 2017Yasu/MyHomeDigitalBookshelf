@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { auth } from '../services/apiClient';
 import { useNavigate } from 'react-router-dom';
+import { AxiosError } from 'axios';
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -19,8 +20,9 @@ const Login: React.FC = () => {
       // setAuth(response.token); // Store token in context/global state
       console.log("Logged in successfully, token:", response.token);
       navigate('/'); // Redirect to home page on successful login
-    } catch (err: any) {
-      setError(err.response?.data?.message || 'Login failed');
+    } catch (err: unknown) {
+      const axiosError = err as AxiosError<{ message: string }>;
+      setError(axiosError.response?.data?.message || 'Login failed');
     }
   };
 

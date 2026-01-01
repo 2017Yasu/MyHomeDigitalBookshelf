@@ -1,4 +1,4 @@
-using MyHomeDigitalBookshelf.Domain.Enums; // Assuming Enums are in Domain
+using MyHomeDigitalBookshelf.Domain.Entities; // Added missing using directive
 
 namespace MyHomeDigitalBookshelf.Application.Books.Queries;
 
@@ -9,7 +9,7 @@ public class GetBooksForBookshelfQuery
     public string? Author { get; set; }
     public string? Isbn { get; set; }
     public Guid? CategoryId { get; set; }
-    public ReadingStatus? ReadingStatus { get; set; }
+    public ReadingStatus? ReadingStatus { get; set; } // Corrected type to remove 'Entities.' prefix
     public Guid? OwnerId { get; set; }
 
     // Pagination/Sorting

@@ -1,4 +1,4 @@
-using MyHomeDigitalBookshelf.Domain.Enums;
+using MyHomeDigitalBookshelf.Domain.Entities; // Corrected namespace
 using MyHomeDigitalBookshelf.Domain.ValueObjects;
 
 namespace MyHomeDigitalBookshelf.Application.UserBooks.Commands;
@@ -7,8 +7,8 @@ public class UpdateUserBookStatusCommand
 {
     public Guid UserId { get; set; }
     public Guid BookId { get; set; }
-    public UserBookReadingStatus? NewReadingStatus { get; set; }
-    public UserBookLoanStatus? NewLoanStatus { get; set; }
+    public ReadingStatus? NewReadingStatus { get; set; } // Corrected type
+    public LoanStatus? NewLoanStatus { get; set; } // Corrected type
 
     public void Validate()
     {

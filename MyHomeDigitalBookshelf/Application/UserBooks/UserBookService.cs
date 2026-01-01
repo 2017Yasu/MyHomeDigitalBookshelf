@@ -27,11 +27,11 @@ public class UserBookService
         var updatedUserBook = new UserBook(
             userBook.UserId,
             userBook.BookId,
+            userBook.Ownership, // Existing ownership
             command.NewReadingStatus ?? userBook.ReadingStatus,
             command.NewLoanStatus ?? userBook.LoanStatus,
             userBook.PurchaseDate,
-            userBook.Price,
-            userBook.CreatedAt
+            userBook.Price
         );
 
         await _userBookRepository.UpdateAsync(updatedUserBook);

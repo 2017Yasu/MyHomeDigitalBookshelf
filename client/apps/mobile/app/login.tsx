@@ -39,7 +39,7 @@ export default function Login() {
         secureTextEntry
       />
       <Button title="Login" onPress={handleSubmit} />
-      <Link href="/register" style={styles.link}>Don't have an account? Register</Link>
+      <Link href="/register" style={styles.link}>Don&apos;t have an account? Register</Link>
     </View>
   );
 }

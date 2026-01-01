@@ -33,8 +33,10 @@ public class UserServiceTests
         var command = new CreateUserCommand { Username = "testuser", Email = "test@example.com", Password = "password123" };
         var hashedPassword = "hashed_password";
 
-        _userRepositoryMock.Setup(r => r.GetByEmailAsync(It.IsAny<Email>())).ReturnsAsync((User?)null);
+        _userRepositoryMock.Setup(r => r.GetByEmailAsync(It.IsAny<string>())).ReturnsAsync((User?)null);
         _userRepositoryMock.Setup(r => r.GetByUsernameAsync(It.IsAny<string>())).ReturnsAsync((User?)null);
+        _userRepositoryMock.Setup(r => r.AddAsync(It.IsAny<User>()))
+            .ReturnsAsync((User user) => new User(Guid.NewGuid(), user.Username, user.Email, user.PasswordHash, user.Role, DateTime.UtcNow));
         _passwordHasherMock.Setup(p => p.Hash(command.Password)).Returns(hashedPassword);
 
         // Act
@@ -53,7 +55,7 @@ public class UserServiceTests
         var command = new CreateUserCommand { Username = "testuser", Email = "test@example.com", Password = "password123" };
         var existingUser = User.CreateNew("existinguser", new Email(command.Email), "hash", UserRole.Member);
 
-        _userRepositoryMock.Setup(r => r.GetByEmailAsync(new Email(command.Email))).ReturnsAsync(existingUser);
+        _userRepositoryMock.Setup(r => r.GetByEmailAsync(command.Email)).ReturnsAsync(existingUser);
 
         // Act & Assert
         await Assert.ThrowsAsync<InvalidOperationException>(() => _userService.CreateUserAsync(command));
@@ -67,8 +69,7 @@ public class UserServiceTests
         var hashedPassword = "hashed_password";
         var user = User.CreateNew("testuser", new Email(query.Email), hashedPassword, UserRole.Member);
 
-        _userRepositoryMock.Setup(r => r.GetByEmailAsync(new Email(query.Email))).ReturnsAsync(user);
-        _passwordHasherMock.Setup(p => p.Verify(query.Password, hashedPassword)).Returns(true);
+        _userRepositoryMock.Setup(r => r.GetByEmailAsync(query.Email)).ReturnsAsync(user);        _passwordHasherMock.Setup(p => p.Verify(query.Password, hashedPassword)).Returns(true);
 
         // Act
         var result = await _userService.AuthenticateUserAsync(query);
@@ -86,7 +87,7 @@ public class UserServiceTests
         var hashedPassword = "hashed_password";
         var user = User.CreateNew("testuser", new Email(query.Email), hashedPassword, UserRole.Member);
 
-        _userRepositoryMock.Setup(r => r.GetByEmailAsync(new Email(query.Email))).ReturnsAsync(user);
+        _userRepositoryMock.Setup(r => r.GetByEmailAsync(query.Email)).ReturnsAsync(user);
         _passwordHasherMock.Setup(p => p.Verify(query.Password, hashedPassword)).Returns(false);
 
         // Act

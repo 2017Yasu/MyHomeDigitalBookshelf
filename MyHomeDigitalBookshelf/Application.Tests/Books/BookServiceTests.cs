@@ -116,6 +116,7 @@ public class BookServiceTests
             It.Is<Guid?>(g => g == query.CategoryId),
             It.Is<string?>(s => s == (query.CCode != null ? query.CCode.ToString() : null)),
             It.Is<Guid?>(g => g == query.OwnerId),
+            It.IsAny<Guid?>(), // BookshelfId parameter, not used in this general search test
             It.Is<ReadingStatus?>(s => s == query.ReadingStatus)))
             .ReturnsAsync(expectedBooks);
 
@@ -131,8 +132,8 @@ public class BookServiceTests
             It.Is<Guid?>(g => g == query.CategoryId),
             It.Is<string?>(s => s == (query.CCode != null ? query.CCode.ToString() : null)),
             It.Is<Guid?>(g => g == query.OwnerId),
-            It.Is<ReadingStatus?>(s => s == query.ReadingStatus)), Times.Once);
-    }
+            It.IsAny<Guid?>(), // BookshelfId parameter, not used in this general search test
+            It.Is<ReadingStatus?>(s => s == query.ReadingStatus)), Times.Once);    }
 
     [Fact]
     public async Task GetBookById_WithExistingBook_ReturnsBook()
