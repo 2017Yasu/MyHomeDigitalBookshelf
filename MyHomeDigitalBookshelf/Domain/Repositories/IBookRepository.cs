@@ -1,4 +1,5 @@
 using MyHomeDigitalBookshelf.Domain.Entities;
+using MyHomeDigitalBookshelf.Domain.ValueObjects;
 
 namespace MyHomeDigitalBookshelf.Domain.Repositories;
 
@@ -15,6 +16,13 @@ public interface IBookRepository
     Task<Book?> GetByIdAsync(Guid id);
 
     /// <summary>
+    /// Retrieves a book by its ISBN.
+    /// </summary>
+    /// <param name="isbn">The ISBN of the book.</param>
+    /// <returns>The book if found; otherwise, null.</returns>
+    Task<Book?> GetByIsbnAsync(Isbn isbn);
+
+    /// <summary>
     /// Searches for books matching the specified criteria.
     /// </summary>
     /// <param name="title">The title of the book (optional).</param>
@@ -23,9 +31,10 @@ public interface IBookRepository
     /// <param name="categoryId">The category ID of the book (optional).</param>
     /// <param name="cCode">The CCode of the book (optional).</param>
     /// <param name="ownerId">The owner ID of the book (optional).</param>
+    /// <param name="bookshelfId">The ID of the bookshelf to search within (optional).</param>
     /// <param name="readingStatus">The reading status of the book (optional).</param>
     /// <returns>An array of books matching the search criteria.</returns>
-    Task<Book[]> SearchAsync(string? title, string? author, string? isbn, Guid? categoryId, string? cCode, Guid? ownerId, ReadingStatus? readingStatus);
+    Task<Book[]> SearchAsync(string? title, string? author, string? isbn, Guid? categoryId, string? cCode, Guid? ownerId, Guid? bookshelfId, ReadingStatus? readingStatus);
 
     /// <summary>
     /// Adds a new book to the data store and returns the created book (with generated fields populated).
@@ -38,7 +47,7 @@ public interface IBookRepository
     /// Updates an existing book in the data store and returns the updated book.
     /// </summary>
     /// <param name="book">The book to update.</param>
-    /// <returns>The updated book entity if found: otherwise, null.</returns>
+    /// <returns>The updated book entity if found; otherwise, null.</returns>
     Task<Book?> UpdateAsync(Book book);
 
     /// <summary>

@@ -1,22 +1,87 @@
+using MyHomeDigitalBookshelf.Application.Common.Interfaces;
 using MyHomeDigitalBookshelf.Domain.Entities;
 using MyHomeDigitalBookshelf.Domain.Repositories;
+using MyHomeDigitalBookshelf.Domain.ValueObjects;
+using MyHomeDigitalBookshelf.Utilities.Attributes.Registration;
 
 namespace MyHomeDigitalBookshelf.Application.Users;
 
 /// <summary>
 /// Service for managing users in the system.
 /// </summary>
+[SingletonService]
 public class UserService
 {
     private readonly IUserRepository _userRepository;
     private readonly IUserIdentityRepository _userIdentityRepository;
+    private readonly IPasswordHasher _passwordHasher;
 
     public UserService(
         IUserRepository userRepository,
-        IUserIdentityRepository userIdentityRepository)
+        IUserIdentityRepository userIdentityRepository,
+        IPasswordHasher passwordHasher)
     {
         _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
         _userIdentityRepository = userIdentityRepository ?? throw new ArgumentNullException(nameof(userIdentityRepository));
+        _passwordHasher = passwordHasher ?? throw new ArgumentNullException(nameof(passwordHasher));
+    }
+
+    /// <summary>
+    /// Creates a new user with a password.
+    /// </summary>
+    /// <param name="command">The command containing the new user's details.</param>
+    /// <returns>The created user.</returns>
+    public async Task<User> CreateUserAsync(Commands.CreateUserCommand command)
+    {
+        command.Validate();
+
+        var email = new Email(command.Email);
+        var existingUserByEmail = await _userRepository.GetByEmailAsync(email.Value);
+        if (existingUserByEmail != null)
+        {
+            throw new InvalidOperationException($"Email {command.Email} is already registered.");
+        }
+
+        var existingUserByUsername = await _userRepository.GetByUsernameAsync(command.Username);
+        if (existingUserByUsername != null)
+        {
+            throw new InvalidOperationException($"Username {command.Username} is already taken.");
+        }
+
+        var passwordHash = _passwordHasher.Hash(command.Password);
+
+        var user = User.CreateNew(
+            command.Username,
+            email,
+            passwordHash,
+            UserRole.Member);
+
+        return await _userRepository.AddAsync(user);
+    }
+
+    /// <summary>
+    /// Authenticates a user by email and password.
+    /// </summary>
+    /// <param name="query">The query containing the user's credentials.</param>
+    /// <returns>The authenticated user, or null if authentication fails.</returns>
+    public async Task<User?> AuthenticateUserAsync(Queries.AuthenticateUserQuery query)
+    {
+        query.Validate();
+
+        var email = new Email(query.Email);
+        var user = await _userRepository.GetByEmailAsync(email.Value); // Corrected
+
+        if (user == null || user.PasswordHash == null)
+        {
+            return null; // User not found or has no password (e.g., external login)
+        }
+
+        if (!_passwordHasher.Verify(query.Password, user.PasswordHash))
+        {
+            return null; // Invalid password
+        }
+
+        return user;
     }
 
     /// <summary>
@@ -167,16 +232,6 @@ public class UserService
     /// </summary>
     /// <param name="command">The command containing user identity details.</param>
     /// <returns>The created user identity.</returns>
-    /// <summary>
-    /// Adds a new user identity to the system.
-    /// </summary>
-    /// <param name="command">The command containing user identity details.</param>
-    /// <returns>The created user identity.</returns>
-    /// <summary>
-    /// Adds a new user identity to the system.
-    /// </summary>
-    /// <param name="command">The command containing user identity details.</param>
-    /// <returns>The created user identity.</returns>
     public async Task<UserIdentity> AddUserIdentityAsync(Commands.AddUserIdentityCommand command)
     {
         command.Validate();
@@ -195,9 +250,7 @@ public class UserService
             throw new InvalidOperationException($"Identity with provider {command.Provider} and subject {command.Subject} already exists.");
         }
 
-        Domain.ValueObjects.Email? email = !string.IsNullOrWhiteSpace(command.Email) 
-            ? new Domain.ValueObjects.Email(command.Email) 
-            : null;
+        var email = !string.IsNullOrWhiteSpace(command.Email) ? new Email(command.Email) : null;
 
         var identity = UserIdentity.CreateNew(
             command.UserId,

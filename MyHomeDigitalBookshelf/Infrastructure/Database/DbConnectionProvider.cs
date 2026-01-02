@@ -1,8 +1,10 @@
 using System.Data.Common;
 using Microsoft.Extensions.Logging;
+using MyHomeDigitalBookshelf.Utilities.Attributes.Registration;
 
 namespace MyHomeDigitalBookshelf.Infrastructure.Database;
 
+[SingletonService]
 public class DbConnectionProvider : IDisposable
 {
     private readonly DbDataSource _dataSource;

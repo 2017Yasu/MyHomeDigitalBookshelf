@@ -2,6 +2,7 @@ using MyHomeDigitalBookshelf.Domain.Entities;
 using MyHomeDigitalBookshelf.Domain.ValueObjects;
 using MyHomeDigitalBookshelf.Infrastructure.Database.Repositories;
 using Xunit.Abstractions;
+using Microsoft.Extensions.Logging;
 
 namespace MyHomeDigitalBookshelf.Infrastructure.Tests.Database.Repositories;
 
@@ -10,11 +11,14 @@ public class SessionRepositoryTests : RepositoryTestBase
     private readonly SessionRepository _repository;
     private readonly UserRepository _userRepository;
 
+    private readonly ILogger<SessionRepositoryTests> _testLogger;
+
     public SessionRepositoryTests(ITestOutputHelper outputHelper)
         : base(outputHelper)
     {
         _repository = new SessionRepository(CreateLogger<SessionRepository>(), GetConnectionProvider());
         _userRepository = new UserRepository(CreateLogger<UserRepository>(), GetConnectionProvider());
+        _testLogger = CreateLogger<SessionRepositoryTests>();
     }
 
     private async Task<User> CreateTestUser(string? username = null, string? email = null)

@@ -1,14 +1,15 @@
-using System.Data.Common;
 using Microsoft.Extensions.Logging;
 using MyHomeDigitalBookshelf.Domain.Entities;
 using MyHomeDigitalBookshelf.Domain.Repositories;
 using MyHomeDigitalBookshelf.Infrastructure.Database.Repositories.Sql;
+using MyHomeDigitalBookshelf.Utilities.Attributes.Registration;
 
 namespace MyHomeDigitalBookshelf.Infrastructure.Database.Repositories;
 
 /// <summary>
 /// Repository implementation for managing users in the PostgreSQL database.
 /// </summary>
+[SingletonService]
 public class UserRepository(ILogger<UserRepository> logger, DbConnectionProvider connectionProvider)
     : RepositoryBase(logger, connectionProvider), IUserRepository
 {

@@ -1,11 +1,13 @@
 using MyHomeDigitalBookshelf.Domain.Entities;
 using MyHomeDigitalBookshelf.Domain.Repositories;
+using MyHomeDigitalBookshelf.Utilities.Attributes.Registration;
 
 namespace MyHomeDigitalBookshelf.Application.Sessions;
 
 /// <summary>
 /// Service for managing sessions in the system.
 /// </summary>
+[SingletonService]
 public class SessionService
 {
     private readonly ISessionRepository _sessionRepository;

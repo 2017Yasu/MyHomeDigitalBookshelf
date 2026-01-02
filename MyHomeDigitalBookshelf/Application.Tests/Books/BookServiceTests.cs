@@ -4,6 +4,7 @@ using MyHomeDigitalBookshelf.Application.Books.Queries;
 using MyHomeDigitalBookshelf.Domain.Entities;
 using MyHomeDigitalBookshelf.Domain.Repositories;
 using MyHomeDigitalBookshelf.Domain.ValueObjects;
+using MyHomeDigitalBookshelf.Application.Books.Interfaces;
 
 namespace MyHomeDigitalBookshelf.Application.Tests.Books;
 
@@ -12,6 +13,7 @@ public class BookServiceTests
     private readonly Mock<IBookRepository> _mockBookRepository;
     private readonly Mock<IUserBookRepository> _mockUserBookRepository;
     private readonly Mock<ICategoryRepository> _mockCategoryRepository;
+    private readonly Mock<IBookFinderService> _bookFinderServiceMock;
     private readonly Application.Books.BookService _service;
 
     public BookServiceTests()
@@ -19,7 +21,8 @@ public class BookServiceTests
         _mockBookRepository = new Mock<IBookRepository>();
         _mockUserBookRepository = new Mock<IUserBookRepository>();
         _mockCategoryRepository = new Mock<ICategoryRepository>();
-        _service = new Application.Books.BookService(_mockBookRepository.Object, _mockUserBookRepository.Object, _mockCategoryRepository.Object);
+        _bookFinderServiceMock = new Mock<IBookFinderService>();
+        _service = new Application.Books.BookService(_mockBookRepository.Object, _mockUserBookRepository.Object, _mockCategoryRepository.Object, _bookFinderServiceMock.Object);
     }
 
     [Fact]
@@ -49,7 +52,7 @@ public class BookServiceTests
             command.Notes);
 
         _mockBookRepository.Setup(r => r.AddAsync(It.IsAny<Book>()))
-            .ReturnsAsync((Book book) => book);
+            .ReturnsAsync((Book book) => new Book(Guid.NewGuid(), book.Title, book.BookshelfId, book.Authors, book.Isbn, book.Publisher, book.PublishDate, book.CCode, book.CategoryId, book.CoverImageUrl, book.Notes, DateTime.UtcNow, DateTime.UtcNow));
 
         // Act
         var result = await _service.AddBookAsync(command);
@@ -113,6 +116,7 @@ public class BookServiceTests
             It.Is<Guid?>(g => g == query.CategoryId),
             It.Is<string?>(s => s == (query.CCode != null ? query.CCode.ToString() : null)),
             It.Is<Guid?>(g => g == query.OwnerId),
+            It.IsAny<Guid?>(), // BookshelfId parameter, not used in this general search test
             It.Is<ReadingStatus?>(s => s == query.ReadingStatus)))
             .ReturnsAsync(expectedBooks);
 
@@ -128,8 +132,8 @@ public class BookServiceTests
             It.Is<Guid?>(g => g == query.CategoryId),
             It.Is<string?>(s => s == (query.CCode != null ? query.CCode.ToString() : null)),
             It.Is<Guid?>(g => g == query.OwnerId),
-            It.Is<ReadingStatus?>(s => s == query.ReadingStatus)), Times.Once);
-    }
+            It.IsAny<Guid?>(), // BookshelfId parameter, not used in this general search test
+            It.Is<ReadingStatus?>(s => s == query.ReadingStatus)), Times.Once);    }
 
     [Fact]
     public async Task GetBookById_WithExistingBook_ReturnsBook()
@@ -278,5 +282,96 @@ public class BookServiceTests
 
         // Assert
         _mockBookRepository.Verify(r => r.DeleteAsync(bookId), Times.Once);
+    }
+
+    [Fact]
+    public async Task AddBookFromIsbnAsync_ShouldSucceed_WhenBookFoundByIsbn()
+    {
+        // Arrange
+        var command = new AddBookFromIsbnCommand { Isbn = "978-0321765723", BookshelfId = Guid.NewGuid(), OwnerId = Guid.NewGuid() };
+        var foundBook = Book.CreateNew("The Lord of the Rings", command.BookshelfId, new[] { "J.R.R. Tolkien" }, new Isbn("978-0321765723"));
+
+        _bookFinderServiceMock.Setup(s => s.FindByIsbnAsync(command.Isbn)).ReturnsAsync(foundBook);
+        _mockBookRepository.Setup(r => r.GetByIsbnAsync(It.IsAny<Isbn>())).ReturnsAsync((Book?)null);
+                _mockBookRepository.Setup(r => r.AddAsync(It.IsAny<Book>()))
+                    .ReturnsAsync((Book book) => new Book(Guid.NewGuid(), book.Title, book.BookshelfId, book.Authors, book.Isbn, book.Publisher, book.PublishDate, book.CCode, book.CategoryId, book.CoverImageUrl, book.Notes, DateTime.UtcNow, DateTime.UtcNow, book.Category));
+        _mockUserBookRepository.Setup(r => r.AddAsync(It.IsAny<UserBook>())).ReturnsAsync((UserBook ub) => ub);
+
+        // Act
+        var result = await _service.AddBookFromIsbnAsync(command);
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.Equal(foundBook.Title, result.Title);
+        _bookFinderServiceMock.Verify(s => s.FindByIsbnAsync(command.Isbn), Times.Once);
+        _mockBookRepository.Verify(r => r.AddAsync(It.IsAny<Book>()), Times.Once);
+        _mockUserBookRepository.Verify(r => r.AddAsync(It.IsAny<UserBook>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task AddBookFromIsbnAsync_ShouldThrowException_WhenBookNotFoundByIsbn()
+    {
+        // Arrange
+        var command = new AddBookFromIsbnCommand { Isbn = "978-0321765723", BookshelfId = Guid.NewGuid(), OwnerId = Guid.NewGuid() };
+
+        _bookFinderServiceMock.Setup(s => s.FindByIsbnAsync(command.Isbn)).ReturnsAsync((Book?)null);
+        _mockBookRepository.Setup(r => r.GetByIsbnAsync(It.IsAny<Isbn>())).ReturnsAsync((Book?)null);
+
+        // Act & Assert
+        await Assert.ThrowsAsync<ArgumentException>(() => _service.AddBookFromIsbnAsync(command));
+        _bookFinderServiceMock.Verify(s => s.FindByIsbnAsync(command.Isbn), Times.Once);
+        _mockBookRepository.Verify(r => r.AddAsync(It.IsAny<Book>()), Times.Never);
+        _mockUserBookRepository.Verify(r => r.AddAsync(It.IsAny<UserBook>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task GetBooksForBookshelfAsync_WithValidQuery_ReturnsFilteredAndPagedBooks()
+    {
+        // Arrange
+        var bookshelfId = Guid.NewGuid();
+        var query = new GetBooksForBookshelfQuery
+        {
+            BookshelfId = bookshelfId,
+            Title = "Lord",
+            Author = "Tolkien",
+            PageNumber = 1,
+            PageSize = 10,
+            SortBy = "TitleAsc"
+        };
+
+        var expectedBooks = new[]
+        {
+            Book.CreateNew("The Lord of the Rings: Fellowship", bookshelfId, new[] { "J.R.R. Tolkien" }),
+            Book.CreateNew("The Lord of the Rings: Two Towers", bookshelfId, new[] { "J.R.R. Tolkien" })
+        };
+
+        _mockBookRepository.Setup(r => r.SearchAsync(
+                It.Is<string?>(s => s == query.Title),
+                It.Is<string?>(s => s == query.Author),
+                It.Is<string?>(s => s == query.Isbn), // Conversion to string for SearchAsync
+                It.Is<Guid?>(g => g == query.CategoryId),
+                It.IsAny<string?>(), // cCode, not in query
+                It.Is<Guid?>(g => g == query.OwnerId),
+                It.Is<Guid?>(g => g == query.BookshelfId),
+                It.Is<ReadingStatus?>(s => s == query.ReadingStatus)
+            ))
+            .ReturnsAsync(expectedBooks);
+
+        // Act
+        var result = await _service.GetBooksForBookshelfAsync(query);
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.Equal(expectedBooks.Length, result.Length);
+        _mockBookRepository.Verify(r => r.SearchAsync(
+                It.Is<string?>(s => s == query.Title),
+                It.Is<string?>(s => s == query.Author),
+                It.Is<string?>(s => s == query.Isbn), // Conversion to string for SearchAsync
+                It.Is<Guid?>(g => g == query.CategoryId),
+                It.IsAny<string?>(), // cCode, not in query
+                It.Is<Guid?>(g => g == query.OwnerId),
+                It.Is<Guid?>(g => g == query.BookshelfId),
+                It.Is<ReadingStatus?>(s => s == query.ReadingStatus)
+            ), Times.Once);
     }
 }

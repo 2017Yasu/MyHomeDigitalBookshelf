@@ -1,8 +1,10 @@
+using MyHomeDigitalBookshelf.Domain.ValueObjects;
 using Moq;
 using MyHomeDigitalBookshelf.Application.Bookshelves.Commands;
 using MyHomeDigitalBookshelf.Application.Bookshelves.Queries;
 using MyHomeDigitalBookshelf.Domain.Entities;
 using MyHomeDigitalBookshelf.Domain.Repositories;
+using MyHomeDigitalBookshelf.Application.Common.Interfaces;
 
 namespace MyHomeDigitalBookshelf.Application.Tests.Bookshelves;
 
@@ -11,6 +13,7 @@ public class BookshelfServiceTests
     private readonly Mock<IBookshelfRepository> _mockBookshelfRepository;
     private readonly Mock<IBookshelfUserRepository> _mockBookshelfUserRepository;
     private readonly Mock<IUserRepository> _mockUserRepository;
+    private readonly Mock<IEmailService> _mockEmailService;
     private readonly Application.Bookshelves.BookshelfService _service;
 
     public BookshelfServiceTests()
@@ -18,10 +21,12 @@ public class BookshelfServiceTests
         _mockBookshelfRepository = new Mock<IBookshelfRepository>();
         _mockBookshelfUserRepository = new Mock<IBookshelfUserRepository>();
         _mockUserRepository = new Mock<IUserRepository>();
+        _mockEmailService = new Mock<IEmailService>();
         _service = new Application.Bookshelves.BookshelfService(
             _mockBookshelfRepository.Object,
             _mockBookshelfUserRepository.Object,
-            _mockUserRepository.Object);
+            _mockUserRepository.Object,
+            _mockEmailService.Object); // Modified
     }
 
     [Fact]
@@ -56,7 +61,7 @@ public class BookshelfServiceTests
     {
         // Arrange
         var bookshelfId = Guid.NewGuid();
-        var query = new GetBookshelfByIdQuery(bookshelfId);
+        var query = new GetBookshelfByIdQuery { Id = bookshelfId };
 
         var expectedBookshelf = Bookshelf.CreateNew("Test Bookshelf", "Test description");
 
@@ -245,5 +250,62 @@ public class BookshelfServiceTests
         Assert.Equal(expectedUsers.Length, result.Length);
         _mockBookshelfRepository.Verify(r => r.GetByIdAsync(bookshelfId), Times.Once);
         _mockBookshelfUserRepository.Verify(r => r.GetByBookshelfAsync(bookshelfId), Times.Once);
+    }
+
+    [Fact]
+    public async Task InviteUserToBookshelfAsync_WithValidCommand_SendsEmailAndAddsUser()
+    {
+        // Arrange
+        var bookshelfId = Guid.NewGuid();
+        var invitingUserId = Guid.NewGuid();
+        var invitedUserEmail = "invited@example.com";
+        var command = new InviteUserToBookshelfCommand
+        {
+            BookshelfId = bookshelfId,
+            InvitingUserId = invitingUserId,
+            InvitedUserEmail = invitedUserEmail
+        };
+
+        var existingBookshelf = new Bookshelf(bookshelfId, "Test Bookshelf", "Test Description", DateTime.UtcNow.AddDays(-1), DateTime.UtcNow);
+        var invitingUser = new User(Guid.NewGuid(), "Inviter", new Email("inviter@example.com"), "hash", Domain.Entities.UserRole.Member, DateTime.UtcNow);
+        var invitedUser = new User(Guid.NewGuid(), "Invited", new Email(invitedUserEmail), "hash", Domain.Entities.UserRole.Member, DateTime.UtcNow);
+
+        _mockBookshelfRepository.Setup(r => r.GetByIdAsync(bookshelfId)).ReturnsAsync(existingBookshelf);
+        _mockUserRepository.Setup(r => r.GetByIdAsync(invitingUserId)).ReturnsAsync(invitingUser);
+        _mockUserRepository.Setup(r => r.GetByEmailAsync(invitedUserEmail)).ReturnsAsync(invitedUser); // User already exists
+        _mockBookshelfUserRepository.Setup(r => r.GetAsync(invitedUser.Id, bookshelfId)).ReturnsAsync((BookshelfUser?)null);
+        _mockBookshelfUserRepository.Setup(r => r.AddAsync(It.IsAny<BookshelfUser>())).ReturnsAsync((BookshelfUser bu) => bu);
+        _mockEmailService.Setup(s => s.SendEmailAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).Returns(Task.CompletedTask);
+
+        // Act
+        await _service.InviteUserToBookshelfAsync(command);
+
+        // Assert
+        _mockBookshelfRepository.Verify(r => r.GetByIdAsync(bookshelfId), Times.Once);
+        _mockUserRepository.Verify(r => r.GetByIdAsync(invitingUserId), Times.Once);
+        _mockUserRepository.Verify(r => r.GetByEmailAsync(invitedUserEmail), Times.Once);
+        _mockBookshelfUserRepository.Verify(r => r.GetAsync(invitedUser.Id, bookshelfId), Times.Once);
+        _mockBookshelfUserRepository.Verify(r => r.AddAsync(It.Is<BookshelfUser>(bu => bu.UserId == invitedUser.Id && bu.BookshelfId == bookshelfId)), Times.Once);
+        _mockEmailService.Verify(s => s.SendEmailAsync(invitedUserEmail, It.IsAny<string>(), It.IsAny<string>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task InviteUserToBookshelfAsync_ShouldThrowException_WhenBookshelfDoesNotExist()
+    {
+        // Arrange
+        var command = new InviteUserToBookshelfCommand
+        {
+            BookshelfId = Guid.NewGuid(),
+            InvitingUserId = Guid.NewGuid(),
+            InvitedUserEmail = "invited@example.com"
+        };
+
+        _mockBookshelfRepository.Setup(r => r.GetByIdAsync(command.BookshelfId)).ReturnsAsync((Bookshelf?)null);
+
+        // Act & Assert
+        await Assert.ThrowsAsync<ArgumentException>(() => _service.InviteUserToBookshelfAsync(command));
+        _mockBookshelfRepository.Verify(r => r.GetByIdAsync(command.BookshelfId), Times.Once);
+        _mockEmailService.Verify(s => s.SendEmailAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Never);
+        _mockBookshelfUserRepository.Verify(r => r.AddAsync(It.IsAny<BookshelfUser>()), Times.Never);
     }
 }

@@ -1,9 +1,11 @@
 using Microsoft.Extensions.Logging;
 using MyHomeDigitalBookshelf.Domain.Entities;
 using MyHomeDigitalBookshelf.Domain.Repositories;
+using MyHomeDigitalBookshelf.Utilities.Attributes.Registration;
 
 namespace MyHomeDigitalBookshelf.Infrastructure.Database.Repositories;
 
+[SingletonService]
 public class BookshelfUserRepository(ILogger<BookshelfUserRepository> logger, DbConnectionProvider connectionProvider)
     : RepositoryBase(logger, connectionProvider), IBookshelfUserRepository
 {

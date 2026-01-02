@@ -39,9 +39,15 @@ internal class GetBooksSql(DbConnection connection, DbTransaction? transaction =
         return (await QueryAsync(builder)).FirstOrDefault();
     }
 
+    public async Task<BookSchema?> QueryByIsbnAsync(string isbn)
+    {
+        var builder = new SqlBuilder().Where(@$"b.isbn = @{nameof(isbn)}", new { isbn });
+        return (await QueryAsync(builder)).FirstOrDefault();
+    }
+
     public async Task<BookSchema[]> QueryAsync(
         string? title, string? author, string? isbn, Guid? categoryId,
-        string? cCode, Guid? ownerId, ReadingStatus? readingStatus)
+        string? cCode, Guid? ownerId, Guid? bookshelfId, ReadingStatus? readingStatus) // Modified signature
     {
         var builder = new SqlBuilder().LeftJoin("user_books ub ON b.id = ub.book_id");
         if (!string.IsNullOrEmpty(title))
@@ -67,6 +73,10 @@ internal class GetBooksSql(DbConnection connection, DbTransaction? transaction =
         if (ownerId.HasValue)
         {
             builder = builder.Where(@$"ub.user_id = @{nameof(ownerId)}", new { ownerId });
+        }
+        if (bookshelfId.HasValue)
+        {
+            builder = builder.Where(@$"b.bookshelf_id = @{nameof(bookshelfId)}", new { bookshelfId });
         }
         if (readingStatus.HasValue)
         {
