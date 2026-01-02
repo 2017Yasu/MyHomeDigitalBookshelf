@@ -4,7 +4,7 @@ import { View, Text, StyleSheet, TextInput, Button, Alert, ScrollView } from 're
 // Mock API call for inviting a user
 const mockInviteUserApi = async (bookshelfId: string, email: string) => {
   console.log(`Mock API call: Inviting ${email} to bookshelf ${bookshelfId}`);
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     setTimeout(() => {
       if (email.includes('@')) {
         resolve({ success: true, message: `Invitation sent to ${email}` });
@@ -15,11 +15,14 @@ const mockInviteUserApi = async (bookshelfId: string, email: string) => {
   });
 };
 
-const MemberManagementScreen: React.FC = ({ route }) => { // Assuming route.params will contain bookshelfId
-  const { bookshelfId } = route?.params || { bookshelfId: 'some-bookshelf-id' }; // Default for demonstration
+// TODO: Define the type for route params
+const MemberManagementScreen = () => {
+  // TODO: Replace with actual route param extraction
+  const { bookshelfId } = { bookshelfId: 'some-bookshelf-id' }; // Default for demonstration
   const [invitedEmail, setInvitedEmail] = useState('');
   const [loading, setLoading] = useState(false);
-  const [members, setMembers] = useState<any[]>([ // Placeholder for existing members
+  const [members, setMembers] = useState<any[]>([
+    // Placeholder for existing members
     { id: '1', email: 'admin@example.com', role: 'Administrator' },
     { id: '2', email: 'member1@example.com', role: 'Member' },
   ]);
@@ -64,7 +67,7 @@ const MemberManagementScreen: React.FC = ({ route }) => { // Assuming route.para
 
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Current Members</Text>
-        {members.map(member => (
+        {members.map((member) => (
           <View key={member.id} style={styles.memberItem}>
             <Text style={styles.memberEmail}>{member.email}</Text>
             <Text style={styles.memberRole}>{member.role}</Text>

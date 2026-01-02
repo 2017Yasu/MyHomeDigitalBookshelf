@@ -5,6 +5,7 @@ const API_BASE_URL = Constants.expoConfig?.extra?.API_BASE_URL || 'http://localh
 const apiClient = axios.create({
   baseURL: API_BASE_URL,
   headers: {
+    'Access-Control-Request-Headers': '*',
     'Content-Type': 'application/json',
   },
 });

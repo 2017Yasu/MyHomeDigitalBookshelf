@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, Alert } from 'react-native';
-import BarcodeScanner from '../../../common/ui/src/components/BarcodeScanner';
-import AddBookForm from '../../../common/ui/src/components/AddBookForm';
+import { BarcodeScanner, AddBookForm } from '@mhdb/ui';
 
 // Mock API call for demonstration purposes
 const mockFetchBookByIsbn = async (isbn: string) => {
   console.log(`Mock API call: Fetching book data for ISBN: ${isbn}`);
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     setTimeout(() => {
       if (isbn === '978-0321765723') {
         resolve({
@@ -26,7 +25,7 @@ const mockFetchBookByIsbn = async (isbn: string) => {
 // Mock API call for adding a book
 const mockAddBookApi = async (bookData: any) => {
   console.log('Mock API call: Adding book', bookData);
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     setTimeout(() => {
       resolve({ success: true, message: 'Book added successfully!' });
     }, 1000);
@@ -73,9 +72,7 @@ const AddBookScreen: React.FC = () => {
 
       {loading && <Text style={styles.loadingText}>Loading...</Text>}
 
-      {!scannedIsbn && !loading && (
-        <BarcodeScanner onScan={handleBarcodeScan} />
-      )}
+      {!scannedIsbn && !loading && <BarcodeScanner onScan={handleBarcodeScan} />}
 
       {(scannedIsbn || bookFormData) && !loading && (
         <>

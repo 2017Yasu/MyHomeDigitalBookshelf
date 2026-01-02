@@ -11,6 +11,17 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("DevelopmentCorsPolicy", policy =>
+    {
+        policy.WithOrigins("http://localhost:8081");
+        policy.AllowAnyHeader();
+        policy.AllowAnyMethod();
+        policy.AllowCredentials();
+    });
+});
+
 builder.Services
     .AddInfrastructureServices(
         builder.Configuration.GetSection("Database").Get<DbSettings>()?.ToInfrastructureDbSettings()
@@ -25,6 +36,7 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+    app.UseCors("DevelopmentCorsPolicy");
 }
 
 app.UseHttpsRedirection();

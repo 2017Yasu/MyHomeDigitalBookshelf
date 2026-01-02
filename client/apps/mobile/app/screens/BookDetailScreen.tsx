@@ -5,7 +5,7 @@ import { Picker } from '@react-native-picker/picker'; // Assuming @react-native-
 // Mock API call for fetching book details
 const mockFetchBookDetails = async (bookId: string) => {
   console.log(`Mock API call: Fetching details for book ID: ${bookId}`);
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     setTimeout(() => {
       // Simulate fetching a book by ID
       if (bookId === '1') {
@@ -30,7 +30,7 @@ const mockFetchBookDetails = async (bookId: string) => {
 // Mock API call for updating user book status
 const mockUpdateBookStatus = async (userBookId: string, newStatus: string) => {
   console.log(`Mock API call: Updating status for user book ${userBookId} to ${newStatus}`);
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     setTimeout(() => {
       // Simulate API response
       resolve({ success: true, message: 'Status updated successfully!' });
@@ -38,8 +38,11 @@ const mockUpdateBookStatus = async (userBookId: string, newStatus: string) => {
   });
 };
 
-const BookDetailScreen: React.FC = ({ route }) => { // Assuming route.params will contain bookId
-  const { bookId } = route?.params || { bookId: '1' }; // Default to '1' for demonstration
+// TODO: Define the type for route params
+const BookDetailScreen = () => {
+  // Assuming route.params will contain bookId
+  // TODO: Replace with actual route param extraction
+  const { bookId } = { bookId: '1' }; // Default to '1' for demonstration
   const [bookDetails, setBookDetails] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [selectedStatus, setSelectedStatus] = useState<string>('');
