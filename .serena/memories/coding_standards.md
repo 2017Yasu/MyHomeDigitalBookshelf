@@ -1,134 +1,55 @@
 # Coding Standards and Best Practices
 
-## Clean Architecture Implementation
+## General C# Conventions
+- Target .NET 8 with nullable reference types and implicit usings enabled.
+- Prefer one primary type per file and keep namespaces aligned with project/folder boundaries.
+- Use PascalCase for public types and members; camelCase for parameters and local variables.
+- Prefix interfaces with `I`.
+- Keep public APIs documented when behavior is not obvious.
+- Use small, focused services/repositories that match the existing feature folders.
 
-### Domain Layer
-- Entities are immutable with private setters
-- Use constructor validation for business rules
-- Provide static factory methods for entity creation
-- Use value objects for complex properties
-- Implement proper ToString() methods using ClassUtilities
-- Document public properties with XML comments
-- Keep entities focused on core business logic
+## Architecture Boundaries
+- `Domain` contains entities, enums, value objects, repository interfaces, and domain utilities.
+- `Application` coordinates use cases through services and depends on domain abstractions.
+- `Infrastructure` implements external concerns such as PostgreSQL repositories and external API/services.
+- `Api` wires services, settings, controllers, Swagger, CORS, static files, and SPA fallback.
+- `Utilities` contains shared attributes/extensions used across projects.
+- Avoid moving business rules into API controllers or SQL classes.
 
-Example:
-```csharp
-public class Book
-{
-    public Guid Id { get; }
-    public string Title { get; }
-    public ValueObjects.Isbn? Isbn { get; }
-    
-    private Book(string title) 
-    {
-        if (string.IsNullOrWhiteSpace(title))
-            throw new ArgumentException("Title must not be empty", nameof(title));
-        Title = title;
-    }
+## Domain Layer
+- Keep entities focused on domain state and business invariants.
+- Use value objects for structured domain concepts such as `Email`, `Isbn`, `Price`, and `CCode`.
+- Validate constructor/factory inputs where invalid state would otherwise be possible.
+- Use domain enums for constrained state such as roles, reading status, and loan status.
+- Use `ClassUtilities`/existing helpers for consistent `ToString()` behavior when present.
 
-    public static Book Create(string title) => new(title);
-}
-```
+## Application Layer
+- Use feature folders such as `Books`, `Bookshelves`, `Categories`, `Sessions`, `UserBooks`, and `Users`.
+- Keep application services responsible for orchestration and repository interaction.
+- Register services through `ApplicationServiceExtensions`.
+- Use dependency injection for service dependencies; avoid direct infrastructure construction.
+- Application unit tests live under `Application.Tests` and use xUnit/Moq patterns already present in the repo.
 
-### Infrastructure Layer
+## Infrastructure Layer
+- Repository implementations live in `Infrastructure/Database/Repositories/` and implement domain repository interfaces.
+- Use `RepositoryBase` plus `QueryAndTraceAsync` for reads and `ExecuteAndTraceAsync` for writes/transactions.
+- Use Dapper and `Dapper.SqlBuilder` with parameterized SQL.
+- Keep row mapping in `Schema` classes with `ToEntity()` conversions.
+- Keep SQL execution details in operation-specific classes under `Repositories/Sql/`.
+- Preserve the existing split between `QuerySqlBase` and `ExecSqlBase`.
+- Use structured logging context through the existing repository base helpers.
 
-#### Repository Pattern Implementation
-1. **Base Classes**
-   - Use RepositoryBase for common functionality
-   - Implement proper error handling and logging
-   - Use QueryAndTraceAsync for read operations
-   - Use ExecuteAndTraceAsync for write operations with transactions
+## Database / Migrations
+- PostgreSQL SQL files live under `sql/up` and `sql/down`.
+- Migration filenames use four-digit numeric prefixes so `DbMigrator` can order and range-filter them.
+- `compose.yml` provides `db` for development and `db_test` for integration tests.
 
-2. **Repository Structure**
-   - Schema classes for database mapping
-   - SQL classes for query encapsulation
-   - Repository implementations for domain interface
-   
-3. **Logging Pattern**
-   - Log operation start with parameters
-   - Log SQL errors with detailed information
-   - Log operation completion
-   - Use structured logging with proper context
+## Testing
+- Use xUnit for tests.
+- Application service tests should mock repositories/dependencies with Moq.
+- Infrastructure repository tests inherit from `RepositoryTestBase` and require the PostgreSQL test database.
+- Test CRUD behavior, mappings, null handling, enum/value-object conversions, and relationship/navigation cases where relevant.
+- Keep test names behavior-oriented, matching the existing `Method_Should_ExpectedBehavior` style.
 
-4. **Error Handling**
-   - Catch and log specific database exceptions
-   - Proper transaction management
-   - Consistent error propagation
-
-Example Repository:
-```csharp
-public class BookRepository : RepositoryBase, IBookRepository
-{
-    public async Task<Book> AddAsync(Book book)
-    {
-        return await ExecuteAndTraceAsync(
-            async (conn, tran) =>
-            {
-                var schema = await new AddBookSql(conn, tran).ExecuteAsync(book);
-                return schema.ToEntity();
-            },
-            "Add New Book",
-            book.ToString());
-    }
-}
-```
-
-### Application Layer
-- Use CQRS pattern with Commands and Queries
-- Implement proper validation
-- Handle business logic coordination
-- Use dependency injection
-- Implement proper service interfaces
-
-## Coding Conventions
-
-### Naming Conventions
-- PascalCase for:
-  - Public members
-  - Class names
-  - Interface names (prefix with 'I')
-  - Property names
-- camelCase for:
-  - Private fields
-  - Parameters
-  - Local variables
-
-### Documentation
-- XML documentation for public APIs
-- Clear and concise summaries
-- Document parameters when not self-evident
-- Include usage examples for complex APIs
-
-### File Organization
-- One class per file
-- Group related files in feature folders
-- Maintain consistent file structure
-- Use proper namespacing
-
-### Testing
-- Write meaningful test names
-- Test all CRUD operations
-- Verify entity mappings
-- Test business rules
-- Clean up test data
-- Use proper test categories
-
-## TypeScript/React Conventions
-
-### Component Structure
-- Use functional components with hooks
-- Implement proper TypeScript interfaces
-- Follow React best practices
-- Use proper state management
-
-### File Organization
-- Feature-based structure
-- Shared components in common
-- Clear separation of concerns
-- Proper module organization
-
-### Code Quality
-- Use ESLint + Prettier
-- Maintain consistent formatting
-- Write meaningful comments
-- Follow React patterns
+## Frontend Note
+No React/Vite/TypeScript client is currently checked in. Do not assume frontend lint/build/test commands exist unless a `package.json` or client project is added.

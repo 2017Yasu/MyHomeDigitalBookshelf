@@ -1,76 +1,37 @@
 # Repository Implementation Guide
 
-## Overview
+## Current Repository Set
+Repository interfaces live in `Domain/Repositories/`; implementations live in `Infrastructure/Database/Repositories/`.
 
-The repository implementation in MyHomeDigitalBookshelf follows a consistent pattern using Dapper for data access. Each repository consists of several components:
+Current implemented repositories:
+- `BookRepository` / `IBookRepository`
+- `BookshelfRepository` / `IBookshelfRepository`
+- `BookshelfUserRepository` / `IBookshelfUserRepository`
+- `CategoryRepository` / `ICategoryRepository`
+- `SessionRepository` / `ISessionRepository`
+- `UserBookRepository` / `IUserBookRepository`
+- `UserIdentityRepository` / `IUserIdentityRepository`
+- `UserRepository` / `IUserRepository`
 
-1. **Schema Classes** - Map database rows to C# objects
-2. **SQL Classes** - Encapsulate SQL queries and Dapper execution
-3. **Repository Implementation** - Coordinate data access and implement domain interfaces
+## File Layout
+For a new repository-backed entity, follow the existing three-part structure:
+- `Infrastructure/Database/Repositories/<Entity>Repository.cs`
+- `Infrastructure/Database/Repositories/Schema/<Entity>Schema.cs`
+- `Infrastructure/Database/Repositories/Sql/<Operation><Entity>Sql.cs`
 
-## Components
+SQL support base classes:
+- `QuerySqlBase` for SELECT-style operations
+- `ExecSqlBase` for INSERT/UPDATE/DELETE-style operations
 
-### Schema Classes
+## Repository Class Pattern
+- Implement the matching domain repository interface.
+- Inherit from `RepositoryBase`.
+- Accept `ILogger<TRepository>` and `DbConnectionProvider` through constructor injection, matching existing repositories.
+- Use `QueryAndTraceAsync` for reads.
+- Use `ExecuteAndTraceAsync` for writes so operations run in a transaction.
+- Convert schemas to domain entities inside the repository, not in controllers or application services.
 
-Located in `Infrastructure/Database/Repositories/Schema/`
-- Map database columns to C# properties
-- Include ToEntity() method to convert to domain entity
-- No business logic, pure data mapping
-
-Example:
-```csharp
-public class SessionSchema
-{
-    public Guid Id { get; set; }
-    public string Token { get; set; } = string.Empty;
-    // ... other properties
-
-    public Domain.Entities.Session ToEntity()
-    {
-        return new(
-            id: Id,
-            token: Token,
-            // ... other properties
-        );
-    }
-}
-```
-
-### SQL Classes
-
-Located in `Infrastructure/Database/Repositories/Sql/`
-- Inherit from QuerySqlBase (SELECT) or ExecSqlBase (INSERT/UPDATE/DELETE)
-- Use Dapper for query execution
-- Use parameterized queries
-- Support transactions
-
-Example:
-```csharp
-internal class GetSessionsSql : QuerySqlBase
-{
-    private const string Sql = @"
-        SELECT id, token
-        FROM sessions
-        /**where**/";
-
-    internal async Task<Schema.SessionSchema?> QuerySingleAsync(Guid id)
-    {
-        var builder = new SqlBuilder();
-        builder = builder.Where("id = @id", new { id });
-        // ... execution code
-    }
-}
-```
-
-### Repository Implementation
-
-Located in `Infrastructure/Database/Repositories/`
-- Inherit from RepositoryBase
-- Use QueryAndTraceAsync/ExecuteAndTraceAsync for consistent logging
-- Convert between schema and domain entities
-- Handle transactions when needed
-
-Example:
+Example shape:
 ```csharp
 public class SessionRepository : RepositoryBase, ISessionRepository
 {
@@ -88,10 +49,29 @@ public class SessionRepository : RepositoryBase, ISessionRepository
 }
 ```
 
-## Testing
+## Schema Classes
+- Put schemas under `Infrastructure/Database/Repositories/Schema/`.
+- Use Dapper-friendly public properties with setters.
+- Keep schema classes free of business rules.
+- Implement `ToEntity()` for domain conversion.
+- Convert database strings/numbers into domain enums and value objects in `ToEntity()`.
+- Use nullable properties for optional columns and left-joined navigation data.
+- Follow existing relationship schema patterns for bookshelves/users/user books.
 
-- Create test class inheriting from RepositoryTestBase
-- Test all CRUD operations
-- Verify entity mappings
-- Test business rules and constraints
-- Clean up test data automatically
+## SQL Classes
+- Put SQL operation classes under `Infrastructure/Database/Repositories/Sql/`.
+- Use parameterized SQL only.
+- Use Dapper and `Dapper.SqlBuilder` for dynamic filtering.
+- Keep methods narrowly named around the operation they perform, such as `QuerySingleAsync`, `QueryAsync`, or `ExecuteAsync`, matching nearby files.
+- Keep SQL readable and explicit about selected columns/aliases, especially for joins.
+- Pass transactions through write operations.
+
+## Registration
+New repositories must be registered in `Infrastructure/InfrastructureServiceExtensions.cs` alongside the existing repository implementations so DI can resolve them.
+
+## Tests
+- Add repository integration tests under `Infrastructure.Tests/Database/Repositories/`.
+- Inherit from `RepositoryTestBase`.
+- Use the `db_test` service and migrated schema.
+- Cover create/read/update/delete paths, domain mapping, optional/null fields, enum and value-object conversion, relationship/navigation cases, and duplicate/constraint behavior when relevant.
+- Clean up created data in dependency order, matching existing tests.
