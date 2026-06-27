@@ -5,7 +5,10 @@ export const languageDetector: LanguageDetectorModule = {
   type: 'languageDetector',
   detect: () => {
     const locales = Localization.getLocales();
-    const firstLanguageCode = locales[0].languageCode ?? 'en';
+    let firstLanguageCode = 'en';
+    if (locales && locales.length > 0) {
+      firstLanguageCode = locales[0].languageCode ?? firstLanguageCode;
+    }
     return firstLanguageCode;
   },
   init: () => {},

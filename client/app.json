@@ -1,11 +1,10 @@
 {
   "expo": {
-    "name": "my-expo-app",
-    "slug": "my-expo-app",
-    "version": "1.0.0",
-
-    "scheme": "my-expo-app",
-    "platforms": ["ios", "android"],
+    "name": "my-home-digital-bookshelf",
+    "slug": "my-home-digital-bookshelf",
+    "version": "0.1.0",
+    "scheme": "my-home-digital-bookshelf",
+    "platforms": ["ios", "android", "web"],
     "web": {
       "bundler": "metro",
       "output": "static",
@@ -17,12 +16,9 @@
 
       "tsconfigPaths": true
     },
-
     "orientation": "portrait",
     "icon": "./assets/icon.png",
-
     "userInterfaceStyle": "light",
-
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
