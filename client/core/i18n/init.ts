@@ -1,4 +1,4 @@
-import i18n, { Resource } from 'i18next';
+import { createInstance, type Resource } from 'i18next';
 import { initReactI18next } from 'react-i18next';
 
 import { fallbackChecker } from './fallbackChecker';
@@ -10,6 +10,8 @@ type Init18n = {
 };
 
 export const init18n = ({ resources, fallbackLng }: Init18n) => {
+  const i18n = createInstance();
+
   return i18n
     .use(languageDetector)
     .use(initReactI18next)

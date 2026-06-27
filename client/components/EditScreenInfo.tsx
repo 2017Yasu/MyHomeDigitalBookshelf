@@ -1,18 +1,15 @@
 import { Text, View } from 'react-native';
 
-
 import { useTranslation } from 'react-i18next';
-
 
 interface EditScreenInfoProps {
   path: string;
 }
 
 export const EditScreenInfo: React.FC<EditScreenInfoProps> = ({ path }) => {
-
   const { t } = useTranslation();
   const title = t('getStarted');
-  const description = t('changeCode')
+  const description = t('changeCode');
 
   return (
     <View>
@@ -21,9 +18,7 @@ export const EditScreenInfo: React.FC<EditScreenInfoProps> = ({ path }) => {
         <View className={`${styles.codeHighlightContainer} ${styles.homeScreenFilename}`}>
           <Text>{path}</Text>
         </View>
-        <Text className={styles.getStartedText}>
-          {description}
-        </Text>
+        <Text className={styles.getStartedText}>{description}</Text>
       </View>
     </View>
   );
