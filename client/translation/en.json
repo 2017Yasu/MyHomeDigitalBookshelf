@@ -1,8 +1,8 @@
 {
   "button": {
-    "french": "Switch language to French",
-    "english": "Switch language to English"
+    "english": "Switch language to English",
+    "french": "Switch language to French"
   },
-  "getStarted": "Open up the code for this screen:",
-  "changeCode": "Change any of the text, save the file, and your app will automatically update."
+  "changeCode": "Change any of the text, save the file, and your app will automatically update.",
+  "getStarted": "Open up the code for this screen:"
 }

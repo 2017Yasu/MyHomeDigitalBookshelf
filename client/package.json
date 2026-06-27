@@ -10,7 +10,9 @@
     "lint": "eslint \"**/*.{js,jsx,ts,tsx}\" && prettier -c \"**/*.{js,jsx,ts,tsx,json}\"",
     "format": "eslint \"**/*.{js,jsx,ts,tsx}\" --fix && prettier \"**/*.{js,jsx,ts,tsx,json}\" --write",
     "web": "expo start --web",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "i18n-status": "i18next-cli status",
+    "i18n-extract": "i18next-cli extract"
   },
   "dependencies": {
     "@expo/vector-icons": "^15.0.2",
@@ -44,6 +46,7 @@
     "eslint-config-expo": "~10.0.0",
     "eslint-config-prettier": "^10.1.2",
     "eslint-plugin-simple-import-sort": "^13.0.0",
+    "i18next-cli": "^1.64.2",
     "prettier": "^3.2.5",
     "prettier-plugin-tailwindcss": "^0.5.11",
     "tailwindcss": "^3.4.0",
