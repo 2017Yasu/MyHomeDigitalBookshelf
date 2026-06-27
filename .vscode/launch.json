@@ -6,7 +6,7 @@
       "type": "coreclr",
       "request": "launch",
       "preLaunchTask": "build API to launch",
-      "program": "${workspaceFolder}/MyHomeDigitalBookshelf/Api/bin/Debug/net8.0/MyHomeDigitalBookshelf.Api.dll",
+      "program": "${workspaceFolder}/MyHomeDigitalBookshelf/Api/bin/Debug/net10.0/MyHomeDigitalBookshelf.Api.dll",
       "cwd": "${workspaceFolder}",
       "stopAtEntry": false,
       "checkForDevCert": false,
