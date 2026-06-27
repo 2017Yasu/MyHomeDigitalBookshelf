@@ -1,8 +1,10 @@
 {
-  "button": {
-    "english": "Switch language to English",
-    "french": "Switch language to French"
+  "home": {
+    "title": "Home"
   },
-  "changeCode": "Change any of the text, save the file, and your app will automatically update.",
-  "getStarted": "Open up the code for this screen:"
+  "notFound": {
+    "linkText": "Go to home screen!",
+    "message": "This screen doesn't exist.",
+    "title": "Oops!"
+  }
 }

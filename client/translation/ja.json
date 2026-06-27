@@ -1,0 +1,10 @@
+{
+  "home": {
+    "title": "ホーム"
+  },
+  "notFound": {
+    "linkText": "ホーム画面に移動",
+    "message": "この画面は存在しません。",
+    "title": "おっと!"
+  }
+}
